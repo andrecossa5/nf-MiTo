@@ -38,7 +38,7 @@ my_parser.add_argument(
 
 my_parser.add_argument(
     '--max_fraction_unassigned', 
-    type=int,
+    type=float,
     default=.05,
     help='Max fraction of unassigned cells. Default: .05.'
 )
