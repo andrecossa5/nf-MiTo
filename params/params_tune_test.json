@@ -27,6 +27,7 @@
     "k" : 5,
     "gamma" : 0.2,
     "min_n_var" : 2,
+    "max_fraction_unassigned" : 0.05,
 
     "path_dbSNP" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/dbSNP_MT.txt",
     "path_REDIdb" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/REDIdb_MT.txt"
