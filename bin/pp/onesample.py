@@ -215,6 +215,13 @@ my_parser.add_argument(
     help='Path to REDIdb database. Default: None.'
 )
 
+my_parser.add_argument(
+    '--max_fraction_unassigned', 
+    type=int,
+    default=.05,
+    help='Max fraction of unassigned cells. Default: .05.'
+)
+
 
 ##
 
@@ -264,7 +271,7 @@ def main():
 
     # MiTo clones
     model = MiToTreeAnnotator(tree)
-    model.clonal_inference()
+    model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
     
     # Save info
 

@@ -36,6 +36,13 @@ my_parser.add_argument(
     help='Path to tree in .newick format. Default: None.'
 )
 
+my_parser.add_argument(
+    '--max_fraction_unassigned', 
+    type=int,
+    default=.05,
+    help='Max fraction of unassigned cells. Default: .05.'
+)
+
 
 ##
 
@@ -89,7 +96,7 @@ def main():
     # Cut and annotate tree
     if annotate_tree == "MiTo":
         model = MiToTreeAnnotator(tree)
-        model.clonal_inference()
+        model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
 
     # Write as pickle
     with open('annotated_tree.pickle', 'wb') as f:

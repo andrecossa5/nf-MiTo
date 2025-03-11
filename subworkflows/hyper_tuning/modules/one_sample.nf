@@ -39,6 +39,7 @@ process ONESAMPLE {
     def k = params.k ? "--k ${params.k}" : ""
     def gamma = params.gamma ? "--gamma ${params.gamma}" : ""
     def min_n_var = params.min_n_var ? "--min_n_var ${params.min_n_var}" : ""
+    def max_fraction_unassigned = params.max_fraction_unassigned ? "--max_fraction_unassigned ${params.max_fraction_unassigned}" : ""
 
     script: 
     """
@@ -70,7 +71,8 @@ process ONESAMPLE {
     ${lineage_column} \
     --ncores ${task.cpus} \
     --path_dbSNP ${params.path_dbSNP} \
-    --path_REDIdb ${params.path_REDIdb}
+    --path_REDIdb ${params.path_REDIdb} \
+    ${max_fraction_unassigned}
     """
 
     stub:
