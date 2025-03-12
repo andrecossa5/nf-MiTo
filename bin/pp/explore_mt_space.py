@@ -217,7 +217,6 @@ def main():
         categorical_cmaps=cmaps,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
-        show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
     n_clones = model.tree.cell_meta['MiTo clone'].unique().size
@@ -234,8 +233,10 @@ def main():
 
     mt.pl.plot_tree(
         model.tree, ax=axs[0], 
-        colorstrip_spacing=.000001, colorstrip_width=2, orient='down',
-        features=list(cmaps.keys())+model.ordered_muts, layer='raw',
+        colorstrip_spacing=.000001, colorstrip_width=2, 
+        orient='down',
+        features=list(cmaps.keys()),
+        characters=model.ordered_muts, layer='raw',
         categorical_cmaps=cmaps,
         feature_label_size=10, feature_label_offset=2,
         feature_internal_nodes='similarity',
@@ -246,14 +247,17 @@ def main():
     mt.pl.add_cbar(
         model.tree.layers['transformed'].values.flatten(), 
         palette='mako', label='AF', 
-        ticks_size=8, label_size=9, vmin=.01, vmax=.1,
+        ticks_size=8, label_size=9, vmin=.0, vmax=.1,
         ax=axs[0], layout=( (1.02,.3,.02,.2), 'right', 'vertical' )
     )
 
     mt.pl.plot_tree(
         model.tree, ax=axs[1],
-        colorstrip_spacing=.000001, colorstrip_width=2, orient='down',
-        features=list(cmaps.keys())+model.ordered_muts, layer='transformed',
+        colorstrip_spacing=.000001, colorstrip_width=2, 
+        orient='down',
+        features=list(cmaps.keys()),
+        characters=model.ordered_muts, layer='transformed',
+        categorical_cmaps=cmaps,
         feature_label_size=10, feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
