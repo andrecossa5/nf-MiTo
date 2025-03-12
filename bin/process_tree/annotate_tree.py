@@ -62,9 +62,9 @@ annotate_tree = args.annotate_tree
 
 # Code
 import pickle
-from mito_utils.utils import *
-from mito_utils.phylo import *
-from mito_utils.MiToTreeAnnotator import *
+import scanpy as sc
+import pandas as pd
+import mito as mt
 
 
 ##
@@ -91,11 +91,11 @@ def main():
     #     X_bin = X_bin.loc[:,test].copy()
 
     # Load tree
-    tree = read_newick(path_tree, X_raw=X_raw, X_bin=X_bin, D=D, meta=cell_meta)
+    tree = mt.io.read_newick(path_tree, X_raw=X_raw, X_bin=X_bin, D=D, meta=cell_meta)
 
     # Cut and annotate tree
     if annotate_tree == "MiTo":
-        model = MiToTreeAnnotator(tree)
+        model = mt.tl.MiToTreeAnnotator(tree)
         model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
 
     # Write as pickle

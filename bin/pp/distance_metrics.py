@@ -81,10 +81,9 @@ lineage_column = args.lineage_column
 # Preparing run: import code, prepare directories
 
 # Code
-from scipy.sparse import load_npz
-from mito_utils.utils import *
-from mito_utils.metrics import *
-from mito_utils.phylo import *
+import numpy as np
+import scanpy as sc
+import mito as mt 
 
 ########################################################################
 
@@ -109,16 +108,16 @@ def main():
         labels = meta[lineage_column].astype(str)
     
         # kNN metrics
-        idx = kNN_graph(D=D['observed'].A, k=K, from_distances=True)[0]
-        _, _, acc_rate = kbet(idx, labels, only_score=False)
-        median_entropy = NN_entropy(idx, labels)
-        median_purity = NN_purity(idx, labels)
+        idx = mt.pp.kNN_graph(D=D['observed'].A, k=K, from_distances=True)[0]
+        _, _, acc_rate = mt.ut.kbet(idx, labels, only_score=False)
+        median_entropy = mt.ut.NN_entropy(idx, labels)
+        median_purity = mt.ut.NN_purity(idx, labels)
         metrics['kBET_rejection_rate'] = 1-acc_rate
         metrics['median_NN_entropy'] = median_entropy
         metrics['median_NN_purity'] = median_purity
     
         # AUPRC
-        metrics['AUPRC'] = distance_AUPRC(D['observed'].A, labels)
+        metrics['AUPRC'] = mt.ut.distance_AUPRC(D['observed'].A, labels)
 
     # Corr
     L = []

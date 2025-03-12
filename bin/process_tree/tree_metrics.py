@@ -51,18 +51,12 @@ job_id = args.job_id
 
 ########################################################################
 
-# Preparing run: import code, prepare directories, set logger
-
 # Code
 import pickle
+import numpy as np
+import pandas as pd
+import mito as mt
 from itertools import chain
-from mito_utils.utils import *
-from mito_utils.metrics import *
-from mito_utils.phylo import *
-
-
-##
-
 
 ########################################################################
 
@@ -95,11 +89,11 @@ def main():
         metrics['density'] = 1.0 - (np.sum(X==0) / np.sum(X!=-1))
 
     # Tree-structure/characters consistency (CI/RI indeces)
-    metrics['median_CI'] = np.median(CI(tree))
-    metrics['median_RI'] = np.median(RI(tree))
+    metrics['median_CI'] = np.median(mt.ut.CI(tree))
+    metrics['median_RI'] = np.median(mt.ut.RI(tree))
 
     # Bootstrap support
-    df_internal = get_internal_node_stats(tree)
+    df_internal = mt.tl.get_internal_node_stats(tree)
     metrics['median_support'] = df_internal['support'].median()
     if 'MiTo clone' in tree.cell_meta.columns:
         metrics['median_support_mut_clades'] = df_internal.loc[df_internal['mut_clade'],'support'].median()
@@ -110,7 +104,7 @@ def main():
     metrics['median_time'] = df_internal['time'].median()
 
     # Corr genetic-tree distances
-    corr_dists, p_corr_dists = calculate_corr_distances(tree)
+    corr_dists, p_corr_dists = mt.ut.calculate_corr_distances(tree)
     metrics['corr_distances'] = corr_dists
     metrics['corr_distances_pvalue'] = p_corr_dists
 
@@ -120,14 +114,22 @@ def main():
         metrics['median_n_cells_clone'] = tree.cell_meta['MiTo clone'].value_counts().median()
         metrics['min_n_cells_clone'] = tree.cell_meta['MiTo clone'].value_counts().min()
         metrics['max_n_cells_clone'] = tree.cell_meta['MiTo clone'].value_counts().max()
-        metrics['median_n_assigned_char_per_clone'] = np.median([ len(x.split(';')) for x in tree.cell_meta['muts'].loc[lambda x: ~x.isna()].unique() ])
-        metrics['total_assigned_char'] = len(list(chain.from_iterable([ x.split(';') for x in tree.cell_meta['muts'].loc[lambda x: ~x.isna()].unique() ])))
+        metrics['median_n_assigned_char_per_clone'] = np.median(
+            [ len(x.split(';')) for x in tree.cell_meta['muts'].loc[lambda x: ~x.isna()].unique() ]
+        )
+        metrics['total_assigned_char'] = len(list(
+            chain.from_iterable([ x.split(';') for x in tree.cell_meta['muts'].loc[lambda x: ~x.isna()].unique() ])
+        ))
 
     # Benchmark specifics
     if lineage_column is not None and lineage_column in tree.cell_meta.columns:
         test = ~tree.cell_meta['MiTo clone'].isna()
-        metrics['ARI'] = custom_ARI(tree.cell_meta.loc[test, lineage_column], tree.cell_meta.loc[test, 'MiTo clone'])
-        metrics['NMI'] = normalized_mutual_info_score(tree.cell_meta.loc[test, lineage_column], tree.cell_meta.loc[test, 'MiTo clone'])
+        metrics['ARI'] = mt.ut.custom_ARI(
+            tree.cell_meta.loc[test, lineage_column], tree.cell_meta.loc[test, 'MiTo clone']
+        )
+        metrics['NMI'] = mt.ut.normalized_mutual_info_score(
+            tree.cell_meta.loc[test, lineage_column], tree.cell_meta.loc[test, 'MiTo clone']
+        )
 
     # Collapse tree
     n = len(tree.internal_nodes)

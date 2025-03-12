@@ -48,8 +48,8 @@ my_parser.add_argument(
 
 # Code
 import pickle
-from mito_utils.utils import *
-from mito_utils.preprocessing import *
+import scanpy as sc
+import mito as mt
 
 ########################################################################
 
@@ -66,7 +66,7 @@ def main():
     # Calculate distances and write out afm
     afm = sc.read(path_afm)
     afm.uns['genotyping'] = {'layer':'bin', 'bin_method':'', 'binarization_kwargs':{}}
-    compute_distances(afm, precomputed=True, metric=metric, ncores=n_cores)
+    mt.pp.compute_distances(afm, precomputed=True, metric=metric, ncores=n_cores)
     afm.write('afm.h5ad')
             
 
