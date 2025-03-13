@@ -100,7 +100,7 @@ def main():
 
     # Write as pickle
     with open('annotated_tree.pickle', 'wb') as f:
-        pickle.dump(model.tree.copy(), f)
+        pickle.dump(tree.copy(), f)
     
 
     ##
