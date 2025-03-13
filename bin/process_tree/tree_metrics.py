@@ -96,7 +96,7 @@ def main():
     df_internal = mt.tl.get_internal_node_stats(tree)
     metrics['median_support'] = df_internal['support'].median()
     if 'MiTo clone' in tree.cell_meta.columns:
-        metrics['median_support_mut_clades'] = df_internal.loc[df_internal['mut_clade'],'support'].median()
+        metrics['median_support_mut_clades'] = df_internal.loc[df_internal['clonal_node'],'support'].median()
     max_clade = np.percentile(df_internal['clade_size'], 90)
     metrics['median_support_biggest_clades'] = df_internal.query(f'clade_size>={max_clade}')['support'].median()
 
