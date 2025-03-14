@@ -92,7 +92,7 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_positive', 
     type=int,
-    default=2,
+    default=3,
     help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 2.'
 )
 
@@ -113,14 +113,14 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_mean_AD_in_positives', 
     type=float,
-    default=1.5,
+    default=1.25,
     help='Minimum number of mean AD in positive cells to consider a MT-SNV. Default: 1.5.'
 )
 
 my_parser.add_argument(
     '--min_mean_DP_in_positives', 
     type=float,
-    default=20,
+    default=25,
     help='Minimum number of mean DP in positive cells to consider a MT-SNV. Default: 20.'
 )
 
@@ -169,8 +169,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_var', 
     type=int,
-    default=2,
-    help='Min n variants. Default: 2.'
+    default=1,
+    help='Min n variants. Default: 1.'
 )
 
 my_parser.add_argument(

@@ -89,11 +89,13 @@ args = my_parser.parse_args()
 ########################################################################
 
 # Code
-import numpy as np
 import pandas as pd
 import scanpy as sc
 import mito as mt 
 import matplotlib.pyplot as plt
+from mito.pl.plotting_base import (
+    bar, format_ax, add_cbar, add_legend
+)
 
 ########################################################################
 
@@ -159,7 +161,7 @@ def main():
     xticks = [1,2,4,10,30,90,300,1100]
     mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
     mt.pl.plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
-    mt.pl.format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
+    format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
     mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
@@ -169,8 +171,8 @@ def main():
     ax = fig.add_subplot(1,4,4)
     ref_df = mt.ut.load_mt_gene_annot()
     df_plot = ref_df.query('mut in @afm.var_names')['Symbol'].value_counts().to_frame('n')
-    mt.pl.bar(df_plot, 'n', ax=ax, c='#C0C0C0', edgecolor='k', s=.8)
-    mt.pl.format_ax(ax=ax, xticks=df_plot.index, rotx=90, ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
+    bar(df_plot, 'n', ax=ax, c='#C0C0C0', edgecolor='k', s=.8)
+    format_ax(ax=ax, xticks=df_plot.index, rotx=90, ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
 
     fig.subplots_adjust(bottom=.25, top=.8, left=.1, right=.9, wspace=.4)
     fig.savefig('MT_SNVs.png', dpi=500)
@@ -211,7 +213,7 @@ def main():
     # 4. Viz tree
     fig, ax = plt.subplots(figsize=(4.7,5))
     mt.pl.plot_tree(
-        model.tree, ax=ax, 
+        tree, ax=ax, 
         features=list(cmaps.keys()), 
         colorstrip_width=5, 
         categorical_cmaps=cmaps,
@@ -219,7 +221,7 @@ def main():
         internal_node_subset=model.clonal_nodes,
         internal_node_kwargs={'markersize':8}
     )
-    n_clones = model.tree.cell_meta['MiTo clone'].unique().size
+    n_clones = tree.cell_meta['MiTo clone'].unique().size
     fig.suptitle(f'n cells: {afm.shape[0]}, n vars: {afm.shape[1]}, n MiTo clones: {n_clones}')
     fig.tight_layout()
     fig.savefig('phylo.png', dpi=500)
@@ -232,19 +234,20 @@ def main():
     fig, axs = plt.subplots(1,2,figsize=(15,8), gridspec_kw={'wspace': 0.4})
 
     mt.pl.plot_tree(
-        model.tree, ax=axs[0], 
+        tree, ax=axs[0], 
         colorstrip_spacing=.000001, colorstrip_width=2, 
         orient='down',
         features=list(cmaps.keys()),
         characters=model.ordered_muts, layer='raw',
         categorical_cmaps=cmaps,
-        feature_label_size=10, feature_label_offset=2,
+        feature_label_size=10, 
+        feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    mt.pl.add_cbar(
+    add_cbar(
         model.tree.layers['transformed'].values.flatten(), 
         palette='mako', label='AF', 
         ticks_size=8, label_size=9, vmin=.0, vmax=.1,
@@ -252,7 +255,7 @@ def main():
     )
 
     mt.pl.plot_tree(
-        model.tree, ax=axs[1],
+        tree, ax=axs[1],
         colorstrip_spacing=.000001, colorstrip_width=2, 
         orient='down',
         features=list(cmaps.keys()),
@@ -264,7 +267,7 @@ def main():
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    mt.pl.add_legend(
+    add_legend(
         label='Genotype', ax=axs[1], 
         colors={'REF':'b', 'ALT':'r'}, loc='center left', 
         bbox_to_anchor=(1,.4),
@@ -286,8 +289,8 @@ def main():
 
     fig, ax = plt.subplots(figsize=(4.5,4.5))
     ax.imshow(afm[order].obsp['distances'].A, cmap='Spectral')
-    mt.pl.format_ax(ax=ax, xlabel='Cells', ylabel='Cells', xticks=[], yticks=[])
-    mt.pl.add_cbar(
+    format_ax(ax=ax, xlabel='Cells', ylabel='Cells', xticks=[], yticks=[])
+    add_cbar(
         afm.obsp['distances'].A.flatten(), ax=ax, palette='Spectral', 
         label='Distance', layout='outside', label_size=8, ticks_size=8,
         vmin=.25, vmax=.95
