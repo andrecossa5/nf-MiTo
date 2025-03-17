@@ -239,11 +239,10 @@ args = my_parser.parse_args()
 
 # Code
 import os
-from mito_utils.utils import *
-from mito_utils.preprocessing import *
-from mito_utils.phylo import *
-from mito_utils.MiToTreeAnnotator import *
-from mito_utils.metrics import *
+import numpy as np
+import pandas as pd
+import scanpy as sc
+import mito as mt
 
 ########################################################################
 
@@ -252,12 +251,12 @@ def main():
 
     # Extract kwargs
     cell_filter, kwargs, filtering_kwargs, \
-    binarization_kwargs, tree_kwargs = extract_kwargs(args)
+    binarization_kwargs, tree_kwargs = mt.ut.extract_kwargs(args)
 
     # Filter matrix and calculate metrics
     afm = sc.read(args.path_afm)
-    afm = filter_cells(afm, cell_filter=cell_filter)
-    afm, tree = filter_afm(
+    afm = mt.pp.filter_cells(afm, cell_filter=cell_filter)
+    afm, tree = mt.pp.filter_afm(
         afm,
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,
@@ -270,7 +269,7 @@ def main():
     )
 
     # MiTo clones
-    model = MiToTreeAnnotator(tree)
+    model = mt.tl.MiToTreeAnnotator(tree)
     model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
     
     # Save info
@@ -301,17 +300,17 @@ def main():
     metrics = {}
     metrics['unassigned'] = tree.cell_meta['MiTo clone'].isna().sum()
     metrics['n MiTo clone'] = tree.cell_meta['MiTo clone'].nunique()
-    metrics['corr'] = calculate_corr_distances(tree)[0]
-    metrics['mean_CI'] = np.median(CI(tree))
-    metrics['mean_RI'] = np.median(RI(tree))
+    metrics['corr'] = mt.ut.calculate_corr_distances(tree)[0]
+    metrics['mean_CI'] = np.median(mt.ut.CI(tree))
+    metrics['mean_RI'] = np.median(mt.ut.RI(tree))
 
     lineage_column = kwargs['lineage_column']
     if lineage_column is not None and lineage_column in tree.cell_meta.columns:
         metrics[f'n_{lineage_column}_groups'] = tree.cell_meta[lineage_column].nunique()
-        metrics['AUPRC'] = distance_AUPRC(afm.obsp['distances'].A, afm.obs[lineage_column])
+        metrics['AUPRC'] = mt.ut.distance_AUPRC(afm.obsp['distances'].A, afm.obs[lineage_column])
         test = tree.cell_meta['MiTo clone'].isna()
-        metrics['ARI'] = custom_ARI(tree.cell_meta.loc[~test, lineage_column], tree.cell_meta.loc[~test, 'MiTo clone'])
-        metrics['NMI'] = normalized_mutual_info_score(
+        metrics['ARI'] = mt.ut.custom_ARI(tree.cell_meta.loc[~test, lineage_column], tree.cell_meta.loc[~test, 'MiTo clone'])
+        metrics['NMI'] = mt.ut.normalized_mutual_info_score(
             tree.cell_meta.loc[~test, lineage_column], tree.cell_meta.loc[~test, 'MiTo clone']
         )
 

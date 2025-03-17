@@ -85,8 +85,9 @@ args = my_parser.parse_args()
 ########################################################################
 
 # Code
-from mito_utils.utils import *
-from mito_utils.phylo import *
+import scanpy as sc
+import mito as mt
+
 
 ########################################################################
 
@@ -94,14 +95,14 @@ from mito_utils.phylo import *
 def main():
 
     # Extract kwargs
-    _, _, _, _, tree_kwargs = extract_kwargs(args, only_tree=True)
+    _, _, _, _, tree_kwargs = mt.ut.extract_kwargs(args, only_tree=True)
 
     # Build tree
     afm = sc.read(args.path_afm)
-    tree = build_tree(afm, precomputed=True, ncores=args.ncores, **tree_kwargs)
+    tree = mt.tl.build_tree(afm, precomputed=True, ncores=args.ncores, **tree_kwargs)
     
     # Write out
-    write_newick(tree, path=f'rep_{args.boot_replicate}.newick')
+    mt.io.write_newick(tree, path=f'rep_{args.boot_replicate}.newick')
     
 
     ##

@@ -76,8 +76,7 @@ frac_char_resampling = args.frac_char_resampling
 
 # Code
 import scanpy as sc
-from mito_utils.distances import *
-from mito_utils.bootstrap import *
+import mito as mt
 
 ########################################################################
 
@@ -100,14 +99,14 @@ def main():
 
     # Bootstrap
     if scLT_system in ['MAESTER', 'RedeeM']:
-        afm_new = bootstrap_MiTo(afm, **kwargs)
+        afm_new = mt.tl.bootstrap_MiTo(afm, **kwargs)
     elif scLT_system in ['scWGS', 'Cas9']:
-        afm_new = bootstrap_bin(afm, **kwargs)
+        afm_new = mt.tl.bootstrap_bin(afm, **kwargs)
     else:
         raise ValueError(f'{scLT_system} unavailable! Choose a scLT_system among MAESTER, RedeeeM, scWGS and Cas9.')
 
     # Compute distances, recalling 
-    compute_distances(
+    mt.pp.compute_distances(
         afm_new, 
         metric=metric, 
         precomputed=False if scLT_system in ['MAESTER', 'RedeeM'] else True, # Bin layer after bootstrapping

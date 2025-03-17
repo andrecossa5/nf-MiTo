@@ -89,13 +89,13 @@ args = my_parser.parse_args()
 ########################################################################
 
 # Code
-from mito_utils.utils import *
-from mito_utils.preprocessing import *
-from mito_utils.dimred import *
-from mito_utils.phylo import *
-from mito_utils.MiToTreeAnnotator import *
-from mito_utils.diagnostic_plots import *
-from mito_utils.phylo_plots import *
+import pandas as pd
+import scanpy as sc
+import mito as mt 
+import matplotlib.pyplot as plt
+from mito.pl.plotting_base import (
+    bar, format_ax, add_cbar, add_legend
+)
 
 ########################################################################
 
@@ -108,13 +108,13 @@ def main():
 
     # Extract kwargs
     cell_filter, kwargs, filtering_kwargs, \
-    binarization_kwargs, tree_kwargs = extract_kwargs(args)
+    binarization_kwargs, tree_kwargs = mt.ut.extract_kwargs(args)
 
     # Filter cells
     afm_raw = sc.read(args.path_afm)
-    afm_raw = filter_cells(afm_raw, cell_filter=cell_filter)
-    annotate_vars(afm_raw)
-    afm_raw = filter_baseline(afm_raw)
+    afm_raw = mt.pp.filter_cells(afm_raw, cell_filter=cell_filter)
+    mt.pp.annotate_vars(afm_raw)
+    afm_raw = mt.pp.filter_baseline(afm_raw)
 
     # Read and format coverage 
     path_coverage = os.path.join(os.path.dirname(args.path_afm), 'tables', 'coverage.txt.gz')
@@ -127,7 +127,7 @@ def main():
     cov = cov.pivot_table(index='cell', columns='pos', values='n', fill_value=0)
 
     # Filter afm, reduce dimensions
-    afm = filter_afm(
+    afm = mt.pp.filter_afm(
         afm_raw,
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,
@@ -138,13 +138,12 @@ def main():
         return_tree=False,
        **kwargs
     )
-    print(kwargs)
-    compute_distances(afm, precomputed=True)
-    reduce_dimensions(afm)
+    mt.pp.compute_distances(afm, precomputed=True)
+    mt.pp.reduce_dimensions(afm)
 
     # Build and annotate tree
-    tree = build_tree(afm, precomputed=True)
-    model = MiToTreeAnnotator(tree)
+    tree = mt.tl.build_tree(afm, precomputed=True)
+    model = mt.tl.MiToTreeAnnotator(tree)
     model.clonal_inference()
 
 
@@ -155,22 +154,22 @@ def main():
     fig = plt.figure(figsize=(15,4.5))
 
     ax = fig.add_subplot(1,4,1)
-    vars_AF_dist(afm_raw, ax=ax, color='#303030', alpha=.7, linewidth=.2)
-    vars_AF_dist(afm_raw[:,afm.var_names], ax=ax, color='#05A8B3', linewidth=.5, alpha=1)
+    mt.pl.vars_AF_spectrum(afm_raw, ax=ax, color='#303030', alpha=.7, linewidth=.2)
+    mt.pl.vars_AF_spectrum(afm_raw[:,afm.var_names], ax=ax, color='#05A8B3', linewidth=.5, alpha=1)
 
     ax = fig.add_subplot(1,4,2)
     xticks = [1,2,4,10,30,90,300,1100]
-    plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
-    plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
+    mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
+    mt.pl.plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
     format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
-    MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
+    mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
                       kwargs_subset={'markersize':8, 'c':'#05A8B3'}, 
                       kwargs_main={'c':'#303030', 'linewidth':1.5, 'alpha':.7})
 
     ax = fig.add_subplot(1,4,4)
-    ref_df = load_mt_gene_annot()
+    ref_df = mt.ut.load_mt_gene_annot()
     df_plot = ref_df.query('mut in @afm.var_names')['Symbol'].value_counts().to_frame('n')
     bar(df_plot, 'n', ax=ax, c='#C0C0C0', edgecolor='k', s=.8)
     format_ax(ax=ax, xticks=df_plot.index, rotx=90, ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
@@ -183,7 +182,7 @@ def main():
 
 
     # 2. Viz mutation profile
-    fig = mut_profile(afm.var_names, figsize=(5,2.5))
+    fig = mt.pl.mut_profile(afm.var_names, figsize=(5,2.5))
     fig.tight_layout()
     fig.savefig('mut_profile.png', dpi=500)
 
@@ -193,18 +192,17 @@ def main():
 
     # 3. Viz embeddings
     cmaps = {
-        'MiTo clone' : create_palette(model.tree.cell_meta, 
-                                      'MiTo clone', sc.pl.palettes.default_102)
+        'MiTo clone' : \
+        mt.pl.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102)
     }
     if args.covariate is not None:
-        cmaps[args.covariate] = create_palette(
+        cmaps[args.covariate] = mt.pl.create_palette(
             model.tree.cell_meta, args.covariate, sc.pl.palettes.vega_20_scanpy
         )
         afm.uns[f'{args.covariate}_colors'] = list(cmaps[args.covariate].values())
 
     fig, ax = plt.subplots(figsize=(9,5))
-    sc.pl.embedding(afm, basis='X_umap', color=args.covariate, 
-                    ax=ax, show=False, save=False, frameon=False)
+    sc.pl.embedding(afm, basis='X_umap', color=args.covariate, ax=ax, show=False, save=False, frameon=False)
     fig.subplots_adjust(bottom=.1, top=.9, left=.1, right=.5)
     fig.savefig(f'embeddings.png', dpi=500)
 
@@ -214,17 +212,16 @@ def main():
 
     # 4. Viz tree
     fig, ax = plt.subplots(figsize=(4.7,5))
-    plot_tree(
-        model.tree, ax=ax, 
+    mt.pl.plot_tree(
+        tree, ax=ax, 
         features=list(cmaps.keys()), 
         colorstrip_width=5, 
         categorical_cmaps=cmaps,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
-        show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    n_clones = model.tree.cell_meta['MiTo clone'].unique().size
+    n_clones = tree.cell_meta['MiTo clone'].unique().size
     fig.suptitle(f'n cells: {afm.shape[0]}, n vars: {afm.shape[1]}, n MiTo clones: {n_clones}')
     fig.tight_layout()
     fig.savefig('phylo.png', dpi=500)
@@ -236,12 +233,15 @@ def main():
     # 5. Viz tree with muts
     fig, axs = plt.subplots(1,2,figsize=(15,8), gridspec_kw={'wspace': 0.4})
 
-    plot_tree(
-        model.tree, ax=axs[0], 
-        colorstrip_spacing=.000001, colorstrip_width=2, orient='down',
-        features=list(cmaps.keys())+model.ordered_muts, layer='raw',
+    mt.pl.plot_tree(
+        tree, ax=axs[0], 
+        colorstrip_spacing=.000001, colorstrip_width=2, 
+        orient='down',
+        features=list(cmaps.keys()),
+        characters=model.ordered_muts, layer='raw',
         categorical_cmaps=cmaps,
-        feature_label_size=10, feature_label_offset=2,
+        feature_label_size=10, 
+        feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
         show_internal=True, 
@@ -250,14 +250,17 @@ def main():
     add_cbar(
         model.tree.layers['transformed'].values.flatten(), 
         palette='mako', label='AF', 
-        ticks_size=8, label_size=9, vmin=.01, vmax=.1,
+        ticks_size=8, label_size=9, vmin=.0, vmax=.1,
         ax=axs[0], layout=( (1.02,.3,.02,.2), 'right', 'vertical' )
     )
 
-    plot_tree(
-        model.tree, ax=axs[1],
-        colorstrip_spacing=.000001, colorstrip_width=2, orient='down',
-        features=list(cmaps.keys())+model.ordered_muts, layer='transformed',
+    mt.pl.plot_tree(
+        tree, ax=axs[1],
+        colorstrip_spacing=.000001, colorstrip_width=2, 
+        orient='down',
+        features=list(cmaps.keys()),
+        characters=model.ordered_muts, layer='transformed',
+        categorical_cmaps=cmaps,
         feature_label_size=10, feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
