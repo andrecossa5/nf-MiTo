@@ -1,4 +1,4 @@
-// phylo_inference MiTo
+// nf-MiTo
 
 nextflow.enable.dsl = 2
 include { preprocess } from "./subworkflows/preprocessing/main"
