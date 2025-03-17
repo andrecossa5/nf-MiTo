@@ -92,7 +92,7 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_positive', 
     type=int,
-    default=2,
+    default=3,
     help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 2.'
 )
 
@@ -113,14 +113,14 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_mean_AD_in_positives', 
     type=float,
-    default=1.5,
+    default=1.25,
     help='Minimum number of mean AD in positive cells to consider a MT-SNV. Default: 1.5.'
 )
 
 my_parser.add_argument(
     '--min_mean_DP_in_positives', 
     type=float,
-    default=20,
+    default=25,
     help='Minimum number of mean DP in positive cells to consider a MT-SNV. Default: 20.'
 )
 
@@ -169,8 +169,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_var', 
     type=int,
-    default=2,
-    help='Min n variants. Default: 2.'
+    default=1,
+    help='Min n variants. Default: 1.'
 )
 
 my_parser.add_argument(
@@ -236,8 +236,8 @@ args = my_parser.parse_args()
 ########################################################################
 
 # Code
-from mito_utils.utils import *
-from mito_utils.preprocessing import *
+import scanpy as sc
+import mito as mt
 
 ########################################################################
 
@@ -246,12 +246,12 @@ def main():
 
     # Extract kwargs
     cell_filter, kwargs, filtering_kwargs, \
-    binarization_kwargs, tree_kwargs = extract_kwargs(args)
+    binarization_kwargs, tree_kwargs = mt.ut.extract_kwargs(args)
 
     # Filter matrix and calculate metrics
     afm = sc.read(args.path_afm)
-    afm = filter_cells(afm, cell_filter=cell_filter)
-    afm = filter_afm(
+    afm = mt.pp.filter_cells(afm, cell_filter=cell_filter)
+    afm = mt.pp.filter_afm(
         afm,
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,

@@ -22,13 +22,15 @@ process PROCESS_TREE {
 
     // Handle CLI args
     def annotate_tree = params.annotate_tree ? "--annotate_tree ${params.annotate_tree}" : ""
+    def max_fraction_unassigned = params.max_fraction_unassigned ? "--max_fraction_unassigned ${params.max_fraction_unassigned}" : ""
     
     script:
     """
     python ${baseDir}/bin/process_tree/annotate_tree.py \
     --tree ${tree} \
     --afm ${afm} \
-    ${annotate_tree}
+    ${annotate_tree} \
+    ${max_fraction_unassigned}
     """
 
     stub:

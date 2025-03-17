@@ -17,6 +17,7 @@
 
     "tree_algorithm" : "cassiopeia",
     "support_method" : "tbe",
-    "annotate_tree" : "MiTo"
+    "annotate_tree" : "MiTo",
+    "max_fraction_unassigned" : 0.05
 
 }

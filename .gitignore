@@ -102,6 +102,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.vscode
 .env
 .venv
 env/
@@ -134,6 +135,8 @@ trace*
 .nextflow*
 
 # Folders 
+.DS_Store
+./*/.DS_Store
 data/
 results/
 scratch/
