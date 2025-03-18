@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process SUMMARISE {
 
-    publishDir "${params.outdir}", mode: 'copy'
+    publishDir "${params.output_folder}", mode: 'copy'
 
     input:
     path(files)

@@ -1,9 +1,9 @@
 {
 
-    "tracing_system" : "MAESTER",
-    "outdir" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/results/tuning_test",
+    "scLT_system" : "MAESTER",
 
-    "path_input" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/input_files/input_tuning_test.csv",
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
+    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
     "cell_filter": "filter2",
     "filtering": "MiTo",
     "lineage_column" : "GBC",
@@ -29,8 +29,9 @@
     "min_n_var" : 2,
     "max_fraction_unassigned" : 0.05,
 
-    "path_dbSNP" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/dbSNP_MT.txt",
-    "path_REDIdb" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/REDIdb_MT.txt"
+    "path_dbSNP" : "...",
+    "path_REDIdb" : "..."
+    
 }
 
 

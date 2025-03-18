@@ -20,6 +20,5 @@ workflow explore_spaces {
 
     emit:
         plots = VIZ_MT_SPACE.out.plots
-        // plots = VIZ_MT_SPACE.out.plots
         
 } 

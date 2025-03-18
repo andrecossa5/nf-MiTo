@@ -1,7 +1,17 @@
 // nf-MiTo
-
 nextflow.enable.dsl = 2
-include { preprocess } from "./subworkflows/preprocessing/main"
+
+// Preprocess MT
+include { preprocess } from "./subworkflows/preprocess/main"
+include { createPreprocessingChannel } from "./subworkflows/preprocess/main"
+
+// Preprocess GBC
+include { bulk_gbc } from "./subworkflows/bulk_gbc/main"
+include { sc_gbc } from "./subworkflows/sc_gbc/main"  
+
+// Phylo inference: tune, explore, phylo
+include { afm_preprocess } from "./subworkflows/afm_preprocessing/main"
+include { createAFMChannel } from "./subworkflows/afm_preprocessing/main"
 include { build_tree } from "./subworkflows/tree_building/main"
 include { process_tree } from "./subworkflows/tree_processing/main"
 include { hyper_tuning } from "./subworkflows/hyper_tuning/main"
@@ -10,16 +20,24 @@ include { explore_spaces } from "./subworkflows/exploring/main"
 //
 
 //----------------------------------------------------------------------------//
-// phylo_inference workflow main entry point
+// nf-MiTo complete entry-points
 //----------------------------------------------------------------------------//
 
+// Raw data pre-processing
+workflow preprocess_raw {
+
+    ch_preprocessing = createPreprocessingChannel()
+    preprocess(ch_preprocessing)
+
+}
+
+//----------------------------------------------------------------------------//
+
+// Lineage inference
 workflow tune {
 
-    ch_jobs = Channel.fromPath(params.path_input)
-        .splitCsv(header: true)
-        .map { row -> [ row.job_id, row.sample, row.ch_matrix ]}
+    ch_jobs = createAFMChannel()
     hyper_tuning(ch_jobs)
-    hyper_tuning.out.summary.view()
 
 }
 
@@ -27,40 +45,45 @@ workflow tune {
 
 workflow explore {
 
-    ch_jobs = Channel.fromPath(params.path_input)
-        .splitCsv(header: true)
-        .map { row -> [ row.job_id, row.sample, row.ch_matrix ]}
+    ch_jobs = createAFMChannel()
     explore_spaces(ch_jobs)
-    explore_spaces.out.plots.view()
 
 }
 
 //
 
-workflow phylo {
+workflow infer {
 
-    ch_jobs = Channel.fromPath(params.path_input)
-        .splitCsv(header: true)
-        .map { row -> [ row.job_id, row.sample, row.ch_matrix ]}
-    preprocess(ch_jobs)
-    build_tree(preprocess.out.input)
-    process_tree(preprocess.out.input, build_tree.out.final_tree)
-    process_tree.out.metrics.view()
+    ch_jobs = createAFMChannel()
+    afm_preprocess(ch_jobs)
+    build_tree(afm_preprocess.out.input)
+    process_tree(afm_preprocess.out.input, build_tree.out.final_tree)
 
 }
 
+
 //
 
-// Mock
 
-// Default message
+//----------------------------------------------------------------------------//
+// nf-MiTo main workflow
+//----------------------------------------------------------------------------//
+
 workflow {
     
     println "\n"
-    println "Hi there! This is the new version of the phylo_inference pipeline from the MiTo toolkit."
+    println "This is nf-MiTo, the Nextflow pipeline for MT-SNVs-based scLT."
     println "Usage: nextflow run main.nf -c <config> -params-file <params> -profile <profile> -entry <entry>"
-    println "See https://github.com/.../main.nf ./config and ./params for configurations and options available."
-    println "N.B. This is a BETA version under active development."
+    println "See https://github.com/andrecossa5/nf-MiTo for all configurations and options available."
     println "\n"
 
+    ch_preprocessing = createPreprocessingChannel()
+    preprocess(ch_preprocessing)
+    afm_preprocess(preprocess.out.afm)
+    build_tree(afm_preprocess.out.input)
+    process_tree(afm_preprocess.out.input, build_tree.out.final_tree)
+
 }
+
+
+//

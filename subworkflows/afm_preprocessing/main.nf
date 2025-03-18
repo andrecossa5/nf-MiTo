@@ -10,12 +10,23 @@ include { DISTANCE_METRICS } from "./modules/distance_metrics.nf"
 
 //
  
-//----------------------------------------------------------------------------//
-// preprocess subworkflow
-//----------------------------------------------------------------------------//
 
-// preprocess subworkflow
-workflow preprocess {
+// Util to create AFM channels
+def createAFMChannel() {
+
+    ch = Channel.fromPath(params.afm_input)
+        .splitCsv(header: true)
+        .map { row -> [ row.job_id, row.sample, row.afm ] }
+
+    return ch
+}
+
+
+//
+
+
+// afm preprocessing subworkflow
+workflow afm_preprocess {
     
     take:
         ch_jobs 
@@ -40,7 +51,7 @@ workflow preprocess {
         } 
         
         // Calculate distances
-        replicates = Channel.of( 1..(params.n_boot_distances-1) ).concat(Channel.of( "observed")) 
+        replicates = Channel.of( 1..(params.n_boot_replicates-1) ).concat(Channel.of( "observed")) 
         DISTANCES(ch_afm.combine(replicates))
         DISTANCE_METRICS(DISTANCES.out.distances.groupTuple(by: [0,1]))
 

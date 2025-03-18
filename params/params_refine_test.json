@@ -1,16 +1,18 @@
 { 
     
-    "scLT_system" : "MAESTER",
-    "outdir" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/results/explore_test",
 
-    "path_input" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/input_files/input_refining_test.csv",
-    "path_meta" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/cells_meta.csv",
-    "path_tuning" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/results/tuning_test",
-    "path_dbSNP" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/dbSNP_MT.txt",
-    "path_REDIdb" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/REDIdb_MT.txt",
+    "scLT_system" : "MAESTER",
+
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
+    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
+    "cell_filter": "filter2",
     "lineage_column" : "GBC",
 
-    "n_boot_distances" : 5,
+    "path_tuning" : "...",
+    "path_dbSNP" : "...",
+    "path_REDIdb" : "...",
+
+    "n_boot_replicates" : 5,
     "boot_strategy" : "feature_resampling",
     "frac_char_resampling" : 0.8,
     "K" : 10,

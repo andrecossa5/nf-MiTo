@@ -7,7 +7,7 @@ nextflow.enable.dsl = 2
 process DISTANCE_METRICS {
 
     tag "${sample}: ${job_id}"
-    publishDir "${params.outdir}/${sample}/${job_id}", mode: 'copy'
+    publishDir "${params.output_folder}/${sample}/${job_id}", mode: 'copy'
 
     input:
     tuple val(job_id),
@@ -18,7 +18,7 @@ process DISTANCE_METRICS {
     output:
     tuple val(job_id),
         val(sample),  
-        path("afm.h5ad"), emit: distance_metrics
+        path("afm_filtered.h5ad"), emit: distance_metrics
     
     // Handle CLI args
     def lineage_column = params.lineage_column ? "--lineage_column ${params.lineage_column}" : ""
@@ -36,7 +36,7 @@ process DISTANCE_METRICS {
 
     stub:
     """
-    touch afm.h5ad
+    touch afm_filtered.h5ad
     """
 
 }

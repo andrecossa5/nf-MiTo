@@ -1,0 +1,57 @@
+{
+    
+    "scLT_system" : "MAESTER",
+    "pp_method" : "maegatk",
+
+    "raw_data_input_type" : "fastq",
+    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input.csv",
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
+
+    "ref" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/data/resources/ref",
+    "string_MT" : "chrM",
+    "whitelist" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/data/resources/whitelist.txt",
+    "CBs_chunk_size" : 3000, 
+    "fgbio_UMI_consensus_mode" : "Identity",
+    "fgbio_UMI_consensus_edits" : 0,
+    "fgbio_min_reads_mito" : 3,
+    "fgbio_base_error_rate_mito" : 0.25, 
+    "fgbio_base_quality" : 30,
+    "fgbio_min_alignment_quality" : 60,
+
+    "path_meta" : "...",
+
+    "path_dbSNP" : "...",
+    "path_REDIdb" : "...",
+    "cell_filter": "filter2",
+    "filtering": "MiTo",
+    "min_cell_number": 10,
+    "min_cov": 5,
+    "min_var_quality": 10, 
+    "min_frac_negative": 0.2,
+    "min_n_positive": 5,
+    "af_confident_detection": 0.03,
+    "min_n_confidently_detected": 2,
+    "min_mean_AD_in_positives": 1.5,
+    "min_mean_DP_in_positives": 25,
+    "t_prob": 0.7,
+    "min_AD": 2,
+    "min_cell_prevalence": 0.1,
+    "t_vanilla": 0,
+    "bin_method": "MiTo",
+    "k" : 5,
+    "gamma" : 0.2,
+    "min_n_var" : 2,
+
+    "lineage_column" : "GBC",
+    "K" : 10,
+    "distance_metric" : "weighted_jaccard",
+    "tree_algorithm" : "cassiopeia",
+    "cassiopeia_solver" : "UPMGA",
+    "n_boot_replicates" : 10,
+    "boot_strategy" : "feature_resampling",
+    "frac_char_resampling" : 0.8,
+    "support_method" : "tbe",
+    "annotate_tree" : "MiTo",
+    "max_fraction_unassigned" : 0.05
+
+}

@@ -7,7 +7,7 @@ nextflow.enable.dsl = 2
 process VIZ_MT_SPACE {
 
     tag "${sample}: explore ${job_id}"
-    publishDir "${params.outdir}/${sample}", mode: 'copy'
+    publishDir "${params.output_folder}/${sample}", mode: 'copy'
 
     input:
     tuple val(job_id), val(sample), val(ch_matrix)

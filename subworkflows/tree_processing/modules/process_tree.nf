@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 process PROCESS_TREE {
 
     tag "${sample}: ${job_id}"
-    publishDir "${params.outdir}/${sample}/${job_id}", mode: 'copy'
+    publishDir "${params.output_folder}/${sample}/${job_id}", mode: 'copy'
 
     input:
     tuple val(job_id),

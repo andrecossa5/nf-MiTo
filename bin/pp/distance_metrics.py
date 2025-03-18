@@ -128,7 +128,7 @@ def main():
 
     # Save
     afm.uns['distance_metrics'] = metrics
-    afm.write('afm.h5ad')
+    afm.write('afm_filtered.h5ad')
 
 
 #######################################################################
