@@ -32,8 +32,8 @@ def filterReadTags(intags):
     for tg in intags:
     	if(('NH' == tg[0] and int(tg[1]) > int(NHmax)) or \
     		(('NM' == tg[0] or 'nM' == tg[0]) and int(tg[1]) > int(NMmax))):
-        		return(False)
-    return(True)
+        		return False
+    return True 
 
 def pairing(read):
 	'''
@@ -41,9 +41,9 @@ def pairing(read):
 	'''
 	
 	if(proper_pair != "True"): # then user doesn't care to filter it
-		return(True)
+		return True 
 	else:
-		return(read.is_proper_pair())
+		return read.is_proper_pair()
 
 def processRead(read):
 	global keepCount

@@ -16,9 +16,6 @@ import pandas as pd
 i = sys.argv[1]
 path_cbs = sys.argv[2]
 
-# i = 'toy_dataset.bam'
-# path_cbs = 'allowed_cbs.csv'
-
 
 ##
 

@@ -47,7 +47,6 @@ my_parser.add_argument(
 ########################################################################
 
 # Code
-import pickle
 import scanpy as sc
 import mito as mt
 
