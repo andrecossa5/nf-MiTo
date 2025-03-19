@@ -16,7 +16,7 @@ process FILTER_BAM_CB {
 
     script:
     """
-    python ${baseDir}/bin/raw_reads/filter_bam_cb.py ${bam} ${CBs}
+    python ${baseDir}/bin/preprocess/filter_bam_cb.py ${bam} ${CBs}
     """
 
     stub:

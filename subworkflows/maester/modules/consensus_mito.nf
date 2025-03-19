@@ -61,7 +61,7 @@ process CONSENSUS_MITO {
     --output cons_mapped.bam 
 
   # Create allelic tables
-  python ${baseDir}/bin/maester/make_allelic_tables.py \
+  python ${baseDir}/bin/preprocess/make_allelic_tables.py \
   --consensus_bam cons_mapped.bam \
   --cell ${cell} \
   --min_base_qual ${params.fgbio_base_quality} \

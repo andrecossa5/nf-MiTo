@@ -16,7 +16,7 @@ process SPLIT_BARCODES {
 
   script:
   """
-  python ${baseDir}/bin/raw_reads/split_barcodes.py \
+  python ${baseDir}/bin/preprocess/split_barcodes.py \
   ${cell_barcodes} \
   ${params.CBs_chunk_size}
   """

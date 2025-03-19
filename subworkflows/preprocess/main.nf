@@ -68,7 +68,7 @@ workflow preprocess {
 
     emit:
 
-        afm = Channel.of('MiTo_tree').combine(afm)
+        afm = Channel.of('MiTo.tree').combine(afm)
 
 }
 

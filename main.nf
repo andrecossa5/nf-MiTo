@@ -1,21 +1,17 @@
 // nf-MiTo
 nextflow.enable.dsl = 2
 
-// Preprocess MT
+// Preprocess 10x and MT
 include { preprocess } from "./subworkflows/preprocess/main"
 include { createPreprocessingChannel } from "./subworkflows/preprocess/main"
 
-// Preprocess GBC
-include { bulk_gbc } from "./subworkflows/bulk_gbc/main"
-include { sc_gbc } from "./subworkflows/sc_gbc/main"  
-
 // Phylo inference: tune, explore, phylo
-include { afm_preprocess } from "./subworkflows/afm_preprocessing/main"
-include { createAFMChannel } from "./subworkflows/afm_preprocessing/main"
-include { build_tree } from "./subworkflows/tree_building/main"
-include { process_tree } from "./subworkflows/tree_processing/main"
-include { hyper_tuning } from "./subworkflows/hyper_tuning/main"
-include { explore_spaces } from "./subworkflows/exploring/main"
+include { afm_preprocess } from "./subworkflows/afm_preprocess/main"
+include { createAFMChannel } from "./subworkflows/afm_preprocess/main"
+include { build_tree } from "./subworkflows/tree_build/main"
+include { process_tree } from "./subworkflows/tree_process/main"
+include { tune } from "./subworkflows/tune/main"
+include { explore } from "./subworkflows/explore/main"
 
 //
 
@@ -24,7 +20,7 @@ include { explore_spaces } from "./subworkflows/exploring/main"
 //----------------------------------------------------------------------------//
 
 // Raw data pre-processing
-workflow preprocess_raw {
+workflow PREPROCESS {
 
     ch_preprocessing = createPreprocessingChannel()
     preprocess(ch_preprocessing)
@@ -34,25 +30,25 @@ workflow preprocess_raw {
 //----------------------------------------------------------------------------//
 
 // Lineage inference
-workflow tune {
+workflow TUNE {
 
     ch_jobs = createAFMChannel()
-    hyper_tuning(ch_jobs)
+    tune(ch_jobs)
 
 }
 
 //
 
-workflow explore {
+workflow EXPLORE {
 
     ch_jobs = createAFMChannel()
-    explore_spaces(ch_jobs)
+    explore(ch_jobs)
 
 }
 
 //
 
-workflow infer {
+workflow INFER {
 
     ch_jobs = createAFMChannel()
     afm_preprocess(ch_jobs)

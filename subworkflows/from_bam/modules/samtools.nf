@@ -48,7 +48,7 @@ process COLLAPSE_SAMTOOLS {
 
     script:
     """ 
-    python ${baseDir}/bin/benchmark/collapse_bulk_methods.py
+    python ${baseDir}/bin/preprocess/collapse_bulk_methods.py
     """
 
     stub:

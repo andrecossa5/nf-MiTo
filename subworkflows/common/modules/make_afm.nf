@@ -17,7 +17,7 @@ process MAKE_AFM {
 
   script:
   """
-  python ${baseDir}/bin/raw_reads/make_AF_matrix.py \
+  python ${baseDir}/bin/preprocess/make_AF_matrix.py \
   # ...
   """
 
