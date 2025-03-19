@@ -18,7 +18,10 @@ process MAKE_AFM {
   script:
   """
   python ${baseDir}/bin/preprocess/make_AF_matrix.py \
-  # ...
+  --path_ch_matrix ${path_ch_matrix} \
+  --scLT_system ${params.scLT_system} \
+  --cell_meta ${params.path_meta} \
+  --sample_name ${sample_name} 
   """
 
   stub: 

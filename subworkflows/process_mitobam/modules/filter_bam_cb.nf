@@ -21,7 +21,8 @@ process FILTER_BAM_CB {
 
     stub:
     """
-    touch filtered.bam
+    id=\$(basename ${CBs} | cut -d '_' -f2 | cut -d '.' -f1)
+    touch "filtered_\${id}.bam"
     """
 
 } 

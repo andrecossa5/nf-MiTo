@@ -3,9 +3,9 @@
 // Include here
 nextflow.enable.dsl = 2
 include { SPLIT_BARCODES } from "./modules/split_barcodes.nf"
-include { FILTER_BAM_CB } from "../common/modules/filter_bam_cb.nf"
-include { SPLIT_BAM } from "../common/modules/split_bam.nf"
-include { EXTRACT_FASTA } from "../common/modules/extract_fasta.nf"
+include { FILTER_BAM_CB } from "./modules/filter_bam_cb.nf"
+include { SPLIT_BAM } from "./modules/split_bam.nf"
+include { EXTRACT_FASTA } from "./modules/extract_fasta.nf"
 include { SAMTOOLS } from "./modules/samtools.nf"
 include { COLLAPSE_SAMTOOLS } from "./modules/samtools.nf"
 include { INDEX_AND_MERGE } from "./modules/index_and_merge.nf"
@@ -16,7 +16,7 @@ include { MAEGATK } from "./modules/maegatk.nf"
 include { COLLAPSE_MAEGATK } from "./modules/maegatk.nf"
 include { MITO } from "./modules/mito.nf"
 include { COLLAPSE_MITO } from "./modules/mito.nf"
-include { MAKE_AFM } from "../common/modules/make_afm.nf"
+include { MAKE_AFM } from "./modules/make_afm.nf"
 
 // 
 
@@ -41,7 +41,7 @@ def processCellBams(cell_bams) {
 // mitobam subworkflow
 //----------------------------------------------------------------------------//
 
-workflow mitobam {
+workflow process_mitobam {
      
     take:
         ch_mitobam
@@ -71,7 +71,7 @@ workflow mitobam {
         } else if (params.pp_method == "cellsnp-lite") {
         
             INDEX_AND_MERGE(FILTER_BAM_CB.out.bam.groupTuple(by:0))
-            ch_cellsnp = INDEX_AND_MERGE.out.bam.combine(ch_bams.map{it->tuple(it[0],it[2])}, by:0)
+            ch_cellsnp = INDEX_AND_MERGE.out.bam.combine(ch_mitobam.map{it->tuple(it[0],it[2])}, by:0)
             CELLSNP(ch_cellsnp)
             ch_output = CELLSNP.out.ch_output
         
@@ -101,14 +101,13 @@ workflow mitobam {
         } 
         else {
             
-            println('Current benchmarking include: mito_preprocessing, maegatk, samtools, cellsnp-lite, freebayes.')
+            error "Current pipelines include: mito_preprocessing, maegatk, samtools, cellsnp-lite, freebayes."
         
         }
 
     emit:
 
-        afm = MAKE_AFM(ch_output
-                       .combine(EXTRACT_FASTA.out.fasta.map{it->it[0]}))
+        afm = MAKE_AFM(ch_output.combine(EXTRACT_FASTA.out.fasta.map{it->it[0]}))
 
 }
 

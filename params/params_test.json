@@ -1,7 +1,7 @@
 {
     
     "scLT_system" : "MAESTER",
-    "pp_method" : "maegatk",
+    "pp_method" : "mito_preprocessing",
 
     "raw_data_input_type" : "fastq",
     "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input.csv",
