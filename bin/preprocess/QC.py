@@ -147,10 +147,6 @@ def main():
         gene_keep = adata.var.loc[lambda x: ~x['mt']|x['ribo']].query('pct_cells>=.01').index
         adata = adata[cell_keep,gene_keep].copy()
 
-        # Last doublets removal
-        sc.external.pp.scrublet(adata)
-        adata = adata[~adata.obs['predicted_doublet'],:].copy()
-
     # Write
     adata.write('adata.h5ad')
     adata.obs_names.to_series().to_csv('cell_barcodes.txt', index=False)
