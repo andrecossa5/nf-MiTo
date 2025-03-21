@@ -19,9 +19,10 @@ process MAKE_AFM {
   """
   python ${baseDir}/bin/preprocess/make_AF_matrix.py \
   --path_ch_matrix ${path_ch_matrix} \
+  --pp_method ${params.pp_method} \
   --scLT_system ${params.scLT_system} \
-  --cell_meta ${params.path_meta} \
-  --sample_name ${sample_name} 
+  --path_meta ${params.path_meta} \
+  --sample ${sample_name} 
   """
 
   stub: 
