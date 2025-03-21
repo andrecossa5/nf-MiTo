@@ -7,7 +7,7 @@ nextflow.enable.dsl = 2
 process QC {
 
     tag "${sample_name}" 
-    label 'scLT'
+    label 'MiTo'
     publishDir "${params.output_folder}/${sample_name}", mode: 'copy'   
     
     input:
