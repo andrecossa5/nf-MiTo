@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process scWGS {
 
     tag "${sample}: ${job_id}"
+    label 'MiTo'
 
     input:
     tuple val(job_id), val(sample), val(ch_matrix)

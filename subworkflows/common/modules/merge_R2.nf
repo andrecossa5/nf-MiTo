@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process MERGE_R2 {
 
   tag "${sample_name}"
+  label 'scLT'
 
   input:
   tuple val(sample_name), path(in_folder)

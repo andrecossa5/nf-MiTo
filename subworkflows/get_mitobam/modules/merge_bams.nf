@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process MERGE_BAM {
 
   tag "${sample_name}"
+  label 'scLT'
 
   input:
   tuple val(sample_name), path(bam_tenx), path(bam_maester)

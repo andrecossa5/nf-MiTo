@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process FREEBAYES {
 
     tag "${sample_name}: ${cell}"
+    label 'scLT'
 
     input:
     tuple val(sample_name), val(cell), path(bam)
@@ -36,6 +37,7 @@ process FREEBAYES {
 process COLLAPSE_FREEBAYES {
 
     tag "${sample_name}"
+    label 'scLT'
     publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
 
     input:

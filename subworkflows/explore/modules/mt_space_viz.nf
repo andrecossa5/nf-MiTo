@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process VIZ_MT_SPACE {
 
     tag "${sample}: explore ${job_id}"
+    label 'MiTo'
     publishDir "${params.output_folder}/${sample}", mode: 'copy'
 
     input:

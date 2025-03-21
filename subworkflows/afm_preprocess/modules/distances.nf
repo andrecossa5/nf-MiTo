@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process DISTANCES {
 
     tag "${sample}: ${job_id}, rep ${rep}"
+    label 'MiTo'
 
     input:
     tuple val(job_id),

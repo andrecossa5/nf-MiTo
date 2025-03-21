@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process SUMMARISE {
 
     publishDir "${params.output_folder}", mode: 'copy'
+    label 'MiTo'
 
     input:
     path(files)

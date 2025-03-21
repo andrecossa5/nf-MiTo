@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process MAKE_AFM {
 
   tag "${sample_name}" 
+  label 'MiTo'
   publishDir "${params.output_folder}/${sample_name}", mode: 'copy'
 
   input:

@@ -6,6 +6,7 @@ nextflow.enable.dsl = 2
 process BOOSTER {
 
     tag "${sample}"
+    label 'r-phylo'
 
     input:
     tuple val(job_id),

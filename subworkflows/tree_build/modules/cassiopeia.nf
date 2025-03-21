@@ -6,6 +6,7 @@ nextflow.enable.dsl = 2
 process CASSIOPEIA {
 
     tag "${sample}: ${job_id}, rep=${rep}"
+    label 'MiTo'
 
     input:
     tuple val(job_id),

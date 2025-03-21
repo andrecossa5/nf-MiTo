@@ -6,6 +6,7 @@ nextflow.enable.dsl = 2
 process PROCESS_TREE {
 
     tag "${sample}: ${job_id}"
+    label 'MiTo'
     publishDir "${params.output_folder}/${sample}/${job_id}", mode: 'copy'
 
     input:

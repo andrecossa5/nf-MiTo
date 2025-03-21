@@ -6,6 +6,7 @@ nextflow.enable.dsl = 2
 process PATH {
 
     tag "${sample}: ${job_id}"
+    label 'r-phylo'
     publishDir "${params.output_folder}/${sample}/${job_id}", mode: 'copy'
 
     input:
