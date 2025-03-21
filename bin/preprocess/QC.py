@@ -143,7 +143,7 @@ def main():
 
     # Write
     adata.write('adata.h5ad')
-    adata.obs_names.to_series().to_csv('cell_barcodes.txt', index=False)
+    adata.obs_names.to_series().to_csv('cell_barcodes.txt', header=False, index=False)
 
 
 ##
