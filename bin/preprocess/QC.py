@@ -104,7 +104,7 @@ def main():
     adata.obs_names = adata.obs_names.map(lambda x: f'{x}_{sample}') # NB: covention needed on meta df
 
     # Meta or not?
-    if os.path.exists(path_meta):
+    if path_meta is not None and os.path.exists(path_meta):
 
         meta = pd.read_csv(path_meta, index_col=0)
         if sample in meta['sample'].unique():
