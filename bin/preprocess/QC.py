@@ -141,7 +141,7 @@ def main():
         adata.var['pct_cells'] = (adata.X.A>0).sum(axis=0) / adata.shape[0] * 100
 
         # Filter cells and genes
-        query = 'total_counts>=min_nUMIs and n_genes>=min_n_genes and pct_counts_mt<=max_perc_mt'
+        query = 'total_counts>=@min_nUMIs and n_genes>=@min_n_genes and pct_counts_mt<=@max_perc_mt'
         cell_keep = adata.obs.query(query).index
         gene_keep = (
             adata.var
