@@ -113,12 +113,7 @@ def main():
             assert len(cell_keep>0)     
             adata.var['n_cells'] = (adata.X>0).sum(axis=0).A1
             adata.var['pct_cells'] = (adata.X>0).sum(axis=0).A1 / adata.shape[0] * 100
-            gene_keep = (
-                adata.var
-                .loc[lambda x: ~x['mt']|x['ribo']]
-                .query('pct_cells>=@min_pct_cell')
-                .index
-            )
+            gene_keep = adata.var.query('pct_cells>=.01').index
             adata = adata[cell_keep,gene_keep].copy()
             adata.obs = meta.loc[cell_keep]
         else:
@@ -143,12 +138,7 @@ def main():
         # Filter cells and genes
         query = 'total_counts>=@min_nUMIs and n_genes>=@min_n_genes and pct_counts_mt<=@max_perc_mt'
         cell_keep = adata.obs.query(query).index
-        gene_keep = (
-            adata.var
-            .loc[lambda x: ~x['mt']|x['ribo']]
-            .query('pct_cells>=@min_pct_cell')
-            .index
-        )
+        gene_keep = adata.var.loc.query('pct_cells>=.01').index
         adata = adata[cell_keep,gene_keep].copy()
 
     # Write
