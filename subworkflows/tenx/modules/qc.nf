@@ -27,7 +27,7 @@ process QC {
     """
     python ${baseDir}/bin/preprocess/QC.py \
     --input ${filtered} \
-    --sample_name ${sample_name} \
+    --sample ${sample_name} \
     ${min_nUMIs} \
     ${min_n_genes} \
     ${max_perc_mt} \
