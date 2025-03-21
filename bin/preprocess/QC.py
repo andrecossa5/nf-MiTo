@@ -59,8 +59,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--max_perc_mt', 
     type=float,
-    default=.15,
-    help='Max % of MT-gene counts allowed. Default: .15'
+    default=1,
+    help='Max % of MT-gene counts allowed. Default: 1'
 )
 
 my_parser.add_argument(
@@ -126,24 +126,18 @@ def main():
    
         # Basic QC, all samples together (all cells also)
         adata.var["mt"] = adata.var_names.str.startswith("MT-")
-        adata.var["ribo"] = adata.var_names.str.startswith(("RPS", "RPL"))
-        qc_metrics_cells, _ = sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribo"], inplace=False)
-        adata.obs = adata.obs.join(
-            qc_metrics_cells.assign(n_genes=lambda x: (adata.X>0).sum(axis=1).A1)
-            [['total_counts', 'n_genes', 'pct_counts_mt', 'pct_counts_ribo']]
+        adata.obs['total_counts'] = adata.X.A.sum(axis=1)
+        adata.obs['n_genes'] = (adata.X.A>0).sum(axis=1)
+        adata.obs['pct_counts_mt'] = (
+            adata[:,adata.var["mt"]].X.A.sum(axis=1) / \
+            (adata.obs['total_counts'].values + .000001)
         )
-        adata.var['n_cells'] = (adata.X>0).sum(axis=0).A1
-        adata.var['pct_cells'] = (adata.X>0).sum(axis=0).A1 / adata.shape[0] * 100
+        adata.var['n_cells'] = (adata.X.A>0).sum(axis=0)
+        adata.var['pct_cells'] = (adata.X.A>0).sum(axis=0) / adata.shape[0] * 100
 
         # Filter cells and genes
-        mad = lambda x: np.median(np.absolute(x - np.median(x)))
-        test_UMIs = (adata.obs['total_counts'] >= min_nUMIs) & \
-                    (adata.obs['total_counts'] <= n_mads * mad(adata.obs['total_counts']))
-        test_genes = (adata.obs['n_genes'] >= min_n_genes) & \
-                     (adata.obs['n_genes'] <= n_mads * mad(adata.obs['n_genes']))
-        test_mt = (adata.obs['pct_counts_mt'] <= max_perc_mt)
-        test = (test_UMIs) & (test_genes) & (test_mt)
-        cell_keep = adata.obs_names[test]
+        query = 'total_counts>=min_nUMIs and n_genes>=min_n_genes and pct_counts_mt<=max_perc_mt'
+        cell_keep = adata.obs.query(query).index
         gene_keep = adata.var.loc[lambda x: ~x['mt']|x['ribo']].query('pct_cells>=.01').index
         adata = adata[cell_keep,gene_keep].copy()
 
