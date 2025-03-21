@@ -1,10 +1,10 @@
 {
     
     "scLT_system" : "MAESTER",
-    "pp_method" : "mito_preprocessing",
+    "pp_method" : "maegatk",
 
-    "raw_data_input_type" : "fastq",
-    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input.csv",
+    "raw_data_input_type" : "mitobam",
+    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input_mitobam.csv",
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
 
     "ref" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/data/resources/ref",
@@ -18,16 +18,18 @@
     "fgbio_base_quality" : 30,
     "fgbio_min_alignment_quality" : 60,
 
-    "path_meta" : "...",
+    "path_meta" : null,
     "min_nUMIs" : 500,
     "min_n_genes" : 250,
     "max_perc_mt" : 0.15,
     "n_mads" : 3,
 
-    "path_dbSNP" : "...",
-    "path_REDIdb" : "...",
+    "path_dbSNP" : null,
+    "path_REDIdb" : null,
     "cell_filter": "filter2",
     "filtering": "MiTo",
+    "spatial_metrics" : 0,
+    "filter_moransI" : 1,
     "min_cell_number": 10,
     "min_cov": 5,
     "min_var_quality": 10, 
@@ -46,7 +48,7 @@
     "gamma" : 0.2,
     "min_n_var" : 2,
 
-    "lineage_column" : "GBC",
+    "lineage_column" : null,
     "K" : 10,
     "distance_metric" : "weighted_jaccard",
     "tree_algorithm" : "cassiopeia",

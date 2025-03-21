@@ -3,11 +3,11 @@
     "scLT_system" : "MAESTER",
     "pp_method" : "maegatk",
 
-    "raw_data_input_type" : "bam",
-    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input_bam.csv",
+    "raw_data_input_type" : "fastq",
+    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/raw_data_input.csv",
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
 
-    "path_meta" : "...",
+    "path_meta" : null,
 
     "ref" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/data/resources/ref",
     "string_MT" : "chrM",

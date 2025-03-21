@@ -75,6 +75,20 @@ my_parser.add_argument(
     help='Covariate to plot. Default: None.'
 )
 
+my_parser.add_argument(
+    '--spatial_metrics', 
+    type=bool,
+    default=0,
+    help='Add spatial metrics. Default: 0.'
+)
+
+my_parser.add_argument(
+    '--filter_moransI', 
+    type=bool,
+    default=1,
+    help='Add filtering for spatial autocorrelation. Default: False.'
+)
+
 
 ##
 
@@ -132,9 +146,7 @@ def main():
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,
         tree_kwargs=tree_kwargs,
-        spatial_metrics=True,
         compute_enrichment=True,
-        max_AD_counts=2,
         return_tree=False,
        **kwargs
     )
@@ -282,19 +294,8 @@ def main():
 
 
     # 5. Viz distances
-    order = []
-    for node in tree.depth_first_traverse_nodes():
-        if node in tree.leaves:
-            order.append(node)
-
     fig, ax = plt.subplots(figsize=(4.5,4.5))
-    ax.imshow(afm[order].obsp['distances'].A, cmap='Spectral')
-    format_ax(ax=ax, xlabel='Cells', ylabel='Cells', xticks=[], yticks=[])
-    add_cbar(
-        afm.obsp['distances'].A.flatten(), ax=ax, palette='Spectral', 
-        label='Distance', layout='outside', label_size=8, ticks_size=8,
-        vmin=.25, vmax=.95
-    )
+    mt.pl.heatmap_distances(afm, tree=tree, ax=ax)
     fig.tight_layout()
     fig.savefig('distances.png', dpi=500)
 

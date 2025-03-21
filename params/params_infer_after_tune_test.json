@@ -1,16 +1,17 @@
 { 
-    
 
     "scLT_system" : "MAESTER",
 
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
     "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
     "cell_filter": "filter2",
-    "lineage_column" : "GBC",
+    "lineage_column" : null,
+    "spatial_metrics" : 0,
+    "filter_moransI" : 1,
 
     "path_tuning" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
-    "path_dbSNP" : "...",
-    "path_REDIdb" : "...",
+    "path_dbSNP" : null,
+    "path_REDIdb" : null,
 
     "n_boot_replicates" : 5,
     "boot_strategy" : "feature_resampling",

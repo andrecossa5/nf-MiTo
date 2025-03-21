@@ -222,6 +222,20 @@ my_parser.add_argument(
     help='Path to REDIdb database. Default: None.'
 )
 
+my_parser.add_argument(
+    '--spatial_metrics', 
+    type=bool,
+    default=0,
+    help='Add spatial metrics. Default: 0.'
+)
+
+my_parser.add_argument(
+    '--filter_moransI', 
+    type=bool,
+    default=1,
+    help='Add filtering for spatial autocorrelation. Default: False.'
+)
+
 
 ##
 
@@ -256,9 +270,6 @@ def main():
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,
         tree_kwargs=tree_kwargs,
-        spatial_metrics=True,
-        compute_enrichment=True,
-        max_AD_counts=2,
         return_tree=False,
         **kwargs
     )

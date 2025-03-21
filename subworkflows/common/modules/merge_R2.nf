@@ -9,7 +9,7 @@ process MERGE_R2 {
   tag "${sample_name}"
 
   input:
-  tuple val(sample_name), path(in_folder), val(library)
+  tuple val(sample_name), path(in_folder)
 
   output:
   tuple val(sample_name), path("R2_raw.fastq.gz"), emit: R2

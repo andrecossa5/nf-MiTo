@@ -1,12 +1,12 @@
 { 
     
     "scLT_system" : "MAESTER",
-    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test/viz",
 
     "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
     "path_tuning" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/results/test",
     "path_dbSNP" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/dbSNP_MT.txt",
     "path_REDIdb" : "/Users/IEO5505/Desktop/MI_TO/phylo_inference/scratch/data/miscellanea/REDIdb_MT.txt",
-    "covariate": "GBC"
+    "covariate": null
 
 }

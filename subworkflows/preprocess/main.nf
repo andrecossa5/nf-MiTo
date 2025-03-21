@@ -36,7 +36,7 @@ def createPreprocessingChannel() {
             .map { row -> [ row.sample, row.bam, row.cell_barcodes ] }
     }
     else {
-        error "Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: 'fastq', 'fastq, MAESTER', or 'mitobam'."
+        error 'Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: "fastq", "fastq, MAESTER", or "mitobam".'
     }
 
     return ch
@@ -50,31 +50,31 @@ def createPreprocessingChannel() {
 workflow preprocess {
 
     take:
-        ch_preprocessing
+        ch
 
     main:
     
         if (params.raw_data_input_type == "fastq") {
 
             // All 10x and MAESTER MT reads
-            tenx(ch_preprocessing.filter { it -> it[2] == 'TENX' })
-            get_tenx_maester_bam(
-                ch_preprocessing.filter { it -> it[2] == 'MAESTER' },
-                tenx.out.cell_barcodes_QC,
-                tenx.out.bam
-            )
+            tenx_fastqs = ch.filter{it->it[2]=='TENX'}.map{it->tuple(it[0],it[1])}
+            maester_fastqs = ch.filter{it->it[2]=='MAESTER'}.map{it->tuple(it[0],it[1])}
+            tenx(tenx_fastqs)
+            get_tenx_maester_bam(maester_fastqs, tenx.out.cell_barcodes_QC, tenx.out.bam)
             ch_mitobam = get_tenx_maester_bam.out.mitobam
 
         } else if (params.raw_data_input_type == "fastq, MAESTER") {
 
             // MAESTER MT reads
-            get_maester_bam(ch_preprocessing)
+            maester_fastqs = ch.map{it->tuple(it[0],it[1])}
+            cell_barcodes = ch.map{it->tuple(it[0],it[2])}
+            get_maester_bam(maester_fastqs, cell_barcodes)
             ch_mitobam = get_maester_bam.out.mitobam
 
         } else if (params.raw_data_input_type == "mitobam") {
 
             // Previously aligned (and filtered for chrM) MT-reads
-            ch_mitobam = ch_preprocessing
+            ch_mitobam = ch
 
         }
         

@@ -65,12 +65,12 @@ process publish_solo {
 workflow tenx {
 
     take:
-        ch_input
+        ch_fastqs
 
     main:
     
-        MERGE_R1(ch_input)
-        MERGE_R2(ch_input)
+        MERGE_R1(ch_fastqs)
+        MERGE_R2(ch_fastqs)
         SOLO(MERGE_R1.out.R1.combine(MERGE_R2.out.R2, by:0))
         ch_solo = SOLO.out.raw
             .combine(SOLO.out.filtered, by:0)

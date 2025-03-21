@@ -35,15 +35,15 @@ def processCellBams(cell_bams) {
 workflow get_tenx_maester_bam {
      
     take:
-        ch_input
+        ch_fastqs
         cell_barcodes
         tenx_bam  
 
     main:
 
         // Get MT-reads from 10x and MAESTER libraries
-        MERGE_R1(ch_input)
-        MERGE_R2(ch_input)
+        MERGE_R1(ch_fastqs)
+        MERGE_R2(ch_fastqs)
         SOLO(MERGE_R1.out.R1.combine(MERGE_R2.out.R2, by:0))
         FILTER_MAESTER_BAM(SOLO.out.bam)
         FILTER_10X_BAM(tenx_bam)
@@ -62,14 +62,14 @@ workflow get_tenx_maester_bam {
 workflow get_maester_bam {
      
     take:
-        ch_input
+        ch_fastqs
         cell_barcodes
 
     main:
 
         // Get MT-reads from MAESTER libraries
-        MERGE_R1(ch_input)
-        MERGE_R2(ch_input)
+        MERGE_R1(ch_fastqs)
+        MERGE_R2(ch_fastqs)
         SOLO(MERGE_R1.out.R1.combine(MERGE_R2.out.R2, by:0))
         FILTER_MAESTER_BAM(SOLO.out.bam)
 

@@ -23,7 +23,7 @@ my_parser.add_argument(
     '--path_afm', 
     type=str,
     default='..',
-    help='Path to <name>.h5ad file from mito_preprocessing pipelin. Default: .. .'
+    help='Path to <name>.h5ad file from mito_preprocessing pipeline. Default: .. .'
 )
 
 my_parser.add_argument(
@@ -197,8 +197,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--ncores', 
     type=int,
-    default=8,
-    help='n cores for computing distances. Default: 8.'
+    default=1,
+    help='n cores for computing distances. Default: 1.'
 )
 
 my_parser.add_argument(
@@ -220,6 +220,20 @@ my_parser.add_argument(
     type=float,
     default=.05,
     help='Max fraction of unassigned cells. Default: .05.'
+)
+
+my_parser.add_argument(
+    '--spatial_metrics', 
+    type=bool,
+    default=1,
+    help='Add spatial metrics. Default: 0.'
+)
+
+my_parser.add_argument(
+    '--filter_moransI', 
+    type=bool,
+    default=1,
+    help='Add filtering for spatial autocorrelation. Default: False.'
 )
 
 
@@ -261,9 +275,6 @@ def main():
         filtering_kwargs=filtering_kwargs,
         binarization_kwargs=binarization_kwargs,
         tree_kwargs=tree_kwargs,
-        spatial_metrics=True,
-        compute_enrichment=True,
-        max_AD_counts=2,
         return_tree=True,
         **kwargs
     )

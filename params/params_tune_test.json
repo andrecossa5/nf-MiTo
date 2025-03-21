@@ -6,7 +6,7 @@
     "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
     "cell_filter": "filter2",
     "filtering": "MiTo",
-    "lineage_column" : "GBC",
+    "lineage_column" : null,
 
     "min_cell_number": 0,
     "min_cov": 5,
@@ -29,8 +29,8 @@
     "min_n_var" : 2,
     "max_fraction_unassigned" : 0.05,
 
-    "path_dbSNP" : "...",
-    "path_REDIdb" : "..."
+    "path_dbSNP" : null,
+    "path_REDIdb" : null
     
 }
 

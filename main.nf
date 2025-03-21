@@ -73,8 +73,8 @@ workflow {
     println "See https://github.com/andrecossa5/nf-MiTo for all configurations and options available."
     println "\n"
 
-    ch_preprocessing = createPreprocessingChannel()
-    preprocess(ch_preprocessing)
+    ch_pp = createPreprocessingChannel()
+    preprocess(ch_pp)
     afm_preprocess(preprocess.out.afm)
     build_tree(afm_preprocess.out.input)
     process_tree(afm_preprocess.out.input, build_tree.out.final_tree)
