@@ -144,7 +144,7 @@ def main():
         test_mt = (adata.obs['pct_counts_mt'] <= max_perc_mt)
         test = (test_UMIs) & (test_genes) & (test_mt)
         cell_keep = adata.obs_names[test]
-        gene_keep = adata.var.loc[lambda x: ~x['mt']|x['ribo']].query('pct_cells>=@min_pct_cell').index
+        gene_keep = adata.var.loc[lambda x: ~x['mt']|x['ribo']].query('pct_cells>=.01').index
         adata = adata[cell_keep,gene_keep].copy()
 
         # Last doublets removal
