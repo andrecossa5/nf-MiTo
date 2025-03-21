@@ -143,7 +143,12 @@ def main():
 
     # Write
     adata.write('adata.h5ad')
-    adata.obs_names.to_series().to_csv('cell_barcodes.txt', header=False, index=False)
+    (
+        adata.obs_names
+        .map(lambda x: x.split('_')[0])     # Again, no sample name for splitting bams  
+        .to_series()
+        .to_csv('cell_barcodes.txt', header=False, index=False)
+    )
 
 
 ##
