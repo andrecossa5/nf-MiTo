@@ -22,7 +22,6 @@ process QC {
     def min_n_genes = params.min_n_genes ? "--min_n_genes ${params.min_n_genes}" : ""
     def max_perc_mt = params.max_perc_mt ? "--max_perc_mt ${params.max_perc_mt}" : ""
     def path_meta = params.path_meta ? "--path_meta ${params.path_meta}" : ""
-    def n_mads = params.n_mads ? "--n_mads ${params.n_mads}" : ""
 
     script:
     """
@@ -32,8 +31,7 @@ process QC {
     ${min_nUMIs} \
     ${min_n_genes} \
     ${max_perc_mt} \
-    ${path_meta} \
-    ${n_mads}
+    ${path_meta} 
     """
 
     stub: 

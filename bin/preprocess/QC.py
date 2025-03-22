@@ -63,13 +63,6 @@ my_parser.add_argument(
     help='Max % of MT-gene counts allowed. Default: 1'
 )
 
-my_parser.add_argument(
-    '--n_mads', 
-    type=int,
-    default=5,
-    help='n MADs to filter out the higher-end nUMIs/n genes distributions. Default: 5'
-)
-
 
 ##
 
@@ -82,7 +75,6 @@ sample = args.sample
 min_nUMIs = args.min_nUMIs
 min_n_genes = args.min_n_genes
 max_perc_mt = args.max_perc_mt
-n_mads = args.n_mads
 
 
 ##
