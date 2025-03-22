@@ -5,7 +5,7 @@ nextflow.enable.dsl = 2
 process MPBOOT {
 
     tag "${sample}: ${job_id}, rep=${rep}"
-    label 'r-phylo'
+    label 'phylo'
 
     input:
     tuple val(job_id),
