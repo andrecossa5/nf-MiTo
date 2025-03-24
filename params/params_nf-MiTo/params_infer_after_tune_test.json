@@ -1,0 +1,22 @@
+{ 
+
+    "scLT_system" : "MAESTER",
+
+    "output_folder" : ".../test",
+    "afm_input" : ".../input_afm.csv",
+    "path_tuning" : ".../test",
+    "spatial_metrics" : 0,
+    "filter_moransI" : 1,
+
+    "lineage_column" : null,
+    "K" : 10,
+
+    "n_boot_replicates" : 100,
+    "boot_strategy" : "feature_resampling",
+    "frac_char_resampling" : 0.8,
+    "tree_algorithm" : "cassiopeia",
+    "support_method" : "tbe",
+    "annotate_tree" : "MiTo",
+    "max_fraction_unassigned" : 0.05
+
+}

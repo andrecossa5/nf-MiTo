@@ -1,0 +1,36 @@
+{
+
+    "scLT_system" : "MAESTER",
+
+    "output_folder" : ".../tune",
+    "afm_input" : ".../input_afm.csv",
+    "path_dbSNP" : null,
+    "path_REDIdb" : null,
+    "cell_filter": "filter2",
+    "filtering": "MiTo",
+    "lineage_column" : null,
+
+    "min_cell_number": 0,
+    "min_cov": 5,
+    "min_var_quality": 10, 
+    "min_frac_negative": 0.2,
+    "min_n_positive": [5],
+    "af_confident_detection": [0.1, 0.075, 0.05, 0.03, 0.02, 0.01],
+    "min_n_confidently_detected": [2,3,5],
+    "min_mean_AD_in_positives": [1, 1.25, 1.5],
+    "min_mean_DP_in_positives": 25,
+    "t_prob": [0.7],
+    "min_AD": [1,2],
+    "min_cell_prevalence": [0.1, 0.05],
+    "t_vanilla": 0,
+    "bin_method": ["MiTo"],
+    "cassiopeia_solver": "UPMGA",
+    "distance_metric" : "weighted_jaccard",
+    "k" : 5,
+    "gamma" : 0.2,
+    "min_n_var" : 2,
+    "max_fraction_unassigned" : 0.05
+    
+}
+
+

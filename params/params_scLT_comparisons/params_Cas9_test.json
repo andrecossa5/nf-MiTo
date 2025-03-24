@@ -1,0 +1,16 @@
+{ 
+    
+    "scLT_system" : "Cas9",
+
+    "output_folder" : ".../Cas9",
+    "afm_input" : ".../input_afm.csv",
+
+    "distance_metric" : "weighted_hamming",
+    "tree_algorithm" : "cassiopeia",
+    "cassiopeia_solver" : "UPMGA",
+    "n_boot_replicates" : 10,
+    "boot_strategy" : "feature_resampling",
+    "frac_char_resampling" : 0.8,
+    "support_method" : "tbe"
+
+}

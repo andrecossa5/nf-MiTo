@@ -1,0 +1,32 @@
+{ 
+    
+    "scLT_system" : "RedeeM",
+
+    "output_folder" : ".../RedeeM",
+    "afm_input" : ".../input_afm.csv",
+
+    "path_dbSNP" : null,
+    "path_REDIdb" : null,
+    "cell_filter": "filter1",
+    "filtering": null,
+    "spatial_metrics" : 0,
+    "filter_moransI" : 0,
+    "min_cell_number": 0,
+    "t_prob": 0.7,
+    "min_AD": 2,
+    "min_cell_prevalence": 0.1,
+    "t_vanilla": 0,
+    "bin_method": "MiTo",
+    "k" : 5,
+    "gamma" : 0.2,
+    "min_n_var" : 1,
+
+    "distance_metric" : "weighted_jaccard",
+    "tree_algorithm" : "cassiopeia",
+    "cassiopeia_solver" : "UPMGA",
+    "n_boot_replicates" : 10,
+    "boot_strategy" : "feature_resampling",
+    "frac_char_resampling" : 0.8,
+    "support_method" : "tbe"
+
+}
