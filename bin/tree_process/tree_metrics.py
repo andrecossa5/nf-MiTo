@@ -120,6 +120,7 @@ def main():
         metrics['total_assigned_char'] = len(list(
             chain.from_iterable([ x.split(';') for x in tree.cell_meta['muts'].loc[lambda x: ~x.isna()].unique() ])
         ))
+        metrics['frac_unassigned_cells'] = tree.cell_meta['MiTo clone'].isna().sum() / tree.cell_meta.shape[0]
 
     # Benchmark specifics
     if lineage_column is not None and lineage_column in tree.cell_meta.columns:

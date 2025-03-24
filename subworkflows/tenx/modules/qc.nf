@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process QC {
 
     tag "${sample_name}" 
+    label 'MiTo'
     publishDir "${params.output_folder}/${sample_name}", mode: 'copy'   
     
     input:
@@ -21,18 +22,16 @@ process QC {
     def min_n_genes = params.min_n_genes ? "--min_n_genes ${params.min_n_genes}" : ""
     def max_perc_mt = params.max_perc_mt ? "--max_perc_mt ${params.max_perc_mt}" : ""
     def path_meta = params.path_meta ? "--path_meta ${params.path_meta}" : ""
-    def n_mads = params.n_mads ? "--n_mads ${params.n_mads}" : ""
 
     script:
     """
     python ${baseDir}/bin/preprocess/QC.py \
     --input ${filtered} \
-    --sample_name ${sample_name} \
+    --sample ${sample_name} \
     ${min_nUMIs} \
     ${min_n_genes} \
     ${max_perc_mt} \
-    ${path_meta} \
-    ${n_mads}
+    ${path_meta} 
     """
 
     stub: 

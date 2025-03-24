@@ -50,8 +50,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--cell_filter', 
     type=str,
-    default='filter2',
-    help='Cell filtering method. Default: filter2.'
+    default=None,
+    help='Cell filtering method. Default: None.'
 )
 
 my_parser.add_argument(
@@ -264,7 +264,8 @@ def main():
 
     # Filter matrix and calculate metrics
     afm = sc.read(args.path_afm)
-    afm = mt.pp.filter_cells(afm, cell_filter=cell_filter)
+    if cell_filter is not None:
+        afm = mt.pp.filter_cells(afm, cell_filter=cell_filter)
     afm = mt.pp.filter_afm(
         afm,
         filtering_kwargs=filtering_kwargs,

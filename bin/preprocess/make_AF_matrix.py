@@ -81,11 +81,7 @@ def main():
         pp_method=pp_method, 
         scLT_system=scLT_system
     )
-    
-    if os.path.isdir(path_ch_matrix):
-        afm.write(os.path.join(path_ch_matrix, 'afm_unfiltered.h5ad'))
-    else:
-        afm.write(os.path.join(os.path.dirname(path_ch_matrix), 'afm_unfiltered.h5ad'))
+    afm.write('afm_unfiltered.h5ad')
 
 
 if __name__ == '__main__':

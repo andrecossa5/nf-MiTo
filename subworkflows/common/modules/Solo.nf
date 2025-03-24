@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process SOLO {
 
   tag "${sample_name}"
+  label 'scLT'
 
   input:
   tuple val(sample_name), path(transcript_R1), path(transcript_R2)

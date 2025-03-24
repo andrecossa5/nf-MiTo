@@ -5,6 +5,7 @@ nextflow.enable.dsl = 2
 process IQTREE {
 
     tag "${sample}: ${job_id}, rep=${rep}"
+    label 'phylo'
 
     input:
     tuple val(job_id),

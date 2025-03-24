@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process ONESAMPLE {
 
     tag "${sample}: tuning${job_id}"
+    label 'MiTo'
 
     input:
     tuple val(sample), 

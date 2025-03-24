@@ -5,7 +5,7 @@ nextflow.enable.dsl = 2
 include { MERGE_R1 } from "../common/modules/merge_R1.nf"
 include { MERGE_R2 } from "../common/modules/merge_R2.nf"
 include { SOLO } from "../common/modules/Solo.nf"
-include { QC } from "./modules/QC.nf"
+include { QC } from "./modules/qc.nf"
 
 // 
 

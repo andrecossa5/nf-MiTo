@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process INDEX_AND_MERGE {
 
   tag "${sample_name}"
+  label 'scLT'
 
   input:
   tuple val(sample_name), path(bams)

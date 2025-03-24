@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process DISTANCE_METRICS {
 
     tag "${sample}: ${job_id}"
+    label 'MiTo'
     publishDir "${params.output_folder}/${sample}/${job_id}", mode: 'copy'
 
     input:

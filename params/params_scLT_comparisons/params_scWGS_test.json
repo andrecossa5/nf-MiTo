@@ -2,8 +2,8 @@
     
     "scLT_system" : "scWGS",
 
-    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/scWGS",
-    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
+    "output_folder" : ".../scWGS",
+    "afm_input" : ".../input_afm.csv",
 
     "distance_metric" : "jaccard",
     "tree_algorithm" : "cassiopeia",
