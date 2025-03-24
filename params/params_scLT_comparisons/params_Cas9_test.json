@@ -2,8 +2,8 @@
     
     "scLT_system" : "Cas9",
 
-    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/Cas9",
-    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
+    "output_folder" : ".../Cas9",
+    "afm_input" : ".../input_afm.csv",
 
     "distance_metric" : "weighted_hamming",
     "tree_algorithm" : "cassiopeia",

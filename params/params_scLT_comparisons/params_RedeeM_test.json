@@ -2,8 +2,8 @@
     
     "scLT_system" : "RedeeM",
 
-    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/RedeeM",
-    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm.csv",
+    "output_folder" : ".../RedeeM",
+    "afm_input" : ".../input_afm.csv",
 
     "path_dbSNP" : null,
     "path_REDIdb" : null,
