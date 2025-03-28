@@ -107,9 +107,7 @@ import pandas as pd
 import scanpy as sc
 import mito as mt 
 import matplotlib.pyplot as plt
-from mito.pl.plotting_base import (
-    bar, format_ax, add_cbar, add_legend
-)
+import plotting_utils as plu
 
 ########################################################################
 
@@ -173,7 +171,7 @@ def main():
     xticks = [1,2,4,10,30,90,300,1100]
     mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
     mt.pl.plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
-    format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
+    plu.format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
     mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
@@ -182,9 +180,10 @@ def main():
 
     ax = fig.add_subplot(1,4,4)
     ref_df = mt.ut.load_mt_gene_annot()
-    df_plot = ref_df.query('mut in @afm.var_names')['Symbol'].value_counts().to_frame('n')
-    bar(df_plot, 'n', ax=ax, c='#C0C0C0', edgecolor='k', s=.8)
-    format_ax(ax=ax, xticks=df_plot.index, rotx=90, ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
+    df_plot = ref_df.query('mut in @afm.var_names')
+    plu.counts_plot(df_plot, 'Symbol', width=.8, ax=ax, c='#C0C0C0', edgecolor='k', with_label=False)
+    plu.format_ax(ax=ax, xticks=df_plot.index, rotx=90, 
+                  ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
 
     fig.subplots_adjust(bottom=.25, top=.8, left=.1, right=.9, wspace=.4)
     fig.savefig('MT_SNVs.png', dpi=500)
@@ -205,10 +204,10 @@ def main():
     # 3. Viz embeddings
     cmaps = {
         'MiTo clone' : \
-        mt.pl.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102)
+        plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102)
     }
     if args.covariate is not None:
-        cmaps[args.covariate] = mt.pl.create_palette(
+        cmaps[args.covariate] = plu.create_palette(
             model.tree.cell_meta, args.covariate, sc.pl.palettes.vega_20_scanpy
         )
         afm.uns[f'{args.covariate}_colors'] = list(cmaps[args.covariate].values())
@@ -259,7 +258,7 @@ def main():
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    add_cbar(
+    plu.add_cbar(
         model.tree.layers['transformed'].values.flatten(), 
         palette='mako', label='AF', 
         ticks_size=8, label_size=9, vmin=.0, vmax=.1,
@@ -279,7 +278,7 @@ def main():
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    add_legend(
+    plu.add_legend(
         label='Genotype', ax=axs[1], 
         colors={'REF':'b', 'ALT':'r'}, loc='center left', 
         bbox_to_anchor=(1,.4),
