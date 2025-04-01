@@ -74,8 +74,8 @@ process MITO {
     ${filter_moransI} \
     ${spatial_metrics} \
     --ncores ${task.cpus} \
-    --path_dbSNP ${params.path_dbSNP} \
-    --path_REDIdb ${params.path_REDIdb}
+    --filter_dbSNP ${params.filter_dbSNP} \
+    --filter_REDIdb ${params.filter_REDIdb}
     """
 
     stub:

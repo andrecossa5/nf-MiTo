@@ -71,8 +71,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_cov', 
     type=int,
-    default=10,
-    help='Minimum mean coverage of the candidate variant site. Default: 10.'
+    default=5,
+    help='Minimum mean coverage of the candidate variant site. Default: 5.'
 )
 
 my_parser.add_argument(
@@ -92,8 +92,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_positive', 
     type=int,
-    default=3,
-    help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 2.'
+    default=5,
+    help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 5.'
 )
 
 my_parser.add_argument(
@@ -155,7 +155,7 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--gamma', 
     type=float,
-    default=.2,
+    default=.25,
     help='% posterior probability that is smoothed in bin_method==MiTo_smooth. Default: .2.'
 )
 
@@ -209,17 +209,17 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--path_dbSNP', 
-    type=str,
-    default=None,
-    help='Path to dbSNP database. Default: None.'
+    '--filter_dbSNP', 
+    type=bool,
+    default=1,
+    help='Filter MT-SNVs with dbSNP database. Default: True.'
 )
 
 my_parser.add_argument(
-    '--path_REDIdb', 
-    type=str,
-    default=None,
-    help='Path to REDIdb database. Default: None.'
+    '--filter_REDIdb', 
+    type=bool,
+    default=1,
+    help='Filter MT-SNVs with REDIdb database. Default: True.'
 )
 
 my_parser.add_argument(

@@ -5,8 +5,8 @@
 
     "afm_input" : ".../input_afm.csv",
     "path_tuning" : ".../tune",
-    "path_dbSNP" : ".../dbSNP_MT.txt",
-    "path_REDIdb" : ".../REDIdb_MT.txt",
+    "filter_dbSNP" : 1,
+    "filter_REDIdb" : 1,
     "covariate": null
 
 }

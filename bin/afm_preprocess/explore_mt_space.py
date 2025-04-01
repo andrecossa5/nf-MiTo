@@ -55,17 +55,17 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--path_dbSNP', 
-    type=str,
-    default=None,
-    help='Path to dbSNP database. Default: None.'
+    '--filter_dbSNP', 
+    type=bool,
+    default=1,
+    help='Filter MT-SNVs with dbSNP database. Default: True.'
 )
 
 my_parser.add_argument(
-    '--path_REDIdb', 
-    type=str,
-    default=None,
-    help='Path to REDIdb database. Default: None.'
+    '--filter_REDIdb', 
+    type=bool,
+    default=1,
+    help='Filter MT-SNVs with REDIdb database. Default: True.'
 )
 
 my_parser.add_argument(
@@ -148,7 +148,6 @@ def main():
         return_tree=False,
        **kwargs
     )
-    mt.pp.compute_distances(afm, precomputed=True)
     mt.pp.reduce_dimensions(afm)
 
     # Build and annotate tree
@@ -204,7 +203,7 @@ def main():
     # 3. Viz embeddings
     cmaps = {
         'MiTo clone' : \
-        plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102)
+        plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
     }
     if args.covariate is not None:
         cmaps[args.covariate] = plu.create_palette(
