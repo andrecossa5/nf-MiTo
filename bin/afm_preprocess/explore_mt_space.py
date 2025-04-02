@@ -180,7 +180,7 @@ def main():
     ax = fig.add_subplot(1,4,4)
     ref_df = mt.ut.load_mt_gene_annot()
     df_plot = ref_df.query('mut in @afm.var_names')
-    plu.counts_plot(df_plot, 'Symbol', width=.8, ax=ax, c='#C0C0C0', edgecolor='k', with_label=False)
+    plu.counts_plot(df_plot, 'Symbol', width=.8, ax=ax, color='#C0C0C0', edgecolor='k', with_label=False)
     plu.format_ax(ax=ax, xticks=df_plot.index, rotx=90, 
                   ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
 
