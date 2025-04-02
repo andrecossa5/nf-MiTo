@@ -41,6 +41,7 @@ process ONESAMPLE {
     def gamma = params.gamma ? "--gamma ${params.gamma}" : ""
     def min_n_var = params.min_n_var ? "--min_n_var ${params.min_n_var}" : ""
     def max_fraction_unassigned = params.max_fraction_unassigned ? "--max_fraction_unassigned ${params.max_fraction_unassigned}" : ""
+    def filter_moransI = params.filter_moransI ? "--filter_moransI ${params.filter_moransI}" : ""
 
     script: 
     """
@@ -73,6 +74,7 @@ process ONESAMPLE {
     --ncores ${task.cpus} \
     --filter_dbSNP ${params.filter_dbSNP} \
     --filter_REDIdb ${params.filter_REDIdb} \
+    ${filter_moransI} \
     ${max_fraction_unassigned}
     """
 
