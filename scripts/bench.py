@@ -31,11 +31,14 @@ def main():
     afm = sc.read(sys.argv[1])
     maxK = int(sys.argv[2])
 
-    # Get 
+    # Prep dict for results
+    T = mt.ut.Timer()
     D = {}
 
     # Leiden
     D['leiden'] = {}
+
+    T.start()
     scores = []
     resolutions = np.linspace(0.5,2.5,50)
     for res in resolutions:
@@ -49,6 +52,7 @@ def main():
     D['leiden']['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'], labels)
     D['leiden']['NMI'] = normalized_mutual_info_score(afm.obs['GBC'], labels)
     D['leiden']['labels'] = pd.Series([ f'leiden_{x}' for x in labels ], index=afm.obs_names)
+    D['leiden']['time'] = T.stop(pretty=False)
 
 
     ## 
@@ -56,6 +60,8 @@ def main():
 
     # Vireo
     D['vireoSNP'] = {}
+
+    T.start()
     _ELBO_mat = []
     for k in range(2,maxK+1):
         print(f'Clone n: {k}')
@@ -89,6 +95,7 @@ def main():
         .loc[lambda x: ~x.isna()]
         .map(lambda x: f'vireoSNP_{int(x)}')
     )
+    D['vireoSNP']['time'] = T.stop(pretty=False)
 
 
     ##
@@ -97,6 +104,8 @@ def main():
     # MiTo
     afm.uns['scLT_system'] = 'MAESTER'
     D['MiTo'] = {}
+
+    T.start()
     tree = mt.tl.build_tree(afm, precomputed=True)
     model = mt.tl.MiToTreeAnnotator(tree)
     model.clonal_inference()
@@ -108,6 +117,7 @@ def main():
     D['MiTo']['% unassigned'] = test.sum() / labels.size
     D['MiTo']['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'][~test], labels[~test])
     D['MiTo']['NMI'] = normalized_mutual_info_score(afm.obs['GBC'][~test], labels[~test])
+    D['MiTo']['time'] = T.stop(pretty=False)
 
 
     ##
@@ -119,6 +129,8 @@ def main():
     afm.X = afm.X.A
 
     D['CClone'] = {}
+
+    T.start()
     scores = []
     for k in range(2,maxK+1):
 
@@ -136,6 +148,7 @@ def main():
     D['CClone']['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'][~test], labels[~test])
     D['CClone']['NMI'] = normalized_mutual_info_score(afm.obs['GBC'][~test], labels[~test])  
     D['CClone']['labels'] = pd.Series([ f'CClone_{x}' for x in labels ], index=afm.obs_names)
+    D['CClone']['time'] = T.stop(pretty=False)
     
     # Save
     with open(os.path.join(os.path.dirname(sys.argv[1]), 'bench_clonal_recontruction.pickle'), 'wb') as f:
