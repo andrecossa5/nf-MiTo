@@ -1,10 +1,10 @@
-// MITO module
+// MITO_BENCH module
 
 nextflow.enable.dsl = 2 
 
 //
 
-process MITO {
+process MITO_BENCH {
 
     tag "${sample}: ${job_id}"
     publishDir "${params.output_folder}/${sample}", mode: 'copy'
