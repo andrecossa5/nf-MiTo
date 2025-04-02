@@ -12,6 +12,7 @@ include { build_tree } from "./subworkflows/tree_build/main"
 include { process_tree } from "./subworkflows/tree_process/main"
 include { tune } from "./subworkflows/tune/main"
 include { explore } from "./subworkflows/explore/main"
+include { benchmark } from "./subworkflows/bench/main"
 
 //
 
@@ -57,6 +58,15 @@ workflow INFER {
 
 }
 
+//
+
+workflow BENCH {
+
+    ch_jobs = createAFMChannel()
+    benchmark(ch_jobs)
+    benchmark.out.pickles.view()
+
+}
 
 //
 

@@ -8,6 +8,8 @@
     "spatial_metrics" : 0,
     "filter_moransI" : 1,
 
+    "path_meta" : null,
+
     "lineage_column" : null,
     "K" : 10,
 
