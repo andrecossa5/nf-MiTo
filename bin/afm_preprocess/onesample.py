@@ -294,6 +294,9 @@ def main():
     options['filtering'] = kwargs['filtering']
     options['bin_method'] = kwargs['bin_method']
     options['min_n_var'] = kwargs['min_n_var']
+    options['filter_dbSNP'] = kwargs['filter_dbSNP']
+    options['filter_REDIdb'] = kwargs['filter_REDIdb']
+    options['filter_moransI'] = kwargs['filter_moransI']
     options = {
         **options, **filtering_kwargs, **binarization_kwargs, 
         **afm.uns['cell_filter'], **tree_kwargs
