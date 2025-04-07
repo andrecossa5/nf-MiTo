@@ -4,8 +4,8 @@
 
     "output_folder" : ".../tune",
     "afm_input" : ".../input_afm.csv",
-    "filter_dbs" : 1,    
-    "filter_moran" : 1,
+    "filter_dbs" : true,    
+    "filter_moran" : true,
     "cell_filter": "filter2",
     "filtering": "MiTo",
     "lineage_column" : "GBC",

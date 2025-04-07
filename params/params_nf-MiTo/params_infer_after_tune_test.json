@@ -5,7 +5,7 @@
     "output_folder" : ".../test",
     "afm_input" : ".../input_afm.csv",
     "path_tuning" : ".../test",
-    "spatial_metrics" : 0,
+    "spatial_metrics" : false,
 
     "path_meta" : null,
 

@@ -5,7 +5,7 @@
 
     "afm_input" : ".../input_afm.csv",
     "path_tuning" : ".../tune",
-    "filter_dbs" : 1,
+    "filter_dbs" : true,
     "covariate": null
 
 }
