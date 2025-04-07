@@ -203,15 +203,15 @@ my_parser.add_argument(
 
 my_parser.add_argument(
     '--filter_dbSNP', 
-    type=bool,
-    default=1,
+    type=str,
+    default="1",
     help='Filter MT-SNVs with dbSNP database. Default: True.'
 )
 
 my_parser.add_argument(
     '--filter_REDIdb', 
-    type=bool,
-    default=1,
+    type=str,
+    default="1",
     help='Filter MT-SNVs with REDIdb database. Default: True.'
 )
 
@@ -224,15 +224,15 @@ my_parser.add_argument(
 
 my_parser.add_argument(
     '--spatial_metrics', 
-    type=bool,
-    default=1,
+    type=str,
+    default="1",
     help='Add spatial metrics. Default: True.'
 )
 
 my_parser.add_argument(
     '--filter_moransI', 
-    type=bool,
-    default=1,
+    type=str,
+    default="1",
     help='Apply spatial autocorrelation filter. Default: True.'
 )
 
