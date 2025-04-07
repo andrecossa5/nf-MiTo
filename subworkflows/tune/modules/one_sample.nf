@@ -41,8 +41,6 @@ process ONESAMPLE {
     def gamma = params.gamma ? "--gamma ${params.gamma}" : ""
     def min_n_var = params.min_n_var ? "--min_n_var ${params.min_n_var}" : ""
     def max_fraction_unassigned = params.max_fraction_unassigned ? "--max_fraction_unassigned ${params.max_fraction_unassigned}" : ""
-    def filter_moran = params.filter_moran ? "--filter_moran ${params.filter_moran}" : ""
-    def filter_dbs = params.filter_dbs ? "--filter_dbs ${params.filter_dbs}" : ""
 
     script: 
     """
@@ -72,8 +70,8 @@ process ONESAMPLE {
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \
     ${lineage_column} \
-    ${filter_dbs} \
-    ${filter_moran} \
+    --filter_dbs ${params.filter_dbs} \
+    --filter_moran ${params.filter_moran} \
     ${max_fraction_unassigned} \
     --ncores ${task.cpus}
     """
