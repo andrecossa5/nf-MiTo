@@ -334,6 +334,7 @@ def main():
     metrics.update(afm.uns['dataset_metrics'])
     metrics['n_dbSNP'] = afm.uns['char_filter']['n_dbSNP'] 
     metrics['n_REDIdb'] = afm.uns['char_filter']['n_REDIdb'] 
+    metrics['n_not_autocorrelated'] = afm.uns['char_filter']['n_not_autocorrelated'] 
 
     # Save
     (
