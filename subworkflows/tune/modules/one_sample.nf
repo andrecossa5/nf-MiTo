@@ -72,10 +72,10 @@ process ONESAMPLE {
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \
     ${lineage_column} \
-    --ncores ${task.cpus} \
     ${filter_dbs} \
     ${filter_moran} \
-    ${max_fraction_unassigned}
+    ${max_fraction_unassigned} \
+    --ncores ${task.cpus}
     """
 
     stub:
