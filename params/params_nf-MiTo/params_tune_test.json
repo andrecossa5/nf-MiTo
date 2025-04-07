@@ -4,9 +4,8 @@
 
     "output_folder" : ".../tune",
     "afm_input" : ".../input_afm.csv",
-    "filter_dbSNP" : 1,
-    "filter_REDIdb" : 1,    
-    "filter_moransI" : 1,
+    "filter_dbs" : 1,    
+    "filter_moran" : 1,
     "cell_filter": "filter2",
     "filtering": "MiTo",
     "lineage_column" : "GBC",

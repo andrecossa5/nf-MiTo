@@ -27,8 +27,7 @@ process VIZ_MT_SPACE {
     --job_id ${job_id} \
     --sample ${sample} \
     --ncores ${task.cpus} \
-    --filter_dbSNP ${params.filter_dbSNP} \
-    --filter_REDIdb ${params.filter_REDIdb} \
+    --filter_dbs ${params.filter_dbs} \
     ${covariate}
     """
 
