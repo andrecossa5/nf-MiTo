@@ -39,7 +39,9 @@ process MITO {
     def k = params.k ? "--k ${params.k}" : ""
     def gamma = params.gamma ? "--gamma ${params.gamma}" : ""
     def min_n_var = params.min_n_var ? "--min_n_var ${params.min_n_var}" : ""
-    def filter_moransI = params.filter_moransI ? "--filter_moransI ${params.min_n_var}" : ""
+    def filter_moransI = params.filter_moransI ? "--filter_moransI ${params.filter_moransI}" : ""
+    def filter_REDIdb = params.filter_REDIdb ? "--filter_REDIdb ${params.filter_REDIdb}" : ""
+    def filter_dbSNP = params.filter_dbSNP ? "--filter_dbSNP ${params.filter_dbSNP}" : ""
     def spatial_metrics = params.spatial_metrics ? "--spatial_metrics ${params.spatial_metrics}" : ""
     
     script:
@@ -74,8 +76,8 @@ process MITO {
     ${filter_moransI} \
     ${spatial_metrics} \
     --ncores ${task.cpus} \
-    --filter_dbSNP ${params.filter_dbSNP} \
-    --filter_REDIdb ${params.filter_REDIdb}
+    ${filter_REDIdb} \
+    ${filter_dbSNP}
     """
 
     stub:
