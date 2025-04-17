@@ -79,7 +79,8 @@ def main():
         # SNVs: RedeeM and MAESTER (binary char matrices: 0,1 states), scWGS (ternary char matrices: 0,0.5,1 states)                                                                                   
         metrics['n_characters'] = tree.layers['transformed'].shape[1]
         metrics['median_char_per_cell'] = np.median(np.sum(tree.layers['transformed']>0, axis=1))
-        metrics['density'] = np.sum(tree.layers['transformed'].values>0) / np.product(tree.layers['transformed'].shape)
+        nrow, ncol = tree.layers['transformed'].shape
+        metrics['density'] = np.sum(tree.layers['transformed'].values>0) / (nrow*ncol)
     else:                                                                   
         # INDELs (-1 state: missing info, 0 INDEL state: uncut, others: unique indel states)
         # see https://www.sc-best-practices.org/trajectories/lineage_tracing.html#
