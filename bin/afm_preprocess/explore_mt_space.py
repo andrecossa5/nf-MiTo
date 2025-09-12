@@ -123,13 +123,7 @@ def main():
 
     # Read and format coverage 
     path_coverage = os.path.join(os.path.dirname(args.path_afm), 'tables', 'coverage.txt.gz')
-    cov = pd.read_csv(path_coverage, header=None)
-    cov.columns = ['pos', 'cell', 'n'] 
-    cov['cell'] = cov['cell'].map(lambda x: f'{x}_{args.sample}')
-    cov = cov.query('cell in @afm_raw.obs_names')
-    cov['cell'] = pd.Categorical(cov['cell'], categories=afm_raw.obs_names)
-    cov['pos'] = pd.Categorical(cov['pos'], categories=range(1,16569+1))
-    cov = cov.pivot_table(index='cell', columns='pos', values='n', fill_value=0)
+    cov = mt.io.read_coverage(path_coverage)
 
     # Filter afm, reduce dimensions
     afm = mt.pp.filter_afm(
@@ -161,8 +155,8 @@ def main():
 
     ax = fig.add_subplot(1,4,2)
     xticks = [1,2,4,10,30,90,300,1100]
-    mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
-    mt.pl.plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
+    mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, color='#303030', s=2, alpha=.3)
+    mt.pl.plot_ncells_nAD(afm, ax=ax, color='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
     plu.format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
