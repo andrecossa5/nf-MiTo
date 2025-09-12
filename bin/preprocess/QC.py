@@ -103,8 +103,8 @@ def main():
             meta = meta.query('sample==@sample').copy()  
             cell_keep = list(set(meta.index) & set(adata.obs_names))   
             assert len(cell_keep>0)     
-            adata.var['n_cells'] = (adata.X>0).sum(axis=0).A1
-            adata.var['pct_cells'] = (adata.X>0).sum(axis=0).A1 / adata.shape[0] * 100
+            adata.var['n_cells'] = (adata.X>0).sum(axis=0).toarray()
+            adata.var['pct_cells'] = (adata.X>0).sum(axis=0).toarray() / adata.shape[0] * 100
             gene_keep = adata.var.query('pct_cells>=.01').index
             adata = adata[cell_keep,gene_keep].copy()
             adata.obs = meta.loc[cell_keep]
