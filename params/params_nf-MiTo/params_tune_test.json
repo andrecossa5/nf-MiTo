@@ -2,8 +2,8 @@
 
     "scLT_system" : "MAESTER",
 
-    "output_folder" : ".../tune",
-    "afm_input" : ".../input_afm.csv",
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/example_mito/results/tune",
+    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/afm_input.csv",
     "filter_dbs" : true,    
     "filter_moran" : true,
     "cell_filter": "filter2",
@@ -15,7 +15,7 @@
     "min_var_quality": 30, 
     "min_frac_negative": 0.2,
     "min_n_positive": [5],
-    "af_confident_detection": [0.02],
+    "af_confident_detection": [0.02, 0.03],
     "min_n_confidently_detected": [5],
     "min_mean_AD_in_positives": [1.25],
     "min_mean_DP_in_positives": 25,
@@ -23,7 +23,7 @@
     "min_AD": [2],
     "min_cell_prevalence": [0.05],
     "t_vanilla": 0,
-    "bin_method": ["MiTo"],
+    "bin_method": ["MiTo", "vanilla"],
     "cassiopeia_solver": "UPMGA",
     "distance_metric" : "weighted_jaccard",
     "k" : 5,

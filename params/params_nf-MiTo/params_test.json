@@ -4,12 +4,15 @@
     "pp_method" : "maegatk",
 
     "raw_data_input_type" : "mitobam",
-    "raw_data_input" : ".../raw_data_input_mitobam.csv",
-    "output_folder" : ".../test",
+    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/raw_data_input_mitobam.csv",
+    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/afm_input.csv",
+    "path_meta" : null,
+    "path_tuning" : null,
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/example_mito/results",
 
-    "ref" : ".../ref",
+    "ref" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/ref",
     "string_MT" : "chrM",
-    "whitelist" : ".../whitelist.txt",
+    "whitelist" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/whitelist.txt",
     "CBs_chunk_size" : 3000, 
     "fgbio_UMI_consensus_mode" : "Identity",
     "fgbio_UMI_consensus_edits" : 0,
@@ -18,7 +21,6 @@
     "fgbio_base_quality" : 30,
     "fgbio_min_alignment_quality" : 60,
 
-    "path_meta" : null,
     "min_nUMIs" : 500,
     "min_n_genes" : 250,
     "max_perc_mt" : 0.15,
