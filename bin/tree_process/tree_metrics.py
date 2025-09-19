@@ -94,7 +94,7 @@ def main():
     metrics['median_RI'] = np.median(mt.ut.RI(tree))
 
     # Bootstrap support
-    df_internal = mt.tl.get_internal_node_stats(tree)
+    df_internal = mt.ut.get_internal_node_stats(tree)
     metrics['median_support'] = df_internal['support'].median()
     if 'MiTo clone' in tree.cell_meta.columns:
         metrics['median_support_mut_clades'] = df_internal.loc[df_internal['clonal_node'],'support'].median()
