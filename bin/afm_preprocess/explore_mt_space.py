@@ -208,7 +208,7 @@ def main():
         'MiTo clone' : \
         plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
     }
-    if args.covariate is not None:
+    if args.covariate is not None and args.covariate != 'null':
         cmaps[args.covariate] = plu.create_palette(
             model.tree.cell_meta, args.covariate, sc.pl.palettes.vega_20_scanpy
         )
