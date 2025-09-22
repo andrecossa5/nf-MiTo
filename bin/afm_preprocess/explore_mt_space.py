@@ -132,7 +132,7 @@ def main():
     df_coverage_input = pd.read_csv(args.coverage_input, index_col=0)
     path_cov = df_coverage_input.loc[args.job_id, 'path']
     sample = df_coverage_input.loc[args.job_id, 'sample']
-    cov = mt.io.read_coverage(path_cov, sample)
+    cov = mt.io.read_coverage(afm_raw, path_cov, sample)
 
     # Filter afm, reduce dimensions
     afm = mt.pp.filter_afm(
