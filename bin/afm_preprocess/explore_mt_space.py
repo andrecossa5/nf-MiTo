@@ -209,13 +209,14 @@ def main():
         plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
     }
     if args.covariate is not None and args.covariate != 'null':
-        cmaps[args.covariate] = plu.create_palette(
-            model.tree.cell_meta, args.covariate, sc.pl.palettes.vega_20_scanpy
+        covariate = args.covariate
+        cmaps[covariate] = plu.create_palette(
+            model.tree.cell_meta, covariate, sc.pl.palettes.vega_20_scanpy
         )
-        afm.uns[f'{args.covariate}_colors'] = list(cmaps[args.covariate].values())
+        afm.uns[f'{covariate}_colors'] = list(cmaps[covariate].values())
 
     fig, ax = plt.subplots(figsize=(9,5))
-    sc.pl.embedding(afm, basis='X_umap', color=args.covariate, ax=ax, show=False, save=False, frameon=False)
+    sc.pl.embedding(afm, basis='X_umap', color='MiTo clone', ax=ax, show=False, save=False, frameon=False)
     fig.subplots_adjust(bottom=.1, top=.9, left=.1, right=.5)
     fig.savefig(f'embeddings.png', dpi=500)
 
