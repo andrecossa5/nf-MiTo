@@ -158,6 +158,9 @@ def main():
     model = mt.tl.MiToTreeAnnotator(tree)
     model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
 
+    # Add annots to afm
+    afm.obs = afm.obs.join(tree.cell_meta[['MiTo clone']])
+
 
     ##
 
@@ -206,13 +209,11 @@ def main():
     # 3. Viz embeddings
     cmaps = {
         'MiTo clone' : \
-        plu.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
+        plu.create_palette(afm.obs, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
     }
     if args.covariate is not None and args.covariate != 'null':
         covariate = args.covariate
-        cmaps[covariate] = plu.create_palette(
-            model.tree.cell_meta, covariate, sc.pl.palettes.vega_20_scanpy
-        )
+        cmaps[covariate] = plu.create_palette(afm.obs, covariate, sc.pl.palettes.vega_20_scanpy, add_na=True)
         afm.uns[f'{covariate}_colors'] = list(cmaps[covariate].values())
 
     fig, ax = plt.subplots(figsize=(9,5))
