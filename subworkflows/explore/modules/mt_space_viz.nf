@@ -18,6 +18,7 @@ process VIZ_MT_SPACE {
 
     // Handle CLI from params-file
     def covariate = params.covariate ? "--covariate ${params.covariate}" : ""
+    def coverage_input = params.coverage_input ? params.coverage_input : ""
     
     script:
     """
@@ -26,6 +27,7 @@ process VIZ_MT_SPACE {
     --path_tuning ${params.path_tuning} \
     --job_id ${job_id} \
     --sample ${sample} \
+    --coverage_input ${coverage_input} \
     --ncores ${task.cpus} \
     --filter_dbs ${params.filter_dbs} \
     ${covariate}

@@ -82,6 +82,13 @@ my_parser.add_argument(
     help='Add filtering for spatial autocorrelation. Default: true.'
 )
 
+my_parser.add_argument(
+    '--coverage_input', 
+    type=str,
+    default=None,
+    help='Path to coverage file. Default: None.'
+)
+
 
 ##
 
@@ -122,8 +129,10 @@ def main():
     afm_raw = mt.pp.filter_baseline(afm_raw)
 
     # Read and format coverage 
-    path_coverage = os.path.join(os.path.dirname(args.path_afm), 'tables', 'coverage.txt.gz')
-    cov = mt.io.read_coverage(path_coverage)
+    df_coverage_input = pd.read_csv(args.coverage_input, index_col=0)
+    path_cov = df_coverage_input.loc[args.job_id, 'path']
+    sample = df_coverage_input.loc[args.job_id, 'sample']
+    cov = mt.io.read_coverage(path_cov, sample)
 
     # Filter afm, reduce dimensions
     afm = mt.pp.filter_afm(

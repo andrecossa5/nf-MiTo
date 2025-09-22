@@ -4,6 +4,7 @@
     "output_folder" : ".../explore",
 
     "afm_input" : ".../input_afm.csv",
+    "coverage_input" : ".../input_coverage.csv",
     "path_tuning" : ".../tune",
     "filter_dbs" : true,
     "covariate": null
