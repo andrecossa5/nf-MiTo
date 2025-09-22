@@ -89,6 +89,13 @@ my_parser.add_argument(
     help='Path to coverage file. Default: None.'
 )
 
+my_parser.add_argument(
+    '--max_fraction_unassigned', 
+    type=str,
+    default=.05,
+    help='Max fraction unassigned cells. Default: 0.05.'
+)
+
 
 ##
 
@@ -149,7 +156,7 @@ def main():
     # Build and annotate tree
     tree = mt.tl.build_tree(afm, precomputed=True)
     model = mt.tl.MiToTreeAnnotator(tree)
-    model.clonal_inference()
+    model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
 
 
     ##
