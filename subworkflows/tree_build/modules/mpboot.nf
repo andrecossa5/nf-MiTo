@@ -20,7 +20,7 @@ process MPBOOT {
     
     script:
     """
-    python ${baseDir}/bin/build_tree/create_fasta.py ${afm}
+    python ${baseDir}/bin/tree_build/create_fasta.py ${afm}
     mpboot -s genotypes.fa
     mv genotypes.fa.treefile rep_${rep}.newick
     """
