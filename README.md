@@ -52,23 +52,21 @@ With a single command, the user can provide its custom:
 and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
 `TUNE`, `EXPLORE`, `INFER`, `-entry <chosen_entrypoint>` option).
 
-## Parameters and configuration
-
-### Parameters
+## Parameters
 
 nf-MiTo implements n=56 parameters controlling one or more of the available entrypoints.
 These parameters are grouped in 8 distinct groups. See also `nextflow.config` and `nextflow_schema.json` 
 for additional type information. 
 
-#### Input/Output parameters
+### Input/Output parameters
 
 Input/Output Options control nf-MiTo pipeline I/O operations.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--raw_data_input_type` | Input data type [`fastq`, `fastq, MAESTER`, `mitobam`] | `mitobam` | |
-| `--raw_data_input` | Raw data CSV file for preprocessing workflows | `–` | 🔄 |
-| `--afm_input` | AFM data CSV file for analysis workflows | `–` | 🧬 |
+| `--raw_data_input` | Raw data CSV file for preprocessing workflows | `–` | ✅ |
+| `--afm_input` | AFM data CSV file for analysis workflows | `–` | ✅ |
 | `--output_folder` | Output directory path | `–` | ✅ |
 | `--path_meta` | Cell metadata file path | `null` | |
 | `--path_tuning` | Tuning results file from TUNE workflow | `null` | |
@@ -88,7 +86,7 @@ Optionally, one can provide its custom cell metadata with the `--path_meta` para
 | cell1_sampleA | ... | ... | 
 | celln_sampleB | ... | ... | 
 
-#### Reference Genome parameters
+### Reference Genome parameters
 
 Input/Output Options control nf-MiTo pipeline I/O operations.
 
@@ -98,14 +96,14 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` | |
 | `--whitelist` | 10x v3 whitelist file | - | ✅ |
 
-#### scLT System parameters
+### scLT System parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` | |
 | `--pp_method` | Preprocessing method | `maegatk` | |
 
-#### Sequencing Data Preprocessing parameters
+### Sequencing Data Preprocessing parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -113,7 +111,7 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--fgbio_min_reads_mito` | Minimum reads required for mitochondrial consensus | `3` | |
 | `--fgbio_base_quality` | Minimum base quality for consensus calling | `30` | |
 
-#### Cell Filtering parameters
+### Cell Filtering parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -124,7 +122,7 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--min_cov` | Minimum coverage | `5` | |
 | `--min_var_quality` | Minimum variant quality | `30` | |
 
-#### Allele Frequency Matrix Preprocessing parameters
+### Allele Frequency Matrix Preprocessing parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -137,7 +135,7 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | |
 | `--bin_method` | Binarization method | `MiTo` | |
 
-#### Phylogeny Reconstruction parameters
+### Phylogeny Reconstruction parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -149,13 +147,14 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--lineage_column` | Metadata column for lineage annotation | `null` | |
 | `--annotate_tree` | Tree annotation method | `MiTo` | |
 
-#### Benchmarking parameters
+### Benchmarking parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--maxK` | Maximum number of clusters for vireo | `15` | |
 
-### Configs
+
+## Configuration
 
 
 
