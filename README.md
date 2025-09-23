@@ -1,22 +1,30 @@
 # nf-MiTo
-**Integrated Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing**
+**Integrated Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing and multi-omics**
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
 
 ## Overview
 
-nf-MiTo is a comprehensive Nextflow pipeline designed for mitochondrial SNV (MT-SNV) based single-cell lineage tracing analysis. The pipeline supports multiple lineage tracing technologies and provides end-to-end analysis from raw sequencing data to phylogenetic reconstruction and annotation.
+nf-MiTo is a flexible Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing (MT-scLT). 
+The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) data, where MT-SNVs are profiled from full lenght 10x cDNA. In particular, nf-MiTo implements end-to-end workflows for coupled analysis of Gene Expression (GEX) and MT-SNVs (MT) data raw sequencing data (.fastq or .bam format):
+
+    1. Preprocessing (raw sequencing data)
+    2. Allele Frequency Matrix (AFM) filtering
+    3. Cell Genotyping
+    4. Calculation of cell-cell distances
+    5. Lineage inference
+
+Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed character matrices of other lineage tracing systems, representing a novel unifying framework for scLT data analysis.
 
 ### Key Features
 
-- **Multiple input formats**: Support for raw FASTQ files, MAESTER data, and pre-aligned mitochondrial BAM files
-- **Flexible lineage tracing systems**: Compatible with MAESTER, RedeeM, Cas9, and scWGS technologies
-- **Comprehensive preprocessing**: Quality control, variant calling, and allele frequency matrix generation
-- **Advanced phylogeny reconstruction**: Multiple tree-building algorithms with bootstrap support
-- **Parameter optimization**: Built-in parameter tuning workflow for optimal variant detection
-- **Benchmarking capabilities**: Compare different methods and parameter sets
-- **Scalable execution**: Support for local, HPC, and cloud environments
+- **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
+- **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, and scWGS systems
+- **Highly optimized methods for MT-scLT data analysis**: MiTo python package functionalities, at scale
+- **Flexible phylogeny reconstruction**: different phylogeny reconstruction algorithms, Transfer Bootstrap support
+- **Estensive parameter optimization**: built-in parameter tuning workflow
+- **Scalable execution**: in local, HPC, and cloud environments
 
 ## Quick Start
 
