@@ -14,6 +14,11 @@ include { process_mitobam } from "../process_mitobam/main"
 // Util to create preprocessing channel
 def createPreprocessingChannel() {
 
+    // Validate required parameters
+    if (!params.raw_data_input) {
+        error "Error: --raw_data_input is required for preprocessing"
+    }
+
     if (params.raw_data_input_type == "fastq") {
 
         // From raw reads, unaligned
@@ -36,7 +41,7 @@ def createPreprocessingChannel() {
             .map { row -> [ row.sample, row.bam, row.cell_barcodes ] }
     }
     else {
-        error 'Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: "fastq", "fastq, MAESTER", or "mitobam".'
+        error "Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: \"fastq\", \"fastq, MAESTER\", or \"mitobam\"."
     }
 
     return ch
