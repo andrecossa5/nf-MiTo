@@ -82,8 +82,9 @@ To be valid, this should be a CSV file indexed with cell barcodes followed by `_
 Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should be in the following form:
 
 | cell | col1 | col2 | 
-| AAC_sampleA | ... | ... | 
-| CAT_sampleB | ... | ... | 
+|-----------|-------------|---------|
+| cell1_sampleA | ... | ... | 
+| celln_sampleB | ... | ... | 
 
 #### Reference Genome Options
 
