@@ -1,4 +1,4 @@
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%nf-MiTo implements **56 parameters** grouped in **8 sections**, matching the schema definitions.522.04.0-brightgreen.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
 
 
