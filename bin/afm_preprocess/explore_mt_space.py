@@ -55,17 +55,10 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--path_dbSNP', 
+    '--filter_dbs', 
     type=str,
-    default=None,
-    help='Path to dbSNP database. Default: None.'
-)
-
-my_parser.add_argument(
-    '--path_REDIdb', 
-    type=str,
-    default=None,
-    help='Path to REDIdb database. Default: None.'
+    default="true",
+    help='Filter MT-SNVs with dbSNP and REDIdb database. Default: true.'
 )
 
 my_parser.add_argument(
@@ -77,16 +70,30 @@ my_parser.add_argument(
 
 my_parser.add_argument(
     '--spatial_metrics', 
-    type=bool,
-    default=0,
-    help='Add spatial metrics. Default: 0.'
+    type=str,
+    default="false",
+    help='Add spatial metrics. Default: false.'
 )
 
 my_parser.add_argument(
-    '--filter_moransI', 
-    type=bool,
-    default=1,
-    help='Add filtering for spatial autocorrelation. Default: False.'
+    '--filter_moran', 
+    type=str,
+    default="true",
+    help='Add filtering for spatial autocorrelation. Default: true.'
+)
+
+my_parser.add_argument(
+    '--coverage_input', 
+    type=str,
+    default=None,
+    help='Path to coverage file. Default: None.'
+)
+
+my_parser.add_argument(
+    '--max_fraction_unassigned', 
+    type=int,
+    default=.05,
+    help='Max fraction unassigned cells. Default: 0.05.'
 )
 
 
@@ -107,9 +114,7 @@ import pandas as pd
 import scanpy as sc
 import mito as mt 
 import matplotlib.pyplot as plt
-from mito.pl.plotting_base import (
-    bar, format_ax, add_cbar, add_legend
-)
+import plotting_utils as plu
 
 ########################################################################
 
@@ -131,14 +136,10 @@ def main():
     afm_raw = mt.pp.filter_baseline(afm_raw)
 
     # Read and format coverage 
-    path_coverage = os.path.join(os.path.dirname(args.path_afm), 'tables', 'coverage.txt.gz')
-    cov = pd.read_csv(path_coverage, header=None)
-    cov.columns = ['pos', 'cell', 'n'] 
-    cov['cell'] = cov['cell'].map(lambda x: f'{x}_{args.sample}')
-    cov = cov.query('cell in @afm_raw.obs_names')
-    cov['cell'] = pd.Categorical(cov['cell'], categories=afm_raw.obs_names)
-    cov['pos'] = pd.Categorical(cov['pos'], categories=range(1,16569+1))
-    cov = cov.pivot_table(index='cell', columns='pos', values='n', fill_value=0)
+    df_coverage_input = pd.read_csv(args.coverage_input, index_col=0)
+    path_cov = df_coverage_input.loc[args.job_id, 'path']
+    sample = df_coverage_input.loc[args.job_id, 'sample']
+    cov = mt.io.read_coverage(afm_raw, path_cov, sample)
 
     # Filter afm, reduce dimensions
     afm = mt.pp.filter_afm(
@@ -150,13 +151,15 @@ def main():
         return_tree=False,
        **kwargs
     )
-    mt.pp.compute_distances(afm, precomputed=True)
     mt.pp.reduce_dimensions(afm)
 
     # Build and annotate tree
     tree = mt.tl.build_tree(afm, precomputed=True)
     model = mt.tl.MiToTreeAnnotator(tree)
-    model.clonal_inference()
+    model.clonal_inference(max_fraction_unassigned=args.max_fraction_unassigned)
+
+    # Add annots to afm
+    afm.obs = afm.obs.join(tree.cell_meta[['MiTo clone']])
 
 
     ##
@@ -171,9 +174,9 @@ def main():
 
     ax = fig.add_subplot(1,4,2)
     xticks = [1,2,4,10,30,90,300,1100]
-    mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, c='#303030', s=2, alpha=.3)
-    mt.pl.plot_ncells_nAD(afm, ax=ax, c='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
-    format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
+    mt.pl.plot_ncells_nAD(afm_raw, ax=ax,  xticks=xticks, color='#303030', s=2, alpha=.3)
+    mt.pl.plot_ncells_nAD(afm, ax=ax, color='#05A8B3', xticks=xticks, s=5, alpha=1, markeredgecolor='k')
+    plu.format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
     mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
@@ -182,9 +185,10 @@ def main():
 
     ax = fig.add_subplot(1,4,4)
     ref_df = mt.ut.load_mt_gene_annot()
-    df_plot = ref_df.query('mut in @afm.var_names')['Symbol'].value_counts().to_frame('n')
-    bar(df_plot, 'n', ax=ax, c='#C0C0C0', edgecolor='k', s=.8)
-    format_ax(ax=ax, xticks=df_plot.index, rotx=90, ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
+    df_plot = ref_df.query('mut in @afm.var_names')
+    plu.counts_plot(df_plot, 'Symbol', width=.8, ax=ax, color='#C0C0C0', edgecolor='k', with_label=False)
+    plu.format_ax(ax=ax, xticks=df_plot.index, rotx=90, 
+                  ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
 
     fig.subplots_adjust(bottom=.25, top=.8, left=.1, right=.9, wspace=.4)
     fig.savefig('MT_SNVs.png', dpi=500)
@@ -205,16 +209,15 @@ def main():
     # 3. Viz embeddings
     cmaps = {
         'MiTo clone' : \
-        mt.pl.create_palette(model.tree.cell_meta, 'MiTo clone', sc.pl.palettes.default_102)
+        plu.create_palette(afm.obs, 'MiTo clone', sc.pl.palettes.default_102, add_na=True)
     }
-    if args.covariate is not None:
-        cmaps[args.covariate] = mt.pl.create_palette(
-            model.tree.cell_meta, args.covariate, sc.pl.palettes.vega_20_scanpy
-        )
-        afm.uns[f'{args.covariate}_colors'] = list(cmaps[args.covariate].values())
+    if args.covariate is not None and args.covariate != 'null':
+        covariate = args.covariate
+        cmaps[covariate] = plu.create_palette(afm.obs, covariate, sc.pl.palettes.vega_20_scanpy, add_na=True)
+        afm.uns[f'{covariate}_colors'] = list(cmaps[covariate].values())
 
     fig, ax = plt.subplots(figsize=(9,5))
-    sc.pl.embedding(afm, basis='X_umap', color=args.covariate, ax=ax, show=False, save=False, frameon=False)
+    sc.pl.embedding(afm, basis='X_umap', color='MiTo clone', ax=ax, show=False, save=False, frameon=False)
     fig.subplots_adjust(bottom=.1, top=.9, left=.1, right=.5)
     fig.savefig(f'embeddings.png', dpi=500)
 
@@ -252,14 +255,12 @@ def main():
         features=list(cmaps.keys()),
         characters=model.ordered_muts, layer='raw',
         categorical_cmaps=cmaps,
-        feature_label_size=10, 
-        feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    add_cbar(
+    plu.add_cbar(
         model.tree.layers['transformed'].values.flatten(), 
         palette='mako', label='AF', 
         ticks_size=8, label_size=9, vmin=.0, vmax=.1,
@@ -273,13 +274,12 @@ def main():
         features=list(cmaps.keys()),
         characters=model.ordered_muts, layer='transformed',
         categorical_cmaps=cmaps,
-        feature_label_size=10, feature_label_offset=2,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
         show_internal=True, 
         internal_node_kwargs={'markersize':8}
     )
-    add_legend(
+    plu.add_legend(
         label='Genotype', ax=axs[1], 
         colors={'REF':'b', 'ALT':'r'}, loc='center left', 
         bbox_to_anchor=(1,.4),

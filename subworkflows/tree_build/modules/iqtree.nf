@@ -11,7 +11,7 @@ process IQTREE {
     tuple val(job_id),
         val(sample), 
         val(rep),
-        val(afm)
+        path(genotypes)
 
     output:
     tuple val(job_id),
@@ -20,9 +20,8 @@ process IQTREE {
     
     script:
     """
-    python ${baseDir}/bin/build_tree/create_fasta.py ${afm}
-    iqtree -s genotypes.fa -m GTR
-    mv genotypes.fa.treefile rep_${rep}.newick
+    iqtree -s ${genotypes} -m GTR
+    mv ${genotypes}.treefile rep_${rep}.newick
     """
 
     stub:

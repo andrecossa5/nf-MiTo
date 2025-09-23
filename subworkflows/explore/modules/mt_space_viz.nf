@@ -17,7 +17,9 @@ process VIZ_MT_SPACE {
     tuple val(job_id), val(sample), path("${job_id}"), emit: plots
 
     // Handle CLI from params-file
-    def covariate = params.covariate ? "--covariate ${params.covariate}" : ""
+    def covariate = params.covariate ? params.covariate : ""
+    def coverage_input = params.coverage_input ? params.coverage_input : ""
+    def max_fraction_unassigned = params.max_fraction_unassigned ? params.max_fraction_unassigned : "0.1"
     
     script:
     """
@@ -26,10 +28,11 @@ process VIZ_MT_SPACE {
     --path_tuning ${params.path_tuning} \
     --job_id ${job_id} \
     --sample ${sample} \
+    --coverage_input ${coverage_input} \
     --ncores ${task.cpus} \
-    --path_dbSNP ${params.path_dbSNP} \
-    --path_REDIdb ${params.path_REDIdb} \
-    ${covariate}
+    --filter_dbs ${params.filter_dbs} \
+    --covariate ${covariate} \
+    --max_fraction_unassigned ${max_fraction_unassigned}
     """
 
     stub:

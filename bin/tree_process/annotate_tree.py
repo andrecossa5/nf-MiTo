@@ -78,9 +78,9 @@ def main():
     # Prep annot
     afm = sc.read(path_afm)
     cell_meta = afm.obs
-    X_raw = pd.DataFrame(afm.X.A, index=afm.obs_names, columns=afm.var_names)
-    X_bin = pd.DataFrame(afm.layers['bin'].A, index=afm.obs_names, columns=afm.var_names)
-    D = pd.DataFrame(afm.obsp['distances'].A, index=afm.obs_names, columns=afm.obs_names)
+    X_raw = pd.DataFrame(afm.X.toarray(), index=afm.obs_names, columns=afm.var_names)
+    X_bin = pd.DataFrame(afm.layers['bin'].toarray(), index=afm.obs_names, columns=afm.var_names)
+    D = pd.DataFrame(afm.obsp['distances'].toarray(), index=afm.obs_names, columns=afm.obs_names)
 
     # Load tree
     tree = mt.io.read_newick(path_tree, X_raw=X_raw, X_bin=X_bin, D=D, meta=cell_meta)

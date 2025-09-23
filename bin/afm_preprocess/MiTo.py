@@ -71,8 +71,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_cov', 
     type=int,
-    default=10,
-    help='Minimum mean coverage of the candidate variant site. Default: 10.'
+    default=5,
+    help='Minimum mean coverage of the candidate variant site. Default: 5.'
 )
 
 my_parser.add_argument(
@@ -92,8 +92,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_n_positive', 
     type=int,
-    default=3,
-    help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 2.'
+    default=5,
+    help='Minimum number of positive (i.e., AF>0) cells to consider a MT-SNV. Default: 5.'
 )
 
 my_parser.add_argument(
@@ -155,7 +155,7 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--gamma', 
     type=float,
-    default=.2,
+    default=.25,
     help='% posterior probability that is smoothed in bin_method==MiTo_smooth. Default: .2.'
 )
 
@@ -209,31 +209,24 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--path_dbSNP', 
+    '--filter_dbs', 
     type=str,
-    default=None,
-    help='Path to dbSNP database. Default: None.'
-)
-
-my_parser.add_argument(
-    '--path_REDIdb', 
-    type=str,
-    default=None,
-    help='Path to REDIdb database. Default: None.'
+    default="true",
+    help='Filter MT-SNVs with dbSNP and REDIdb database. Default: true.'
 )
 
 my_parser.add_argument(
     '--spatial_metrics', 
-    type=bool,
-    default=0,
-    help='Add spatial metrics. Default: 0.'
+    type=str,
+    default="false",
+    help='Add spatial metrics. Default: false.'
 )
 
 my_parser.add_argument(
-    '--filter_moransI', 
-    type=bool,
-    default=1,
-    help='Add filtering for spatial autocorrelation. Default: False.'
+    '--filter_moran', 
+    type=str,
+    default="true",
+    help='Add filtering for spatial autocorrelation. Default: true.'
 )
 
 

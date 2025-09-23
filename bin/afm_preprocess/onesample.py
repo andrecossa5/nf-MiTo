@@ -13,7 +13,7 @@ my_parser = argparse.ArgumentParser(
     prog='onesample',
     description=
     """
-    Prepare input for tree building: character/distance matrices and sequences (.fasta) file.
+    One sample script: fast afm preprocessing, lineage inference and reporting.
     """
 )
 
@@ -36,15 +36,15 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--job_id', 
     type=str,
-    default='job_0',
-    help='job id. Default: job_0.'
+    default=None,
+    help='job id. Default: None.'
 )
 
 my_parser.add_argument(
     '--cell_filter', 
     type=str,
-    default='filter2',
-    help='Cell filtering method. Default: filter2.'
+    default=None,
+    help='Cell filtering method. Default: None.'
 )
 
 my_parser.add_argument(
@@ -58,7 +58,7 @@ my_parser.add_argument(
     '--min_cell_number', 
     type=int,
     default=0,
-    help='Min number of cell in <lineage_column> categories to retain them. Default: 10.'
+    help='Min number of cell in <lineage_column> categories to retain them. Default: 1.'
 )
 
 my_parser.add_argument(
@@ -71,7 +71,7 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_cov', 
     type=int,
-    default=10,
+    default=5,
     help='Minimum site coverage. Default: 10.'
 )
 
@@ -86,14 +86,14 @@ my_parser.add_argument(
     '--min_n_positive', 
     type=int,
     default=5,
-    help='Minimum number of +cells to consider a MT-SNV. Default: 2.'
+    help='Minimum number of +cells to consider a MT-SNV. Default: 5.'
 )
 
 my_parser.add_argument(
     '--af_confident_detection', 
     type=float,
-    default=.01,
-    help='Allelic Frequency of confident detection. Default: .01.'
+    default=.02,
+    help='Allelic Frequency of confident detection. Default: .02.'
 )
 
 my_parser.add_argument(
@@ -106,14 +106,14 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_mean_AD_in_positives', 
     type=float,
-    default=1.5,
+    default=1.25,
     help='Minimum number of mean AD in +cells to consider a MT-SNV. Default: 1.5.'
 )
 
 my_parser.add_argument(
     '--min_mean_DP_in_positives', 
     type=float,
-    default=20,
+    default=25,
     help='Minimum number of mean DP in +cells to consider a MT-SNV. Default: 20.'
 )
 
@@ -155,15 +155,15 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--gamma', 
     type=float,
-    default=.2,
-    help='% posterior probability that is smoothed in bin_method==MiTo_smooth. Default: .2.'
+    default=.25,
+    help='% posterior probability that is smoothed in bin_method==MiTo_smooth. Default: .25.'
 )
 
 my_parser.add_argument(
     '--min_n_var', 
     type=int,
-    default=2,
-    help='Min n variants. Default: 2.'
+    default=1,
+    help='Min n variants. Default: 1.'
 )
 
 my_parser.add_argument(
@@ -183,8 +183,8 @@ my_parser.add_argument(
 my_parser.add_argument(
     '--min_cell_prevalence', 
     type=float,
-    default=1,
-    help='Min number of AD to assign a 0/1 genotype. Default: 1.'
+    default=.1,
+    help='Cell prevalence to use binomial modeling in MiTo genotyping. Default: .1.'
 )
 
 my_parser.add_argument(
@@ -202,38 +202,31 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--path_dbSNP', 
+    '--filter_dbs', 
     type=str,
-    default=None,
-    help='Path to dbSNP database. Default: None.'
+    default="true",
+    help='Filter MT-SNVs with dbSNP and REDIdb database. Default: true.'
 )
 
 my_parser.add_argument(
-    '--path_REDIdb', 
+    '--filter_moran', 
     type=str,
-    default=None,
-    help='Path to REDIdb database. Default: None.'
+    default="true",
+    help='Filter MT-SNVs with spatial auto-correlation. Default: true.'
 )
 
 my_parser.add_argument(
     '--max_fraction_unassigned', 
     type=float,
-    default=.05,
-    help='Max fraction of unassigned cells. Default: .05.'
+    default=.1,
+    help='Max fraction of unassigned cells. Default: .1.'
 )
 
 my_parser.add_argument(
     '--spatial_metrics', 
-    type=bool,
-    default=1,
-    help='Add spatial metrics. Default: 0.'
-)
-
-my_parser.add_argument(
-    '--filter_moransI', 
-    type=bool,
-    default=1,
-    help='Add filtering for spatial autocorrelation. Default: False.'
+    type=str,
+    default="true",
+    help='Add spatial metrics. Default: true.'
 )
 
 
@@ -294,6 +287,8 @@ def main():
     options['filtering'] = kwargs['filtering']
     options['bin_method'] = kwargs['bin_method']
     options['min_n_var'] = kwargs['min_n_var']
+    options['filter_dbs'] = kwargs['filter_dbs']
+    options['filter_moran'] = kwargs['filter_moran']
     options = {
         **options, **filtering_kwargs, **binarization_kwargs, 
         **afm.uns['cell_filter'], **tree_kwargs
@@ -331,6 +326,7 @@ def main():
     metrics.update(afm.uns['dataset_metrics'])
     metrics['n_dbSNP'] = afm.uns['char_filter']['n_dbSNP'] 
     metrics['n_REDIdb'] = afm.uns['char_filter']['n_REDIdb'] 
+    metrics['n_not_autocorrelated'] = afm.uns['char_filter']['n_not_autocorrelated'] 
 
     # Save
     (

@@ -103,8 +103,8 @@ def main():
             meta = meta.query('sample==@sample').copy()  
             cell_keep = list(set(meta.index) & set(adata.obs_names))   
             assert len(cell_keep>0)     
-            adata.var['n_cells'] = (adata.X>0).sum(axis=0).A1
-            adata.var['pct_cells'] = (adata.X>0).sum(axis=0).A1 / adata.shape[0] * 100
+            adata.var['n_cells'] = (adata.X>0).sum(axis=0).toarray()
+            adata.var['pct_cells'] = (adata.X>0).sum(axis=0).toarray() / adata.shape[0] * 100
             gene_keep = adata.var.query('pct_cells>=.01').index
             adata = adata[cell_keep,gene_keep].copy()
             adata.obs = meta.loc[cell_keep]
@@ -118,14 +118,14 @@ def main():
    
         # Basic QC, all samples together (all cells also)
         adata.var["mt"] = adata.var_names.str.startswith("MT-")
-        adata.obs['total_counts'] = adata.X.A.sum(axis=1)
-        adata.obs['n_genes'] = (adata.X.A>0).sum(axis=1)
+        adata.obs['total_counts'] = adata.X.toarray().sum(axis=1)
+        adata.obs['n_genes'] = (adata.X.toarray()>0).sum(axis=1)
         adata.obs['pct_counts_mt'] = (
-            adata[:,adata.var["mt"]].X.A.sum(axis=1) / \
+            adata[:,adata.var["mt"]].X.toarray().sum(axis=1) / \
             (adata.obs['total_counts'].values + .000001)
         )
-        adata.var['n_cells'] = (adata.X.A>0).sum(axis=0)
-        adata.var['pct_cells'] = (adata.X.A>0).sum(axis=0) / adata.shape[0] * 100
+        adata.var['n_cells'] = (adata.X.toarray()>0).sum(axis=0)
+        adata.var['pct_cells'] = (adata.X.toarray()>0).sum(axis=0) / adata.shape[0] * 100
 
         # Filter cells and genes
         query = 'total_counts>=@min_nUMIs and n_genes>=@min_n_genes and pct_counts_mt<=@max_perc_mt'

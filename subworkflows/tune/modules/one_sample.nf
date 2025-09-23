@@ -70,10 +70,10 @@ process ONESAMPLE {
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \
     ${lineage_column} \
-    --ncores ${task.cpus} \
-    --path_dbSNP ${params.path_dbSNP} \
-    --path_REDIdb ${params.path_REDIdb} \
-    ${max_fraction_unassigned}
+    --filter_dbs ${params.filter_dbs} \
+    --filter_moran ${params.filter_moran} \
+    ${max_fraction_unassigned} \
+    --ncores ${task.cpus}
     """
 
     stub:

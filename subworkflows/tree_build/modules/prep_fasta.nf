@@ -1,32 +1,32 @@
-// MPBOOT module
+// PREP_FASTA module
 
 nextflow.enable.dsl = 2
 
-process MPBOOT {
+process PREP_FASTA {
 
     tag "${sample}: ${job_id}, rep=${rep}"
-    label 'phylo'
+    label 'MiTo'
 
     input:
     tuple val(job_id),
         val(sample), 
         val(rep),
-        path(genotypes)
+        val(afm)
 
     output:
     tuple val(job_id),
         val(sample), 
-        path("*.newick"), emit: tree
+        val(rep),
+        path("genotypes.fa"), emit: fasta
     
     script:
     """
-    mpboot -s ${genotypes}
-    mv ${genotypes}.treefile rep_${rep}.newick
+    python ${baseDir}/bin/tree_build/create_fasta.py ${afm}
     """
 
     stub:
     """
-    touch rep_${rep}.newick
+    touch genotypes.fa
     """
 
 }

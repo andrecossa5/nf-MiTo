@@ -21,7 +21,7 @@ process PATH {
     
     script:
     """
-    Rscript ${baseDir}/bin/process_tree/PATH.r ${tree} ${params.path_meta} ${params.lineage_column}
+    Rscript ${baseDir}/bin/tree_process/PATH.r ${tree} ${params.path_meta} ${params.lineage_column}
     """
 
     stub:

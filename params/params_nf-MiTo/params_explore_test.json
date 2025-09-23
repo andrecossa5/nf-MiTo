@@ -4,9 +4,9 @@
     "output_folder" : ".../explore",
 
     "afm_input" : ".../input_afm.csv",
+    "coverage_input" : ".../input_coverage.csv",
     "path_tuning" : ".../tune",
-    "path_dbSNP" : ".../dbSNP_MT.txt",
-    "path_REDIdb" : ".../REDIdb_MT.txt",
+    "filter_dbs" : true,
     "covariate": null
 
 }

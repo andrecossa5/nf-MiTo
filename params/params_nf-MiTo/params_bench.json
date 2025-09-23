@@ -1,0 +1,7 @@
+{ 
+    
+    "afm_input" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/input_files/input_afm_bench.csv",
+    "output_folder" : "/Users/IEO5505/Desktop/MI_TO/nf-MiTo/scratch/results/test",
+    "maxK" : 15
+
+}
