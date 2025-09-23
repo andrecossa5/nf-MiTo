@@ -4,7 +4,6 @@
 nextflow.enable.dsl = 2
 include { PROCESS_TREE } from "./modules/process_tree.nf"
 include { TREE_METRICS } from "./modules/tree_metrics.nf"
-include { PATH } from "./modules/PATH.nf"
 
 // 
  
