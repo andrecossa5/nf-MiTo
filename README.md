@@ -49,90 +49,106 @@ With a single command, the user can provide its custom:
 - Parameters (see ...): `-params-file <params.json>`, 
 - Profiles (see ...): `-profile <chosen_profiles>`
 
-and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (PREPROCESS,
-TUNE, EXPLORE, INFER, `-entry <chosen_entrypoint>` option).
+and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
+`TUNE`, `EXPLORE`, `INFER`, `-entry <chosen_entrypoint>` option).
 
 ## Parameters, inputs, and configs
 
 ### Parameters
 
-nf-MiTo implements n=56 parameters grouped in 8 distinct groups.
+nf-MiTo implements n=56 parameters controlling one or more of the available entrypoints.
+These parameters are grouped in 8 distinct groups. See also `nextflow.config` and `nextflow_schema.json` 
+for additional type information. 
 
 #### Input/Output Options
 
+Input/Output Options control nf-MiTo pipeline I/O operations.
+
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `--raw_data_input_type` | Input data type [fastq, "fastq, MAESTER", mitobam] | `mitobam` | |
-| `--raw_data_input` | Raw data CSV file | - | For PREPROCESS |
-| `--afm_input` | AFM data CSV file | - | For INFER/TUNE/EXPLORE/BENCH |
+| `--raw_data_input_type` | Input data type ["fastq", "fastq, MAESTER", "mitobam"] | "mitobam" | |
+| `--raw_data_input` | Raw data CSV file | - | ✅ |
+| `--afm_input` | AFM data CSV file | - | ✅ |
 | `--output_folder` | Output directory path | - | ✅ |
 | `--path_meta` | Cell metadata file path | `null` | |
 | `--path_tuning` | Tuning results file path | `null` | |
+
+For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
+to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`.
+For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section). 
+The `--output_folder` parameter is always required from the user.
+Optionally, one can provide its custom cell metadata with the `--path_meta` parameter (default is `null`). 
+To be valid, this should be a CSV file indexed with cell barcodes followed by `_<sample name>`. For example,
+Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should be in the following form:
+
+| cell | col1 | col2 | 
+| AAC_sampleA | ... | ... | 
+| CAT_sampleB | ... | ... | 
 
 #### Reference Genome Options
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `--ref` | Reference genome directory | - | For PREPROCESS |
+| `--ref` | Reference genome directory | - | ✅ |
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` | |
-| `--whitelist` | Cell barcode whitelist file | - | For 10x data |
+| `--whitelist` | Cell barcode whitelist file | - | ✅ |
 
 #### scLT System Options
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` |
-| `--pp_method` | Preprocessing method | `maegatk` |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` | |
+| `--pp_method` | Preprocessing method | `maegatk` | |
 
 #### Sequencing Data Preprocessing Options
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--CBs_chunk_size` | Cell barcode chunk size for processing | `3000` |
-| `--fgbio_min_reads_mito` | Minimum reads required for mitochondrial consensus | `3` |
-| `--fgbio_base_quality` | Minimum base quality for consensus calling | `30` |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--CBs_chunk_size` | Cell barcode chunk size for processing | `3000` | |
+| `--fgbio_min_reads_mito` | Minimum reads required for mitochondrial consensus | `3` | |
+| `--fgbio_base_quality` | Minimum base quality for consensus calling | `30` | |
 
 #### Cell Filtering Options
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--min_nUMIs` | Minimum UMIs per cell | `500` |
-| `--min_n_genes` | Minimum genes per cell | `250` |
-| `--max_perc_mt` | Maximum mitochondrial read percentage | `0.15` |
-| `--min_cell_number` | Minimum cells with variant | `5` |
-| `--min_cov` | Minimum coverage | `5` |
-| `--min_var_quality` | Minimum variant quality | `30` |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--min_nUMIs` | Minimum UMIs per cell | `500` | |
+| `--min_n_genes` | Minimum genes per cell | `250` | |
+| `--max_perc_mt` | Maximum mitochondrial read percentage | `0.15` | |
+| `--min_cell_number` | Minimum cells with variant | `5` | |
+| `--min_cov` | Minimum coverage | `5` | |
+| `--min_var_quality` | Minimum variant quality | `30` | |
 
 #### Allele Frequency Matrix Preprocessing Options
 
-| Parameter | Description | Default | Tunable |
-|-----------|-------------|---------|---------|
-| `--min_n_positive` | Minimum positive cells | `5` | ✅ |
-| `--af_confident_detection` | AF threshold for confident detection | `0.02` | ✅ |
-| `--min_n_confidently_detected` | Minimum confidently detected cells | `2` | ✅ |
-| `--min_mean_AD_in_positives` | Minimum mean allelic depth | `1.25` | ✅ |
-| `--t_prob` | Probability threshold | `0.7` | ✅ |
-| `--min_AD` | Minimum allelic depth | `2` | ✅ |
-| `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | ✅ |
-| `--bin_method` | Binarization method | `MiTo` | ✅ |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--min_n_positive` | Minimum positive cells | `5` | |
+| `--af_confident_detection` | AF threshold for confident detection | `0.02` | |
+| `--min_n_confidently_detected` | Minimum confidently detected cells | `2` | |
+| `--min_mean_AD_in_positives` | Minimum mean allelic depth | `1.25` | |
+| `--t_prob` | Probability threshold | `0.7` | |
+| `--min_AD` | Minimum allelic depth | `2` | |
+| `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | |
+| `--bin_method` | Binarization method | `MiTo` | |
 
 #### Phylogeny Reconstruction Options
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--distance_metric` | Distance metric [weighted_jaccard, jaccard, hamming, cosine] | `weighted_jaccard` |
-| `--tree_algorithm` | Algorithm [cassiopeia, iqtree, mpboot] | `cassiopeia` |
-| `--cassiopeia_solver` | Solver [UPMGA, NJ, UPGMA] | `UPMGA` |
-| `--n_boot_replicates` | Bootstrap replicates | `100` |
-| `--boot_strategy` | Bootstrap strategy [feature_resampling, cell_resampling] | `feature_resampling` |
-| `--lineage_column` | Metadata column for lineage annotation | `null` |
-| `--annotate_tree` | Tree annotation method | `MiTo` |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--distance_metric` | Distance metric [weighted_jaccard, jaccard, hamming, cosine] | `weighted_jaccard` | |
+| `--tree_algorithm` | Algorithm [cassiopeia, iqtree, mpboot] | `cassiopeia` | |
+| `--cassiopeia_solver` | Solver [UPMGA, NJ, UPGMA] | `UPMGA` | |
+| `--n_boot_replicates` | Bootstrap replicates | `100` | |
+| `--boot_strategy` | Bootstrap strategy [feature_resampling, cell_resampling] | `feature_resampling` | |
+| `--lineage_column` | Metadata column for lineage annotation | `null` | |
+| `--annotate_tree` | Tree annotation method | `MiTo` | |
 
 #### Benchmarking Options
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--maxK` | Maximum number of clusters for vireo | `15` |
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--maxK` | Maximum number of clusters for vireo | `15` | |
 
 ### Inputs
 
