@@ -24,7 +24,7 @@ Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed chara
 - 📁 **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
 - 🧬 **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, and scWGS systems
 - ⚡ **Highly optimized methods for MT-scLT data analysis**: MiTo python package functionalities, at scale
-- 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction algorithms, Transfer Bootstrap support
+- 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction and boostrap algorithms
 - 🎯 **Estensive parameter optimization**: built-in parameter tuning workflow
 - ☁️ **Scalable execution**: in local, HPC, and cloud environments
 
