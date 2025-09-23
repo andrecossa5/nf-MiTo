@@ -52,7 +52,7 @@ With a single command, the user can provide its custom:
 and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
 `TUNE`, `EXPLORE`, `INFER`, `-entry <chosen_entrypoint>` option).
 
-## Parameters, inputs, and configs
+## Parameters and configuration
 
 ### Parameters
 
@@ -60,7 +60,7 @@ nf-MiTo implements n=56 parameters controlling one or more of the available entr
 These parameters are grouped in 8 distinct groups. See also `nextflow.config` and `nextflow_schema.json` 
 for additional type information. 
 
-#### Input/Output Options
+#### Input/Output parameters
 
 Input/Output Options control nf-MiTo pipeline I/O operations.
 
@@ -74,8 +74,11 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--path_tuning` | Tuning results file path | `null` | |
 
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
-to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`.
-For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section). 
+to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`. \\
+
+
+For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section). \\
+
 The `--output_folder` parameter is always required from the user.
 Optionally, one can provide its custom cell metadata with the `--path_meta` parameter (default is `null`). 
 To be valid, this should be a CSV file indexed with cell barcodes followed by `_<sample name>`. For example,
@@ -86,22 +89,24 @@ Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should b
 | cell1_sampleA | ... | ... | 
 | celln_sampleB | ... | ... | 
 
-#### Reference Genome Options
+#### Reference Genome parameters
+
+Input/Output Options control nf-MiTo pipeline I/O operations.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--ref` | Reference genome directory | - | ✅ |
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` | |
-| `--whitelist` | Cell barcode whitelist file | - | ✅ |
+| `--whitelist` | 10x v3 whitelist file | - | ✅ |
 
-#### scLT System Options
+#### scLT System parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` | |
 | `--pp_method` | Preprocessing method | `maegatk` | |
 
-#### Sequencing Data Preprocessing Options
+#### Sequencing Data Preprocessing parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -109,7 +114,7 @@ Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should b
 | `--fgbio_min_reads_mito` | Minimum reads required for mitochondrial consensus | `3` | |
 | `--fgbio_base_quality` | Minimum base quality for consensus calling | `30` | |
 
-#### Cell Filtering Options
+#### Cell Filtering parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -120,7 +125,7 @@ Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should b
 | `--min_cov` | Minimum coverage | `5` | |
 | `--min_var_quality` | Minimum variant quality | `30` | |
 
-#### Allele Frequency Matrix Preprocessing Options
+#### Allele Frequency Matrix Preprocessing parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -133,7 +138,7 @@ Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should b
 | `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | |
 | `--bin_method` | Binarization method | `MiTo` | |
 
-#### Phylogeny Reconstruction Options
+#### Phylogeny Reconstruction parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
@@ -145,13 +150,11 @@ Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should b
 | `--lineage_column` | Metadata column for lineage annotation | `null` | |
 | `--annotate_tree` | Tree annotation method | `MiTo` | |
 
-#### Benchmarking Options
+#### Benchmarking parameters
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--maxK` | Maximum number of clusters for vireo | `15` | |
-
-### Inputs
 
 ### Configs
 
