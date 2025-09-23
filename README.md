@@ -66,12 +66,12 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
-| `--raw_data_input_type` | Input data type ["fastq", "fastq, MAESTER", "mitobam"] | "mitobam" | |
-| `--raw_data_input` | Raw data CSV file | - | ✅ |
-| `--afm_input` | AFM data CSV file | - | ✅ |
-| `--output_folder` | Output directory path | - | ✅ |
+| `--raw_data_input_type` | Input data type [`fastq`, `fastq, MAESTER`, `mitobam`] | `mitobam` | |
+| `--raw_data_input` | Raw data CSV file for preprocessing workflows | `–` | 🔄 |
+| `--afm_input` | AFM data CSV file for analysis workflows | `–` | 🧬 |
+| `--output_folder` | Output directory path | `–` | ✅ |
 | `--path_meta` | Cell metadata file path | `null` | |
-| `--path_tuning` | Tuning results file path | `null` | |
+| `--path_tuning` | Tuning results file from TUNE workflow | `null` | |
 
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
 to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`.
