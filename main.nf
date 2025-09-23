@@ -1,4 +1,4 @@
-// nf-MiTo, FINAL_TESTS
+// nf-MiTo
 nextflow.enable.dsl = 2
 
 // Preprocess 10x and MT
