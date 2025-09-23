@@ -9,11 +9,11 @@
 nf-MiTo is a flexible Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing (MT-scLT). 
 The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) data, where MT-SNVs are profiled from full lenght 10x cDNA. In particular, nf-MiTo implements end-to-end workflows for coupled analysis of Gene Expression (GEX) and MT-SNVs (MT) data raw sequencing data (.fastq or .bam format):
 
-    1. Preprocessing (raw sequencing data)
-    2. Allele Frequency Matrix (AFM) filtering
-    3. Cell Genotyping
-    4. Calculation of cell-cell distances
-    5. Lineage inference
+1. Preprocessing (raw sequencing data)
+2. Allele Frequency Matrix (AFM) filtering
+3. Cell Genotyping
+4. Calculation of cell-cell distances
+5. Lineage inference
 
 Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed character matrices of other lineage tracing systems, representing a novel unifying framework for scLT data analysis.
 
