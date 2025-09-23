@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://github.com/andrecossa5/nf-MiTo/blob/master/nextflow_schema.json",
     "title": "nf-MiTo pipeline parameters",
-    "description": "Integrated pipeline for MT-SNVs-based single-cell lineage tracing (scLT)",
+    "description": "Integrated pipeline for MT-SNVs-based single-cell lineage tracing",
     "type": "object",
     "definitions": {
         "input_output_options": {
@@ -234,45 +234,43 @@
                 },
                 "min_n_positive": {
                     "type": ["integer", "array"],
-                    "description": "Minimum number of positive cells (single value or array for tuning)",
-                    "default": [5],
+                    "description": "Minimum number of positive cells (single value for INFER, array for TUNE)",
+                    "default": 5,
+                    "minimum": 1,
                     "items": {
                         "type": "integer",
                         "minimum": 1
-                    },
-                    "minimum": 1
+                    }
                 },
                 "af_confident_detection": {
                     "type": ["number", "array"],
-                    "description": "Allele frequency threshold for confident detection (single value or array for tuning)",
-                    "default": [0.02],
-                    "items": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 1
-                    },
+                    "description": "Allele frequency threshold for confident detection (single value for INFER, array for TUNE)",
+                    "default": 0.02,
                     "minimum": 0,
-                    "maximum": 1
-                },
-                "min_n_confidently_detected": {
-                    "type": ["integer", "array"],
-                    "description": "Minimum number of confidently detected variants (single value or array for tuning)",
-                    "default": [5],
-                    "items": {
-                        "type": "integer",
-                        "minimum": 1
-                    },
-                    "minimum": 1
-                },
-                "min_mean_AD_in_positives": {
-                    "type": ["number", "array"],
-                    "description": "Minimum mean allelic depth in positive cells (single value or array for tuning)",
-                    "default": [1.25],
                     "items": {
                         "type": "number",
                         "minimum": 0
-                    },
-                    "minimum": 0
+                    }
+                },
+                "min_n_confidently_detected": {
+                    "type": ["integer", "array"],
+                    "description": "Minimum number of confidently detected positive cells (single value for INFER, array for TUNE)",
+                    "default": 2,
+                    "minimum": 1,
+                    "items": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "min_mean_AD_in_positives": {
+                    "type": ["number", "array"],
+                    "description": "Minimum mean allelic depth in positive cells (single value for INFER, array for TUNE)",
+                    "default": 1.25,
+                    "minimum": 0,
+                    "items": {
+                        "type": "number",
+                        "minimum": 0
+                    }
                 },
                 "min_mean_DP_in_positives": {
                     "type": "number",
@@ -282,37 +280,37 @@
                 },
                 "t_prob": {
                     "type": ["number", "array"],
-                    "description": "Probability threshold (single value or array for tuning)",
-                    "default": [0.7],
+                    "description": "Probability threshold (single value for INFER, array for TUNE)",
+                    "default": 0.7,
+                    "minimum": 0,
+                    "maximum": 1,
                     "items": {
                         "type": "number",
                         "minimum": 0,
                         "maximum": 1
-                    },
-                    "minimum": 0,
-                    "maximum": 1
+                    }
                 },
                 "min_AD": {
                     "type": ["integer", "array"],
-                    "description": "Minimum allelic depth (single value. Array for tuning)",
-                    "default": [2],
+                    "description": "Minimum allelic depth (single value for INFER, array for TUNE)",
+                    "default": 2,
+                    "minimum": 1,
                     "items": {
                         "type": "integer",
-                        "minimum": 0
-                    },
-                    "minimum": 0
+                        "minimum": 1
+                    }
                 },
                 "min_cell_prevalence": {
                     "type": ["number", "array"],
-                    "description": "Minimum cell prevalence for variant (single value. Array for tuning)",
-                    "default": [0.05],
+                    "description": "Minimum cell prevalence for variant (single value for INFER, array for TUNE)",
+                    "default": 0.05,
+                    "minimum": 0,
+                    "maximum": 1,
                     "items": {
                         "type": "number",
                         "minimum": 0,
                         "maximum": 1
-                    },
-                    "minimum": 0,
-                    "maximum": 1
+                    }
                 },
                 "t_vanilla": {
                     "type": "integer",
@@ -322,8 +320,8 @@
                 },
                 "bin_method": {
                     "type": ["string", "array"],
-                    "description": "Binarization method (single value. Array for tuning)",
-                    "default": ["MiTo"],
+                    "description": "Binarization method (single value for INFER, array for TUNE)",
+                    "default": "MiTo",
                     "items": {
                         "type": "string"
                     }
@@ -337,7 +335,7 @@
                 "gamma": {
                     "type": "number",
                     "description": "Gamma parameter",
-                    "default": 0.2,
+                    "default": 0.25,
                     "minimum": 0
                 },
                 "min_n_var": {

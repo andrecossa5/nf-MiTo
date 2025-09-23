@@ -19,20 +19,20 @@ process CASSIOPEIA {
         val(sample), 
         path("*.newick"), emit: tree
     
-    // Handle CLI args
+    script:
+    // Handle CLI from params (only conditional for null-defaulting parameters)
     def path_tuning = params.path_tuning ? "--path_tuning ${params.path_tuning}" : ""
 
-    script:
     """
     python ${baseDir}/bin/tree_build/build_cassiopeia.py \
     --path_afm ${afm} \
-    ${path_tuning} \
     --sample ${sample} \
     --job_id ${job_id} \
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \
     --boot_replicate ${rep} \
-    --ncores ${task.cpus}
+    --ncores ${task.cpus} \
+    ${path_tuning}
     """
 
     stub:

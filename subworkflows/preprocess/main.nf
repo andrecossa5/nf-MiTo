@@ -14,7 +14,6 @@ include { process_mitobam } from "../process_mitobam/main"
 // Util to create preprocessing channel
 def createPreprocessingChannel() {
 
-    // Validate required parameters
     if (!params.raw_data_input) {
         error "Error: --raw_data_input is required for preprocessing"
     }

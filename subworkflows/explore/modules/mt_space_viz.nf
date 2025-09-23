@@ -16,23 +16,24 @@ process VIZ_MT_SPACE {
     output:
     tuple val(job_id), val(sample), path("${job_id}"), emit: plots
 
-    // Handle CLI from params-file
-    def covariate = params.covariate ? params.covariate : ""
-    def coverage_input = params.coverage_input ? params.coverage_input : ""
-    def max_fraction_unassigned = params.max_fraction_unassigned ? params.max_fraction_unassigned : "0.1"
-    
     script:
+    
+    // Handle CLI from params (only conditional for null-defaulting parameters)
+    def covariate = params.covariate ? "--covariate ${params.covariate}" : ""
+    def coverage_input = params.coverage_input ? "--coverage_input ${params.coverage_input}" : ""
+    def path_tuning = params.path_tuning ? "--path_tuning ${params.path_tuning}" : ""
+
     """
     python ${baseDir}/bin/afm_preprocess/explore_mt_space.py \
     --path_afm ${ch_matrix} \
-    --path_tuning ${params.path_tuning} \
     --job_id ${job_id} \
     --sample ${sample} \
-    --coverage_input ${coverage_input} \
     --ncores ${task.cpus} \
     --filter_dbs ${params.filter_dbs} \
-    --covariate ${covariate} \
-    --max_fraction_unassigned ${max_fraction_unassigned}
+    --max_fraction_unassigned ${params.max_fraction_unassigned} \
+    ${path_tuning} \
+    ${coverage_input} \
+    ${covariate}
     """
 
     stub:

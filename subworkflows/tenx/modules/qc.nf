@@ -17,21 +17,19 @@ process QC {
     tuple val(sample_name), path('adata.h5ad'), emit: gene_expression_matrix  
     tuple val(sample_name), path('cell_barcodes.txt'), emit: cell_barcodes    
     
-    // Handle CLI:
-    def min_nUMIs = params.min_nUMIs ? "--min_nUMIs ${params.min_nUMIs}" : ""
-    def min_n_genes = params.min_n_genes ? "--min_n_genes ${params.min_n_genes}" : ""
-    def max_perc_mt = params.max_perc_mt ? "--max_perc_mt ${params.max_perc_mt}" : ""
+    script:
+
+    // Handle CLI from params (only conditional for null-defaulting parameters)
     def path_meta = params.path_meta ? "--path_meta ${params.path_meta}" : ""
 
-    script:
     """
     python ${baseDir}/bin/preprocess/QC.py \
     --input ${filtered} \
     --sample ${sample_name} \
-    ${min_nUMIs} \
-    ${min_n_genes} \
-    ${max_perc_mt} \
-    ${path_meta} 
+    --min_nUMIs ${params.min_nUMIs} \
+    --min_n_genes ${params.min_n_genes} \
+    --max_perc_mt ${params.max_perc_mt} \
+    ${path_meta}
     """
 
     stub: 

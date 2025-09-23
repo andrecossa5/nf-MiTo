@@ -1,0 +1,47 @@
+{
+    "description": "Basic MAESTER analysis with standard parameters",
+    "use_case": "Standard MAESTER lineage tracing experiment with moderate cell counts",
+    
+    "input_output_options": {
+        "raw_data_input_type": "fastq, MAESTER",
+        "output_folder": "results/maester_basic"
+    },
+    
+    "sclt_system_options": {
+        "scLT_system": "MAESTER",
+        "pp_method": "maegatk"
+    },
+    
+    "cell_filtering_options": {
+        "min_nUMIs": 500,
+        "min_n_genes": 250,
+        "max_perc_mt": 0.15,
+        "n_mads": 3
+    },
+    
+    "afm_preprocessing_options": {
+        "filter_dbs": true,
+        "cell_filter": "filter2",
+        "filtering": "MiTo",
+        "min_cell_number": 5,
+        "min_cov": 5,
+        "min_var_quality": 30,
+        "min_n_positive": 5,
+        "af_confident_detection": 0.02,
+        "min_n_confidently_detected": 2,
+        "min_mean_AD_in_positives": 1.25,
+        "t_prob": 0.7,
+        "min_AD": 2,
+        "min_cell_prevalence": 0.05,
+        "bin_method": "MiTo"
+    },
+    
+    "phylogeny_reconstruction_options": {
+        "distance_metric": "weighted_jaccard",
+        "tree_algorithm": "cassiopeia",
+        "cassiopeia_solver": "UPMGA",
+        "n_boot_replicates": 100,
+        "boot_strategy": "feature_resampling",
+        "frac_char_resampling": 0.8
+    }
+}

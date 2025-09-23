@@ -1,0 +1,48 @@
+{
+    "description": "scWGS analysis with mitochondrial focus",
+    "use_case": "Single-cell whole genome sequencing with mitochondrial variant analysis",
+    
+    "input_output_options": {
+        "raw_data_input_type": "mitobam",
+        "output_folder": "results/scwgs_analysis"
+    },
+    
+    "sclt_system_options": {
+        "scLT_system": "scWGS",
+        "pp_method": "maegatk"
+    },
+    
+    "cell_filtering_options": {
+        "min_nUMIs": 1000,
+        "min_n_genes": 500,
+        "max_perc_mt": 0.05,
+        "n_mads": 2
+    },
+    
+    "afm_preprocessing_options": {
+        "filter_dbs": true,
+        "cell_filter": "filter2",
+        "filtering": "MiTo",
+        "spatial_metrics": true,
+        "filter_moran": true,
+        "min_cell_number": 8,
+        "min_cov": 8,
+        "min_var_quality": 35,
+        "min_n_positive": 8,
+        "af_confident_detection": 0.02,
+        "min_n_confidently_detected": 3,
+        "min_mean_AD_in_positives": 1.5,
+        "t_prob": 0.75,
+        "min_AD": 2,
+        "min_cell_prevalence": 0.05,
+        "bin_method": "MiTo"
+    },
+    
+    "phylogeny_reconstruction_options": {
+        "distance_metric": "weighted_jaccard",
+        "tree_algorithm": "iqtree",
+        "n_boot_replicates": 1000,
+        "boot_strategy": "feature_resampling",
+        "support_method": "felsenstein"
+    }
+}

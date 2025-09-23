@@ -18,7 +18,6 @@ def createAFMChannel() {
     if (!params.afm_input) {
         error "Error: --afm_input is required for AFM processing"
     }
-
     ch = Channel.fromPath(params.afm_input)
         .splitCsv(header: true)
         .map { row -> [ row.job_id, row.sample, row.afm ] }

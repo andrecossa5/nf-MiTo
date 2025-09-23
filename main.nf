@@ -24,149 +24,230 @@ if (params.help) {
     nf-MiTo: Integrated pipeline for MT-SNVs-based single-cell lineage tracing
     ==========================================================================
     
-    Usage:
+    DESCRIPTION:
+        nf-MiTo is a comprehensive Nextflow pipeline for mitochondrial SNV-based 
+        single-cell lineage tracing. It supports multiple lineage tracing systems
+        and provides end-to-end analysis from raw data to phylogenetic trees.
+    
+    USAGE:
         nextflow run main.nf [options]
+        nextflow run main.nf -params-file <params.json> [options]
     
     GLOBAL OPTIONS:
-        --help                         Show this help message
-        --version                      Show version information
+        --help                         Show this help message and exit
+        --version                      Show version information and exit
         
-    ENTRY POINTS:
-        -entry PREPROCESS              Run preprocessing only
-        -entry TUNE                    Run parameter tuning
-        -entry EXPLORE                 Run exploratory analysis  
-        -entry INFER                   Run inference workflow (default)
-        -entry BENCH                   Run benchmarking
+    ENTRY POINTS (choose one):
+        [default]                      Full pipeline: preprocess → infer → annotate
+        -entry PREPROCESS              Data preprocessing only (fastq/bam → AFM)
+        -entry TUNE                    Parameter optimization (grid search)
+        -entry EXPLORE                 Exploratory analysis and visualization
+        -entry INFER                   Lineage inference only (AFM → trees)
+        -entry BENCH                   Benchmarking and method comparison
         
-    EXECUTION PROFILES:
-        -profile docker                Use Docker containers
-        -profile singularity           Use Singularity containers
+    EXECUTION PROFILES (choose one or more):
+        -profile docker                Use Docker containers (recommended)
+        -profile singularity           Use Singularity containers (HPC)
         -profile conda                 Use Conda environments
-        -profile local                 Run locally
+        -profile local                 Run locally (dependencies required)
     
     ==========================================================================
     INPUT/OUTPUT OPTIONS:
     ==========================================================================
 
-        --raw_data_input_type          Type of raw input data [fastq, "fastq, MAESTER", mitobam] (default: ${params.raw_data_input_type})
-        --raw_data_input               Path to CSV file containing raw data input information
-        --afm_input                    Path to CSV file containing AFM input information
-        --output_folder                Output directory (REQUIRED)
-        --path_meta                    Path to metadata file (default: ${params.path_meta})
-        --path_tuning                  Path to tuning results file (default: ${params.path_tuning})
+        --raw_data_input_type          Input data format:
+                                         • fastq: Raw FASTQ files
+                                         • "fastq, MAESTER": MAESTER FASTQ files  
+                                         • mitobam: Pre-aligned mitochondrial BAMs
+                                       (default: ${params.raw_data_input_type})
+                                       
+        --raw_data_input               CSV file with raw data paths
+                                       Required for: PREPROCESS entry point
+                                       Format depends on raw_data_input_type
+                                       
+        --afm_input                    CSV file with AFM paths (job_id,sample,afm)
+                                       Required for: TUNE, EXPLORE, INFER, BENCH
+                                       
+        --output_folder                Output directory path (REQUIRED)
+                                       Will be created if it doesn't exist
+                                       
+        --path_meta                    Cell metadata file (optional)
+                                       (default: ${params.path_meta})
+                                       
+        --path_tuning                  Tuning results file from TUNE workflow
+                                       Use after running TUNE to apply optimal params
+                                       (default: ${params.path_tuning})
     
     ==========================================================================
     REFERENCE GENOME OPTIONS:
     ==========================================================================
 
-        --ref                          Path to reference genome directory
-        --string_MT                    Mitochondrial chromosome identifier (default: ${params.string_MT})
-        --whitelist                    Path to cell barcode whitelist file
+        --ref                          Reference genome directory
+                                       Required for: PREPROCESS entry point
+                                       Should contain STAR index files
+                                       
+        --string_MT                    Mitochondrial chromosome name in reference
+                                       Common values: chrM, MT, chrMT
+                                       (default: ${params.string_MT})
+                                       
+        --whitelist                    10x cell barcode whitelist file
+                                       Required for: 10x data preprocessing
+                                       One barcode per line (text file)
     
     ==========================================================================
-    scLT SYSTEM OPTIONS:
+    LINEAGE TRACING SYSTEM:
     ==========================================================================
 
-        --scLT_system                  Single-cell lineage tracing system [MAESTER, RedeeM, Cas9, scWGS] (default: ${params.scLT_system})
-        --pp_method                    Preprocessing method for variant calling (default: ${params.pp_method})
+        --scLT_system                  Technology used for lineage tracing:
+                                         • MAESTER: mitochondrial RNA editing (default)
+                                         • RedeeM: mitochondrial base editing
+                                         • Cas9: CRISPR/Cas9 mitochondrial editing
+                                         • scWGS: single-cell whole genome sequencing
+                                       (default: ${params.scLT_system})
+                                       
+        --pp_method                    Preprocessing method for variant calling
+                                       (default: ${params.pp_method})
     
     ==========================================================================
-    SEQUENCING DATA PREPROCESSING OPTIONS:
+    KEY PARAMETERS FOR VARIANT DETECTION (use TUNE to optimize):
     ==========================================================================
 
-        --CBs_chunk_size               Cell barcode chunk size for processing (default: ${params.CBs_chunk_size})
-        --fgbio_UMI_consensus_mode     fgbio UMI consensus calling strategy (default: ${params.fgbio_UMI_consensus_mode})
-        --fgbio_UMI_consensus_edits    Maximum edit distance for UMI consensus (default: ${params.fgbio_UMI_consensus_edits})
-        --fgbio_min_reads_mito         Minimum reads required for mitochondrial consensus (default: ${params.fgbio_min_reads_mito})
-        --fgbio_base_error_rate_mito   Base error rate for mitochondrial consensus calling (default: ${params.fgbio_base_error_rate_mito})
-        --fgbio_base_quality           Minimum base quality for consensus calling (default: ${params.fgbio_base_quality})
-        --fgbio_min_alignment_quality  Minimum alignment quality score (default: ${params.fgbio_min_alignment_quality})
+        --min_n_positive               Minimum cells with variant for inclusion
+                                       Lower = more sensitive, Higher = more specific
+                                       (default: ${params.min_n_positive})
+                                       
+        --af_confident_detection       Allele frequency threshold for confident detection
+                                       Range: 0.01-0.05, Lower = more sensitive
+                                       (default: ${params.af_confident_detection})
+                                       
+        --t_prob                       Probability threshold for variant calling
+                                       Range: 0.6-0.8, Higher = more stringent
+                                       (default: ${params.t_prob})
+                                       
+        --bin_method                   Binarization method [MiTo, vanilla]
+                                       MiTo recommended for most analyses
+                                       (default: ${params.bin_method})
     
     ==========================================================================
-    CELL FILTERING OPTIONS:
+    PHYLOGENY RECONSTRUCTION:
     ==========================================================================
 
-        --min_nUMIs                    Minimum number of UMIs per cell (default: ${params.min_nUMIs})
-        --min_n_genes                  Minimum number of genes per cell (default: ${params.min_n_genes})
-        --max_perc_mt                  Maximum percentage of mitochondrial reads (default: ${params.max_perc_mt})
-        --n_mads                       Number of median absolute deviations for outlier detection (default: ${params.n_mads})
+        --distance_metric              Distance metric for tree building:
+                                         • weighted_jaccard: best for MT-SNV data
+                                         • jaccard: binary similarity
+                                         • hamming: good for editing systems  
+                                         • cosine: alternative metric
+                                       (default: ${params.distance_metric})
+                                       
+        --tree_algorithm               Tree reconstruction algorithm:
+                                         • cassiopeia: fast, scalable (default)
+                                         • iqtree: maximum likelihood
+                                         • mpboot: fast bootstrapping
+                                       (default: ${params.tree_algorithm})
+                                       
+        --n_boot_replicates            Bootstrap replicates for support values
+                                       More replicates = more accurate support
+                                       (default: ${params.n_boot_replicates})
+                                       
+        --lineage_column               Metadata column for lineage annotation
+                                       Used for tree annotation if available
+                                       (default: ${params.lineage_column})
     
     ==========================================================================
-    ALLELE FREQUENCY MATRIX PREPROCESSING OPTIONS:
+    CELL AND VARIANT FILTERING:
     ==========================================================================
 
-        --filter_dbs                   Filter doublets/blacklisted variants (default: ${params.filter_dbs})
-        --cell_filter                  Cell filtering strategy (default: ${params.cell_filter})
-        --filtering                    Variant filtering method (default: ${params.filtering})
-        --spatial_metrics              Calculate spatial metrics (default: ${params.spatial_metrics})
-        --filter_moran                 Apply Moran's I filtering (default: ${params.filter_moran})
-        --min_cell_number              Minimum number of cells with variant (default: ${params.min_cell_number})
-        --min_cov                      Minimum coverage (default: ${params.min_cov})
+        --min_nUMIs                    Minimum UMIs per cell (default: ${params.min_nUMIs})
+        --min_n_genes                  Minimum genes per cell (default: ${params.min_n_genes})
+        --max_perc_mt                  Maximum mitochondrial read % (default: ${params.max_perc_mt})
+        --min_cov                      Minimum coverage per variant (default: ${params.min_cov})
         --min_var_quality              Minimum variant quality score (default: ${params.min_var_quality})
-        --min_frac_negative            Minimum fraction of negative cells (default: ${params.min_frac_negative})
-        --min_n_positive               Minimum number of positive cells (default: ${params.min_n_positive})
-        --af_confident_detection       Allele frequency threshold for confident detection (default: ${params.af_confident_detection})
-        --min_n_confidently_detected   Minimum number of confidently detected variants (default: ${params.min_n_confidently_detected})
-        --min_mean_AD_in_positives     Minimum mean allelic depth in positive cells (default: ${params.min_mean_AD_in_positives})
-        --min_mean_DP_in_positives     Minimum mean depth in positive cells (default: ${params.min_mean_DP_in_positives})
-        --t_prob                       Probability threshold (default: ${params.t_prob})
-        --min_AD                       Minimum allelic depth (default: ${params.min_AD})
-        --min_cell_prevalence          Minimum cell prevalence for variant (default: ${params.min_cell_prevalence})
-        --t_vanilla                    Vanilla threshold (default: ${params.t_vanilla})
-        --bin_method                   Binarization method (default: ${params.bin_method})
-        --k                            Number of neighbors for kNN (default: ${params.k})
-        --gamma                        Gamma parameter (default: ${params.gamma})
-        --min_n_var                    Minimum number of variants per cell (default: ${params.min_n_var})
-    
-    ==========================================================================
-    PHYLOGENY RECONSTRUCTION OPTIONS:
-    ==========================================================================
-
-        --lineage_column               Column name for lineage annotation (default: ${params.lineage_column})
-        --K                            Number of clusters (default: ${params.K})
-        --distance_metric              Distance metric for phylogenetic analysis [weighted_jaccard, jaccard, hamming, cosine] (default: ${params.distance_metric})
-        --tree_algorithm               Tree reconstruction algorithm [cassiopeia, iqtree, mpboot] (default: ${params.tree_algorithm})
-        --cassiopeia_solver            Cassiopeia tree solver method [UPMGA, NJ, UPGMA] (default: ${params.cassiopeia_solver})
-        --n_boot_replicates            Number of bootstrap replicates (default: ${params.n_boot_replicates})
-        --boot_strategy                Bootstrap strategy [feature_resampling, cell_resampling] (default: ${params.boot_strategy})
-        --frac_char_resampling         Fraction of characters to resample (default: ${params.frac_char_resampling})
-        --support_method               Support calculation method [tbe, felsenstein] (default: ${params.support_method})
-        --annotate_tree                Tree annotation method (default: ${params.annotate_tree})
-        --max_fraction_unassigned      Maximum fraction of unassigned cells (default: ${params.max_fraction_unassigned})
-    
-    ==========================================================================
-    BENCHMARKING OPTIONS:
-    ==========================================================================
-
-        --maxK                         Maximum number of clusters for vireo (default: ${params.maxK})
+        --min_cell_number              Minimum cells per variant (default: ${params.min_cell_number})
     
     ==========================================================================
     EXAMPLES:
     ==========================================================================
     
-    # Run full pipeline with mitobam input:
-    nextflow run main.nf 
-        -profile docker,local \\
+    # Full pipeline with MAESTER data:
+    nextflow run main.nf \\
+        -profile docker \\
         --raw_data_input samples.csv \\
         --output_folder results \\
-        --ref /path/to/reference 
+        --ref /path/to/reference \\
+        --scLT_system MAESTER
     
-    # Run parameter tuning:
-    nextflow run main.nf 
-        -entry TUNE 
-        -profile docker,local \\
+    # Parameter tuning (recommended first step):
+    nextflow run main.nf \\
+        -entry TUNE \\
+        -profile docker \\
         --afm_input afm_jobs.csv \\
         --output_folder tune_results
     
-    # Run inference only:
+    # Inference with optimized parameters:
     nextflow run main.nf \\
         -entry INFER \\
-        -profile docker,local \\
+        -profile docker \\
         --afm_input afm_jobs.csv \\
+        --path_tuning tune_results/optimal_params.csv \\
         --output_folder infer_results
     
+    # Using example parameter files:
+    nextflow run main.nf \\
+        -profile docker \\
+        -params-file params/examples/example_maester_basic.json \\
+        --afm_input afm_jobs.csv
+        
+    # Benchmarking analysis:
+    nextflow run main.nf \\
+        -entry BENCH \\
+        -profile docker \\
+        --afm_input afm_jobs.csv \\
+        --output_folder benchmark_results
+    
     ==========================================================================
-    For more information: https://github.com/andrecossa5/nf-MiTo
+    PARAMETER CONFIGURATION:
+    ==========================================================================
+    
+    Example parameter files are provided in params/examples/:
+        • example_maester_basic.json    - Standard MAESTER analysis
+        • example_high_sensitivity.json - Low-coverage data
+        • example_high_stringency.json  - High-quality data  
+        • example_parameter_tuning.json - Grid search config
+        • example_cas9.json             - Cas9 system settings
+        • example_scwgs.json            - scWGS configuration
+        • example_benchmarking.json     - Benchmarking setup
+    
+    Use: nextflow run main.nf -params-file <example.json> [other options]
+    
+    For detailed parameter guidance, see: docs/parameter_guide.md
+    
+    ==========================================================================
+    WORKFLOW RECOMMENDATIONS:
+    ==========================================================================
+    
+    1. NEW DATASET:
+       Step 1: Run TUNE to optimize parameters
+       Step 2: Run INFER with optimal parameters
+       Step 3: Use EXPLORE for visualization
+    
+    2. ESTABLISHED PROTOCOL:
+       Use example parameter files or previous optimal settings
+       
+    3. METHOD COMPARISON:
+       Use BENCH entry point to compare approaches
+    
+    4. QUICK ANALYSIS:
+       Use example parameter files with INFER entry point
+    
+    ==========================================================================
+    SUPPORT:
+    ==========================================================================
+    
+    Documentation: https://github.com/andrecossa5/nf-MiTo
+    Issues: https://github.com/andrecossa5/nf-MiTo/issues
+    Parameter Guide: docs/parameter_guide.md
+    
+    For all parameters: nextflow run main.nf --help | less
     ==========================================================================
     """.stripIndent()
     exit(0)
