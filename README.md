@@ -1,5 +1,5 @@
 # nf-MiTo
-**Integrated Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing and multi-omics**
+Integrated Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing and multi-omics.
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
