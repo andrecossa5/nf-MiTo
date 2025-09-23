@@ -1,4 +1,4 @@
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%nf-MiTo implements **56 parameters** grouped in **8 sections**, matching the schema definitions.522.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
 
 
@@ -23,90 +23,191 @@ Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed chara
 
 - 📁 **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
 - 🧬 **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, and scWGS systems
-- ⚡ **Highly optimized methods for MT-scLT data analysis**: [MiTo](https://github.com/andrecossa5/MiTo) python package functionalities, at scale
+- ⚡  **Highly optimized methods for MT-scLT data analysis**: [MiTo](https://github.com/andrecossa5/MiTo) python package functionalities, at scale
 - 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction and boostrap algorithms
 - 🎯 **Estensive parameter optimization**: built-in parameter tuning workflow
-- ☁️ **Scalable execution**: in local, HPC, and cloud environments
+- ☁️ **Scalable execution**: local, HPC, and cloud environment support
 
 ## Quick Start
 
 ### Prerequisites
 
 - [Nextflow](https://www.nextflow.io/) (≥22.04.0)
-- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/) or [Conda](https://conda.io/)
+- [Docker](https://www.docker.com/), [Singularity](https://sylabs.io/singularity/) (preferred), or [Conda](https://conda.io/)
 
 ### Basic Usage
 
+nf-MiTo runs on any machine/HPC cluster supporting Docker/Singularity containers:
+
 ```bash
-# Run the full pipeline with mitobam input
-nextflow run main.nf \
-    -profile docker \
-    --raw_data_input samples.csv \
-    --output_folder results \
-    --ref /path/to/reference
-
-# Run parameter tuning
-nextflow run main.nf \
-    -entry TUNE \
-    -profile docker \
-    --afm_input afm_jobs.csv \
-    --output_folder tune_results
-
-# Run inference only  
-nextflow run main.nf \
-    -entry INFER \
-    -profile docker \
-    --afm_input afm_jobs.csv \
-    --output_folder infer_results
+nextflow run main.nf -c <user.config> -params-file <params.json> -profile <chosen_profiles> -entry <chosen_entrypoint>
 ```
 
-## Workflow Modes
+With a single command, the user can provide its custom:
 
-nf-MiTo provides several entry points for different analysis scenarios:
+- Run configuration (see ...): `-c <user.config>`, 
+- Parameters (see ...): `-params-file <params.json>`, 
+- Profiles (see ...): `-profile <chosen_profiles>`
 
-### 1. **PREPROCESS** - Data Preprocessing Only
+and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (PREPROCESS,
+TUNE, EXPLORE, INFER, `-entry <chosen_entrypoint>` option).
+
+## Parameters, inputs, and configs
+
+### Parameters
+
+nf-MiTo implements n=56 parameters grouped in 8 distinct groups.
+
+#### Input/Output Options
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--raw_data_input_type` | Input data type [fastq, "fastq, MAESTER", mitobam] | `mitobam` | |
+| `--raw_data_input` | Raw data CSV file | - | For PREPROCESS |
+| `--afm_input` | AFM data CSV file | - | For INFER/TUNE/EXPLORE/BENCH |
+| `--output_folder` | Output directory path | - | ✅ |
+| `--path_meta` | Cell metadata file path | `null` | |
+| `--path_tuning` | Tuning results file path | `null` | |
+
+#### Reference Genome Options
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `--ref` | Reference genome directory | - | For PREPROCESS |
+| `--string_MT` | Mitochondrial chromosome identifier | `chrM` | |
+| `--whitelist` | Cell barcode whitelist file | - | For 10x data |
+
+#### scLT System Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` |
+| `--pp_method` | Preprocessing method | `maegatk` |
+
+#### Sequencing Data Preprocessing Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--CBs_chunk_size` | Cell barcode chunk size for processing | `3000` |
+| `--fgbio_min_reads_mito` | Minimum reads required for mitochondrial consensus | `3` |
+| `--fgbio_base_quality` | Minimum base quality for consensus calling | `30` |
+
+#### Cell Filtering Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--min_nUMIs` | Minimum UMIs per cell | `500` |
+| `--min_n_genes` | Minimum genes per cell | `250` |
+| `--max_perc_mt` | Maximum mitochondrial read percentage | `0.15` |
+| `--min_cell_number` | Minimum cells with variant | `5` |
+| `--min_cov` | Minimum coverage | `5` |
+| `--min_var_quality` | Minimum variant quality | `30` |
+
+#### Allele Frequency Matrix Preprocessing Options
+
+| Parameter | Description | Default | Tunable |
+|-----------|-------------|---------|---------|
+| `--min_n_positive` | Minimum positive cells | `5` | ✅ |
+| `--af_confident_detection` | AF threshold for confident detection | `0.02` | ✅ |
+| `--min_n_confidently_detected` | Minimum confidently detected cells | `2` | ✅ |
+| `--min_mean_AD_in_positives` | Minimum mean allelic depth | `1.25` | ✅ |
+| `--t_prob` | Probability threshold | `0.7` | ✅ |
+| `--min_AD` | Minimum allelic depth | `2` | ✅ |
+| `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | ✅ |
+| `--bin_method` | Binarization method | `MiTo` | ✅ |
+
+#### Phylogeny Reconstruction Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--distance_metric` | Distance metric [weighted_jaccard, jaccard, hamming, cosine] | `weighted_jaccard` |
+| `--tree_algorithm` | Algorithm [cassiopeia, iqtree, mpboot] | `cassiopeia` |
+| `--cassiopeia_solver` | Solver [UPMGA, NJ, UPGMA] | `UPMGA` |
+| `--n_boot_replicates` | Bootstrap replicates | `100` |
+| `--boot_strategy` | Bootstrap strategy [feature_resampling, cell_resampling] | `feature_resampling` |
+| `--lineage_column` | Metadata column for lineage annotation | `null` |
+| `--annotate_tree` | Tree annotation method | `MiTo` |
+
+#### Benchmarking Options
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--maxK` | Maximum number of clusters for vireo | `15` |
+
+### Inputs
+
+### Configs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Entry points, and associated outputs
+
+Considering 
+nf-MiTo provides several entry points covering different analysis scenarios:
+
+
+### 1 **Default** - end-to-end data workflow
+```bash
+nextflow run main.nf  \
+
+```
+
+### 2. **PREPROCESS** - raw sequencing data preprocessing only
 Processes raw sequencing data through quality control, alignment, and variant calling to generate allele frequency matrices.
 
 ```bash
 nextflow run main.nf -entry PREPROCESS \
-    --raw_data_input samples.csv \
-    --output_folder preprocess_results
+
 ```
 
-### 2. **TUNE** - Parameter Optimization
+### 3. **TUNE** - critical parameter optimization
 Systematically tests different parameter combinations to optimize variant detection for your specific dataset.
 
 ```bash
 nextflow run main.nf -entry TUNE \
-    --afm_input afm_jobs.csv \
-    --output_folder tune_results
+
 ```
 
-### 3. **INFER** - Lineage Inference (Default)
-Performs phylogenetic reconstruction and tree annotation using pre-computed or optimized parameters.
-
-```bash
-nextflow run main.nf -entry INFER \
-    --afm_input afm_jobs.csv \
-    --output_folder infer_results
-```
-
-### 4. **EXPLORE** - Exploratory Analysis
+### 4. **EXPLORE** - alternative MT-SNVs spaces visualization
 Generates comprehensive visualizations and quality metrics for mitochondrial variant space exploration.
 
 ```bash
 nextflow run main.nf -entry EXPLORE \
-    --afm_input afm_jobs.csv \
-    --output_folder explore_results
+
 ```
 
-### 5. **BENCH** - Benchmarking
-Compares different clustering methods and evaluates pipeline performance across parameter sets.
+### 5. **INFER** - lineage inference
+Performs phylogenetic reconstruction and tree annotation using pre-computed or optimized parameters.
 
 ```bash
-nextflow run main.nf -entry BENCH \
-    --afm_input afm_jobs.csv \
-    --output_folder bench_results
+nextflow run main.nf -entry INFER \
+
 ```
 
 ## Input Data Formats
@@ -139,88 +240,13 @@ job1,sample1,/path/to/sample1_afm.csv
 job2,sample2,/path/to/sample2_afm.csv
 ```
 
-## Supported Lineage Tracing Systems
 
-### MAESTER (Default)
-Mitochondrial RNA-editing-based lineage tracing with UMI-based consensus calling.
 
-### RedeeM  
-Mitochondrial base editing system for lineage tracing.
 
-### Cas9
-CRISPR/Cas9-based mitochondrial editing for lineage tracking.
 
-### scWGS
-Single-cell whole genome sequencing with mitochondrial variant focus.
 
-## Configuration Parameters
 
-### Essential Parameters
 
-| Parameter | Description | Default | Required |
-|-----------|-------------|---------|----------|
-| `--output_folder` | Output directory path | - | ✅ |
-| `--raw_data_input` | Raw data CSV file | - | For PREPROCESS |
-| `--afm_input` | AFM data CSV file | - | For INFER/TUNE/EXPLORE/BENCH |
-| `--ref` | Reference genome directory | - | For PREPROCESS |
-
-### Input/Output Options
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--raw_data_input_type` | Input data type [fastq, "fastq, MAESTER", mitobam] | `mitobam` |
-| `--path_meta` | Cell metadata file path | `null` |
-| `--path_tuning` | Tuning results file path | `null` |
-
-### Reference Genome Options
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--string_MT` | Mitochondrial chromosome identifier | `chrM` |
-| `--whitelist` | Cell barcode whitelist file | - |
-
-### Lineage Tracing System
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--scLT_system` | System type [MAESTER, RedeeM, Cas9, scWGS] | `MAESTER` |
-| `--pp_method` | Preprocessing method | `maegatk` |
-
-### Quality Control & Filtering
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--min_nUMIs` | Minimum UMIs per cell | `500` |
-| `--min_n_genes` | Minimum genes per cell | `250` |
-| `--max_perc_mt` | Maximum mitochondrial read percentage | `0.15` |
-| `--min_cell_number` | Minimum cells with variant | `5` |
-| `--min_cov` | Minimum coverage | `5` |
-| `--min_var_quality` | Minimum variant quality | `30` |
-
-### Variant Detection (Key Parameters for Tuning)
-
-| Parameter | Description | Default | Tunable |
-|-----------|-------------|---------|---------|
-| `--min_n_positive` | Minimum positive cells | `5` | ✅ |
-| `--af_confident_detection` | AF threshold for confident detection | `0.02` | ✅ |
-| `--min_n_confidently_detected` | Minimum confidently detected cells | `2` | ✅ |
-| `--min_mean_AD_in_positives` | Minimum mean allelic depth | `1.25` | ✅ |
-| `--t_prob` | Probability threshold | `0.7` | ✅ |
-| `--min_AD` | Minimum allelic depth | `2` | ✅ |
-| `--min_cell_prevalence` | Minimum cell prevalence | `0.05` | ✅ |
-| `--bin_method` | Binarization method | `MiTo` | ✅ |
-
-### Phylogeny Reconstruction
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--distance_metric` | Distance metric [weighted_jaccard, jaccard, hamming, cosine] | `weighted_jaccard` |
-| `--tree_algorithm` | Algorithm [cassiopeia, iqtree, mpboot] | `cassiopeia` |
-| `--cassiopeia_solver` | Solver [UPMGA, NJ, UPGMA] | `UPMGA` |
-| `--n_boot_replicates` | Bootstrap replicates | `100` |
-| `--boot_strategy` | Bootstrap strategy [feature_resampling, cell_resampling] | `feature_resampling` |
-| `--lineage_column` | Metadata column for lineage annotation | `null` |
-| `--annotate_tree` | Tree annotation method | `MiTo` |
 
 ## Parameter Tuning Strategy
 
