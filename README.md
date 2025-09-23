@@ -74,12 +74,13 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | `--path_tuning` | Tuning results file path | `null` | |
 
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
-to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`. \\
+to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`. \
 
 
-For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section). \\
+For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section). \
 
-The `--output_folder` parameter is always required from the user.
+The `--output_folder` parameter is always required from the user. \
+
 Optionally, one can provide its custom cell metadata with the `--path_meta` parameter (default is `null`). 
 To be valid, this should be a CSV file indexed with cell barcodes followed by `_<sample name>`. For example,
 Cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should be in the following form:
