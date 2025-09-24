@@ -63,9 +63,9 @@ workflow preprocess {
             // All 10x and MAESTER MT reads
             tenx_fastqs = ch.filter{it->it[2]=='TENX'}.map{it->tuple(it[0],it[1])}
             maester_fastqs = ch.filter{it->it[2]=='MAESTER'}.map{it->tuple(it[0],it[1])}
-            // tenx(tenx_fastqs)
-            // get_tenx_maester_bam(maester_fastqs, tenx.out.cell_barcodes_QC, tenx.out.bam)
-            // ch_mitobam = get_tenx_maester_bam.out.mitobam
+            tenx(tenx_fastqs)
+            get_tenx_maester_bam(maester_fastqs, tenx.out.cell_barcodes_QC, tenx.out.bam)
+            ch_mitobam = get_tenx_maester_bam.out.mitobam
 
         } else if (params.raw_data_input_type == "fastq, MAESTER") {
 
@@ -88,8 +88,7 @@ workflow preprocess {
         
     emit:
 
-        afm = tenx_fastqs
-        // afm = Channel.of('MiTo.tree').combine(afm)
+        afm = Channel.of('MiTo.tree').combine(afm)
 
 }
 
