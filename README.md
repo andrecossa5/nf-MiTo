@@ -19,6 +19,8 @@ The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) da
 
 Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed character matrices of other lineage tracing systems, representing a novel unifying framework for scLT data analysis.
 
+See our recent pre-print [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for detailed explanations and benchmarks.
+
 ### Key Features
 
 - 📁 **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
@@ -65,21 +67,51 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 | Parameter | Description | Default | Required |
 |-----------|-------------|---------|----------|
 | `--raw_data_input_type` | Input data type [`fastq`, `fastq, MAESTER`, `mitobam`] | `mitobam` | |
-| `--raw_data_input` | Raw data CSV file for preprocessing workflows | `–` | ✅ |
-| `--afm_input` | AFM data CSV file for analysis workflows | `–` | ✅ |
+| `--raw_data_input` | Raw data CSV file, preprocessing workflows | `–` | ✅ |
+| `--afm_input` | AFM data CSV file, inference workflows | `–` | ✅ |
 | `--output_folder` | Output directory path | `–` | ✅ |
 | `--path_meta` | Cell metadata file path | `null` | |
 | `--path_tuning` | Tuning results file from TUNE workflow | `null` | |
 
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
-to raw sequencing data (see inputs section), whose format needs to follow `--raw_data_input_type`.
+to raw sequencing data. 3 alternative inputs are supported here: 
 
+1. `--raw_data_input_type` = `fastq`. The user need to pre-process both GEX and MT sequening data. MT and GEX FASTQs are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
 
-For all the other entrypoints instead, assuming AFMs have already been generated, the required input parameter is `--afm_input`. Accordingly, this parameter points to a CSV file sheet storing IDs and paths to pre-processed AFMs (see inputs section).
+| sample | fastq_folder | library |
+|-----------|-------------|---------|
+| `sample_name` | `FASTQs folder path` | `MT` |
+| `sample_name` | `FASTQs folder path` | `TENX` |
+
+Each sample is linked to a `fastq_folder` for its `MT` and `TENX` (i.e., GEX) library, respectively. 
+
+2. `--raw_data_input_type` = `fastq, MAESTER`. The user is only interested into MT data pre-processing (i.e., GEX data has been analyzed independently). MT FASTQs are passed (`--raw_data_input` parameter) with the following sample sheet (CSV file):
+
+| sample | fastq_folder | cell_barcodes |
+|-----------|-------------|---------|
+| `sample_name` | `MT FASTQs folder path` | `cell_barcodes path` |
+
+Each sample is linked to a `fastq_folder` for its `MT` library, and a `cell_barcodes.txt` file with cell barcodes of interests (e.g., qualified cell barcodes from independent GEX data analysis). Only reads associated to these cell barcodes will be filtered during pre-processing of `MT` library.
+
+3. `--raw_data_input_type` = `mitobam`. The user already has aligned MT libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
+
+| sample | bam | cell_barcodes |
+|-----------|-------------|---------|
+| `sample_name` | `MT bam path` | `cell_barcodes path` |
+
+Each sample is linked to a `MT bam file` for its `MT` library, and a `cell_barcodes.txt` file with cell barcodes of interests.
+
+All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw data pre-processing. Thus, it is assumed that properly formatted AFMs have been generated *before* running these workflows. These AFMs are passed (i.e., `--afm_input`) with the following a sample sheet (CSV file):
+
+| job_id | sample | afm |
+|-----------|-------------|---------|
+| `job_id` | `sample_name` | `AFM path` |
+
+The `job_id` here serve as label links a certain sample (`sample_name`) with a specific AFM (`AFM path`, e.g. from different raw data pre-processing workflows).
 
 The `--output_folder` parameter is always required from the user.
 
-Optionally, one can provide its custom cell metadata with the `--path_meta` parameter (default is `null`). To be valid, this should be a CSV file indexed with cell barcodes followed by `_<sample name>`. For example, cell metadata (col1 and col2 annotations) for sampleA and sampleB cells should be in the following form:
+(Optional) the user can provide its custom cell metadata (`--path_meta` parameter, default is `null`). To be valid, these metadata should be formatted as a CSV file indexed with 10x cell barcodes to which their sample name is appended (`_<sample name>`):
 
 | cell | col1 | col2 | 
 |-----------|-------------|---------|
