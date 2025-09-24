@@ -16,7 +16,7 @@ The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) da
 4. Calculation of cell-cell distances
 5. Lineage inference
 
-Moreover, nf-MiTo supports lineage inference (step 2-5) from pre-processed character matrices of other lineage tracing systems, representing a novel unifying framework for scLT data analysis.
+nf-MiTo supports lineage inference (step 2-5, from pre-processed character matrices) of other lineage tracing systems, including RedeeM (MT-DNA, enriched from 10x multiome libraries), Cas9-based lineage recorders, and single-cell Whole Genome Sequencing data (scWGS), representing a novel unifying framework for scLT data analysis.
 
 See our recent pre-print [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for detailed explanations and benchmarks.
 
@@ -27,6 +27,7 @@ See our recent pre-print [MiTo: tracing the phenotypic evolution of somatic cell
 - ⚡  **Highly optimized methods for MT-scLT data analysis**: [MiTo](https://github.com/andrecossa5/MiTo) python package functionalities, at scale
 - 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction and boostrap algorithms
 - 🎯 **Estensive parameter optimization**: built-in parameter tuning workflow
+- ** Visual Exploration of alternative character spaces and associated trees.
 - ☁️ **Scalable execution**: local, HPC, and cloud environment support
 
 ## Quick Start
@@ -51,7 +52,7 @@ With a single command, the user can provide its custom:
 - Profiles [profiles](https://www.nextflow.io/docs/latest/config.html#config-profiles): `-profile <chosen_profiles>`
 
 and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
-`TUNE`, `EXPLORE`, `INFER`, `-entry <chosen_entrypoint>` option).
+`TUNE`, `EXPLORE`, `INFER`, with the `-entry <chosen_entrypoint>` option).
 
 ## Parameters
 
@@ -228,23 +229,22 @@ Phylogeny Reconstruction parameters control phylogeny reconstruction from filter
 
 See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) Supplementary Informations for details.
 
-
 ## Configuration
+Any custom configuration can be passed with the `-c <user.config>` syntax. See the [`config/user.config`](config/user.config) file.
 
 ## Examples
 
+
 ## Best practices
 
-## Troubleshooting
 
-### Common Issues
+## Troubleshooting
 
 1. **Memory Errors**: Increase memory allocation in configuration
 2. **Input Format Errors**: Validate CSV file structure
 
 ### Support
 
-- **Documentation**: [GitHub Repository](https://github.com/andrecossa5/nf-MiTo)
 - **Issues**: Report bugs via GitHub Issues
 - **Discussions**: Community support via GitHub Discussions
 
