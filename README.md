@@ -233,7 +233,7 @@ See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitocho
 Any custom configuration can be passed with the `-c <user.config>` syntax. See the [`config/user.config`](config/user.config) file.
 
 ## Examples
-
+Exmples 
 
 ## Best practices
 
