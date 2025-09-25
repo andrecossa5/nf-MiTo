@@ -274,7 +274,7 @@ if (!params.output_folder && !params.help && !params.version) {
 //----------------------------------------------------------------------------//
 
 // Debug
-workflow PREPROCESS {
+workflow DEBUG {
 
     ch_preprocessing = createPreprocessingChannel()
     ch_preprocessing.view()
