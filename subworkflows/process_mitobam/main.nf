@@ -45,10 +45,11 @@ workflow process_mitobam {
      
     take:
         ch_mitobam
+        genome
 
     main:
 
-        EXTRACT_FASTA(params.string_MT)
+        EXTRACT_FASTA(params.string_MT, genome)
         SPLIT_BARCODES(ch_mitobam)
         ch_chunks = SPLIT_BARCODES.out.bam_chunks.flatMap { 
             sample_name, bam, file_paths ->

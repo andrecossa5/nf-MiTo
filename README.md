@@ -132,7 +132,7 @@ Reference Genome parameters control nf-MiTo pipeline resources for alignment of 
 | `--reference_genome` | Reference genome FASTA file URL or path | [GENCODE GRCh38.p13](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz) |
 | `--gtf` | GTF annotation file URL or path | [GENCODE v32 GTF](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz) |
 | `--NUMTs_regions` | Nuclear mitochondrial DNA regions BED file URL or path | [hg38 NUMTs blacklist](https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed) |
-| `--10x_whitelist` | 10x Genomics cell barcode whitelist URL or path | [10x v3 whitelist](https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz) |
+| `--tenx_whitelist` | 10x Genomics cell barcode whitelist URL or path | [10x v3 whitelist](https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz) |
 | `--ref` | Reference genome directory | - |
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` |
 | `--whitelist` | 10x v3 whitelist file | - |

@@ -10,7 +10,8 @@ process EXTRACT_FASTA {
     
     input:
     val(pattern)
-    
+    path(genome)
+
     output:
     tuple path("${pattern}.fa"), 
         path("${pattern}.dict"),  
@@ -24,7 +25,7 @@ process EXTRACT_FASTA {
     script:
     """
     echo ">${pattern}" > name.txt
-    sed -n '/^>${pattern}/,/^>/ { /^>/! p }' ${params.ref}/*.fa > fasta.fa
+    sed -n '/^>${pattern}/,/^>/ { /^>/! p }' ${genome} > fasta.fa
     cat name.txt fasta.fa > ${pattern}.fa
     samtools faidx ${pattern}.fa
     samtools dict ${pattern}.fa > ${pattern}.dict

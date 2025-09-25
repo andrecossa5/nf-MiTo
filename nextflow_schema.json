@@ -82,7 +82,7 @@
                     "default": "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed",
                     "help_text": "BED file containing NUMT regions to mask from reference genome."
                 },
-                "10x_whitelist": {
+                "tenx_whitelist": {
                     "type": "string",
                     "description": "10x Genomics cell barcode whitelist URL or path",
                     "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz",

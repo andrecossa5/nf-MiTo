@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 // Subworkflows
 include { prep_resources } from "../prep_resources/main" 
+include { prep_genome } from "../prep_resources/main" 
 include { tenx } from "../tenx/main"
 include { get_tenx_maester_bam } from "../get_mitobam/main" 
 include { get_maester_bam } from "../get_mitobam/main" 
@@ -65,15 +66,16 @@ workflow preprocess {
             prep_resources()
             tenx_fastqs = ch.filter{it->it[2]=='TENX'}.map{it->tuple(it[0],it[1])}
             maester_fastqs = ch.filter{it->it[2]=='MAESTER'}.map{it->tuple(it[0],it[1])}
-            tenx(tenx_fastqs, prep_resources.whitelist, prep_resources.star_index)
+            tenx(tenx_fastqs, prep_resources.out.whitelist, prep_resources.out.star_index)
             get_tenx_maester_bam(
                 maester_fastqs, 
                 tenx.out.cell_barcodes_QC, 
                 tenx.out.bam, 
-                prep_resources.whitelist,
-                prep_resources.star_index
+                prep_resources.out.whitelist,
+                prep_resources.out.star_index
             )
             ch_mitobam = get_tenx_maester_bam.out.mitobam
+            genome = prep_resources.out.genome
 
         } else if (params.raw_data_input_type == "fastq, MAESTER") {
 
@@ -84,20 +86,23 @@ workflow preprocess {
             get_maester_bam(
                 maester_fastqs, 
                 cell_barcodes, 
-                prep_resources.whitelist
-                prep_resources.star_index
+                prep_resources.out.whitelist,
+                prep_resources.out.star_index
             )
             ch_mitobam = get_maester_bam.out.mitobam
+            genome = prep_resources.out.genome
 
         } else if (params.raw_data_input_type == "mitobam") {
 
             // Previously aligned (and filtered for chrM) MT-reads
             ch_mitobam = ch
+            prep_genome()
+            genome = prep_genome.out.genome
 
         }
      
         // Process mitobam, for a list of target cell barcodes
-        process_mitobam(ch_mitobam)
+        process_mitobam(ch_mitobam, genome)
         afm = process_mitobam.out.afm
         
     emit:
