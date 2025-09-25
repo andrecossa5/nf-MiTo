@@ -52,6 +52,42 @@
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options.",
             "properties": {
+                "build_STAR_index": {
+                    "type": "boolean",
+                    "description": "Build STAR index from reference files",
+                    "default": true,
+                    "help_text": "If true, builds STAR index from reference genome and GTF. If false, uses prebuilt index."
+                },
+                "prebuilt_STAR_index": {
+                    "type": "string",
+                    "description": "Path to prebuilt STAR index directory",
+                    "default": null,
+                    "help_text": "Directory containing prebuilt STAR index files. Used when build_STAR_index is false."
+                },
+                "reference_genome": {
+                    "type": "string",
+                    "description": "Reference genome FASTA file URL or path",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz",
+                    "help_text": "URL or path to reference genome FASTA file for STAR index building."
+                },
+                "gtf": {
+                    "type": "string",
+                    "description": "GTF annotation file URL or path",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz",
+                    "help_text": "URL or path to GTF annotation file for STAR index building."
+                },
+                "NUMTs_regions": {
+                    "type": "string",
+                    "description": "Nuclear mitochondrial DNA regions BED file URL or path",
+                    "default": "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed",
+                    "help_text": "BED file containing NUMT regions to mask from reference genome."
+                },
+                "10x_whitelist": {
+                    "type": "string",
+                    "description": "10x Genomics cell barcode whitelist URL or path",
+                    "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz",
+                    "help_text": "URL or path to 10x Genomics v3 cell barcode whitelist file."
+                },
                 "ref": {
                     "type": "string",
                     "description": "Path to reference genome directory",

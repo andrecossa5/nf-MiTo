@@ -10,7 +10,8 @@ apptainer
 nextflow
 ```
 
-**N.B.**: This tutorial assumes you have your own STAR index and downloaded the 10x v3 cellular barcodes whitelist (see [`create_STAR_index.md`](create_STAR_index.md) tutorial).
+**N.B.**: This tutorial assumes that we want to use nf-MiTo built-in genome reference, transcripts annotation, and 10x cellular
+barcodes whitelist. If this is not be the case (e.g., a specific reference genome is needed), we would need to built our own STAR index (see [`create_STAR_index.md`](create_STAR_index.md) tutorial).
 
 # Download data
 
@@ -26,8 +27,10 @@ Untar test_data:
 
 ```bash
 tar -xzf raw_data_test.tar.gz
-tree test_data
 ```
+
+Our `test_data` folder should look like:
+
 ```
 └── test_data
     ├── MAESTER_small
@@ -38,7 +41,7 @@ tree test_data
         └── R2_small.fastq.gz
 ```
 
-We have downloaded paired-end FASTQ files for the MAESTER (MT) and Gene Expression (TENX) libraries of n=5 test cells. These will be our test data for the PREPROCESS entrypoint.
+We have downloaded paired-end FASTQ files for the MAESTER (MT) and TENX (GENX) libraries of n=5 test cells. These will be our test data for the PREPROCESS entrypoint.
 
 # Prep input file
 
@@ -60,8 +63,6 @@ We prep a `user_params.json` file with our custom parameters:
     "raw_data_input_type" : "fastq",
     "raw_data_input" : "<path to --raw_data_input .csv file>",
     "output_folder" : "<path to output folder>",
-    "ref" : "<path to pre-built STAR index>",
-    "whitelist" : "<path to 10x v3 whitelist>"
 }
 ```
 
@@ -91,9 +92,45 @@ We are now ready to launch `nf-MiTo` PREPROCESS.
 nextflow run main.nf -profile docker,local -params-file user_params.json -entry PREPROCESS
 ```
 
-
-
 # Inspect output
+
+The output folder `<path to output folder>` should contain all the following outputs:
+
+```
+└── test
+    ├── adata.h5ad
+    ├── afm_unfiltered.h5ad
+    ├── cell_barcodes.txt
+    ├── MT.preprocess.ouput
+    │   └── tables
+    │       ├── A.txt.gz
+    │       ├── coverage.txt.gz
+    │       ├── C.txt.gz
+    │       ├── depth.txt.gz
+    │       ├── G.txt.gz
+    │       └── T.txt.gz
+    └── Solo.output
+        ├── Aligned.sortedByCoord.out.bam
+        ├── Features.stats
+        ├── filtered
+        │   ├── barcodes.tsv.gz
+        │   ├── features.tsv.gz
+        │   └── matrix.mtx.gz
+        ├── raw
+        │   ├── barcodes.tsv.gz
+        │   ├── features.tsv.gz
+        │   └── matrix.mtx.gz
+        └── Summary.csv
+```
+
+...
+
+
+# Alternative --raw_data_input_type options
+
+
+
+
 
 
 

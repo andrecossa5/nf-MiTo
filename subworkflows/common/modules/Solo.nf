@@ -11,6 +11,8 @@ process SOLO {
 
   input:
   tuple val(sample_name), path(transcript_R1), path(transcript_R2)
+  path(whitelist)
+  path(star_index)
 
   output:
   tuple val(sample_name), path('raw'), emit: raw 
@@ -24,7 +26,7 @@ process SOLO {
   """
   STAR \
     --runThreadN ${task.cpus} \
-    --genomeDir ${params.ref} \
+    --genomeDir ${star_index} \
     --readFilesIn ${transcript_R2} ${transcript_R1} \
     --readFilesCommand zcat \
     --outTmpDir tmp \
@@ -37,7 +39,7 @@ process SOLO {
     --soloCBlen 16 \
     --soloUMIstart 17 \
     --soloUMIlen 12 \
-    --soloCBwhitelist ${params.whitelist} \
+    --soloCBwhitelist ${whitelist} \
     --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
     --soloUMIdedup 1MM_CR \
     --soloCellFilter EmptyDrops_CR 

@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 // Subworkflows
+include { prep_resources } from "../prep_resources/main" 
 include { tenx } from "../tenx/main"
 include { get_tenx_maester_bam } from "../get_mitobam/main" 
 include { get_maester_bam } from "../get_mitobam/main" 
@@ -61,18 +62,31 @@ workflow preprocess {
         if (params.raw_data_input_type == "fastq") {
 
             // All 10x and MAESTER MT reads
+            prep_resources()
             tenx_fastqs = ch.filter{it->it[2]=='TENX'}.map{it->tuple(it[0],it[1])}
             maester_fastqs = ch.filter{it->it[2]=='MAESTER'}.map{it->tuple(it[0],it[1])}
-            tenx(tenx_fastqs)
-            get_tenx_maester_bam(maester_fastqs, tenx.out.cell_barcodes_QC, tenx.out.bam)
+            tenx(tenx_fastqs, prep_resources.whitelist, prep_resources.star_index)
+            get_tenx_maester_bam(
+                maester_fastqs, 
+                tenx.out.cell_barcodes_QC, 
+                tenx.out.bam, 
+                prep_resources.whitelist,
+                prep_resources.star_index
+            )
             ch_mitobam = get_tenx_maester_bam.out.mitobam
 
         } else if (params.raw_data_input_type == "fastq, MAESTER") {
 
             // MAESTER MT reads
+            prep_resources()
             maester_fastqs = ch.map{it->tuple(it[0],it[1])}
             cell_barcodes = ch.map{it->tuple(it[0],it[2])}
-            get_maester_bam(maester_fastqs, cell_barcodes)
+            get_maester_bam(
+                maester_fastqs, 
+                cell_barcodes, 
+                prep_resources.whitelist
+                prep_resources.star_index
+            )
             ch_mitobam = get_maester_bam.out.mitobam
 
         } else if (params.raw_data_input_type == "mitobam") {

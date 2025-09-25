@@ -66,12 +66,15 @@ workflow tenx {
 
     take:
         ch_fastqs
+        whitelist
+        star_index
 
     main:
     
         MERGE_R1(ch_fastqs)
         MERGE_R2(ch_fastqs)
-        SOLO(MERGE_R1.out.R1.combine(MERGE_R2.out.R2, by:0))
+        fastqs = MERGE_R1.out.R1.combine(MERGE_R2.out.R2, by:0)
+        SOLO(fastqs, whitelist, star_index)
         ch_solo = SOLO.out.raw
             .combine(SOLO.out.filtered, by:0)
             .combine(SOLO.out.stats, by:0)

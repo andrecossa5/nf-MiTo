@@ -10,6 +10,12 @@
     "path_tuning" : null,
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/example_mito/results",
 
+    "build_STAR_index" : false,
+    "prebuilt_STAR_index" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/ref",
+    "reference_genome" : "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz",
+    "gtf" : "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz",
+    "NUMTs_regions" : "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed",
+    "10x_whitelist" : "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz",
     "ref" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/ref",
     "string_MT" : "chrM",
     "whitelist" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/whitelist.txt",

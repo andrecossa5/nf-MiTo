@@ -278,7 +278,6 @@ workflow PREPROCESS {
 
     ch_preprocessing = createPreprocessingChannel()
     preprocess(ch_preprocessing)
-    preprocess.out.afm.view()
 
 }
 
