@@ -6,7 +6,7 @@ include { FETCH_WHITELIST } from "./modules/fetch_whitelist.nf"
 include { PREP_GTF } from "./modules/prep_gtf.nf"
 include { PREP_GENOME } from "./modules/prep_genome.nf"
 include { BUILD_INDEX } from "./modules/build_index.nf"
-include { VALIDATE_STAR_INDEX } from "./modules/validate_star_index.nf"
+include { VALIDATE_INDEX } from "./modules/validate_index.nf"
 
 
 //----------------------------------------------------------------------------//
@@ -22,9 +22,9 @@ workflow prep_resources {
 
         if (!params.build_STAR_index && params.prebuilt_STAR_index != null) {
             
-            VALIDATE_STAR_INDEX(params.prebuilt_STAR_index)
-            star_index = VALIDATE_STAR_INDEX.out.star_index
-            genome = VALIDATE_STAR_INDEX.out.genome
+            VALIDATE_INDEX()
+            star_index = VALIDATE_INDEX.out.star_index
+            genome = VALIDATE_INDEX.out.genome
 
         } else {
             

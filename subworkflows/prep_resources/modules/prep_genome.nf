@@ -6,7 +6,6 @@ nextflow.enable.dsl = 2
 
 process PREP_GENOME {
 
-  tag "${sample_name}"
   label 'scLT'
 
   output:

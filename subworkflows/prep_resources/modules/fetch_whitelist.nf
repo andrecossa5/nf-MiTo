@@ -6,7 +6,6 @@ nextflow.enable.dsl = 2
 
 process FETCH_WHITELIST {
 
-  tag "${sample_name}"
   label 'scLT'
 
   output:

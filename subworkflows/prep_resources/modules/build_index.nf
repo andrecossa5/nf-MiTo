@@ -6,7 +6,6 @@ nextflow.enable.dsl = 2
 
 process BUILD_INDEX {
 
-  tag "${sample_name}"
   label 'scLT'
 
   input:
@@ -14,7 +13,7 @@ process BUILD_INDEX {
   path(gtf)
 
   output:
-  path('STAR_index'), emit: STAR_index
+  path('STAR_index'), emit: star_index
 
   script:
   """

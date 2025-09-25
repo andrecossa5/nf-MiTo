@@ -3,15 +3,15 @@
     "scLT_system" : "MAESTER",
     "pp_method" : "maegatk",
 
-    "raw_data_input_type" : "mitobam",
-    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/raw_data_input_mitobam.csv",
+    "raw_data_input_type" : "fastq",
+    "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/raw_data_input_fastq.csv",
     "afm_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/afm_input.csv",
     "path_meta" : null,
     "path_tuning" : null,
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/example_mito/results",
 
     "build_STAR_index" : false,
-    "prebuilt_STAR_index" : "/Users/IEO5505/Desktop/MI_TO/example_mito/resources/ref",
+    "prebuilt_STAR_index" : null,
     "reference_genome" : "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz",
     "gtf" : "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz",
     "NUMTs_regions" : "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed",
