@@ -273,6 +273,14 @@ if (!params.output_folder && !params.help && !params.version) {
 // nf-MiTo complete entry-points
 //----------------------------------------------------------------------------//
 
+// Debug
+workflow PREPROCESS {
+
+    ch_preprocessing = createPreprocessingChannel()
+    ch_preprocessing.view()
+
+}
+
 // Raw data pre-processing
 workflow PREPROCESS {
 

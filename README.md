@@ -77,30 +77,30 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
 to raw sequencing data. 3 alternative inputs are supported here: 
 
-1. `--raw_data_input_type` = `fastq`. The user need to pre-process both GEX and MT sequening data. MT and GEX FASTQs are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
+1. `--raw_data_input_type` = `fastq`. The user need to pre-process both MAESTER and TENX sequening data. MAESTER and TENX FASTQs are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
 
 | sample | fastq_folder | library |
 |-----------|-------------|---------|
-| `sample_name` | `FASTQs folder path` | `MT` |
+| `sample_name` | `FASTQs folder path` | `MAESTER` |
 | `sample_name` | `FASTQs folder path` | `TENX` |
 
-Each sample is linked to a `fastq_folder` for its `MT` and `TENX` (i.e., GEX) library, respectively. 
+Each sample is linked to a `fastq_folder` for its `MAESTER` and `TENX` (i.e., GEX) library, respectively. 
 
-2. `--raw_data_input_type` = `fastq, MAESTER`. The user is only interested into MT data pre-processing (i.e., GEX data has been analyzed independently). MT FASTQs are passed (`--raw_data_input` parameter) with the following sample sheet (CSV file):
+2. `--raw_data_input_type` = `fastq, MAESTER`. The user is only interested into MAESTER data pre-processing (i.e., GEX data has been analyzed independently). MAESTER FASTQs are passed (`--raw_data_input` parameter) with the following sample sheet (CSV file):
 
 | sample | fastq_folder | cell_barcodes |
 |-----------|-------------|---------|
 | `sample_name` | `MT FASTQs folder path` | `cell_barcodes path` |
 
-Each sample is linked to a `fastq_folder` for its `MT` library, and a `cell_barcodes.txt` file with cell barcodes of interests (e.g., qualified cell barcodes from independent GEX data analysis). Only reads associated to these cell barcodes will be filtered during pre-processing of `MT` library.
+Each sample is linked to a `fastq_folder` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests (e.g., qualified cell barcodes from independent GEX data analysis). Only reads associated to these cell barcodes will be filtered during pre-processing of `MAESTER` library.
 
-3. `--raw_data_input_type` = `mitobam`. The user already has aligned MT libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
+3. `--raw_data_input_type` = `mitobam`. The user already has aligned MAESTER libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
 
 | sample | bam | cell_barcodes |
 |-----------|-------------|---------|
 | `sample_name` | `MT bam path` | `cell_barcodes path` |
 
-Each sample is linked to a `MT bam file` for its `MT` library, and a `cell_barcodes.txt` file with cell barcodes of interests. The bam file should have `CB` and `UB` tags, specifying for cell barcode and UMI, respectively.
+Each sample is linked to a `MT bam file` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests. The bam file should have `CB` and `UB` tags, specifying for cell barcode and UMI, respectively.
 
 All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw data pre-processing. Thus, it is assumed that properly formatted AFMs have been generated *before* running these workflows. These AFMs are passed (i.e., `--afm_input`) with the following a sample sheet (CSV file):
 
