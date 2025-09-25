@@ -3,7 +3,7 @@
 // Include here
 nextflow.enable.dsl = 2
 include { FETCH_WHITELIST } from "./modules/fetch_whitelist.nf"
-include { PREP_GTF } from "./modules/prep_gft.nf"
+include { PREP_GTF } from "./modules/prep_gtf.nf"
 include { PREP_GENOME } from "./modules/prep_genome.nf"
 include { BUILD_INDEX } from "./modules/build_index.nf"
 

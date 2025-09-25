@@ -129,10 +129,10 @@ Reference Genome parameters control nf-MiTo pipeline resources for alignment of 
 |-----------|-------------|---------|
 | `--build_STAR_index` | Build STAR index from reference files | `true` |
 | `--prebuilt_STAR_index` | Path to prebuilt STAR index directory | `null` |
-| `--reference_genome` | Reference genome FASTA file URL or path | `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz` |
-| `--gtf` | GTF annotation file URL or path | `https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz` |
-| `--NUMTs_regions` | Nuclear mitochondrial DNA regions BED file URL or path | `https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed` |
-| `--10x_whitelist` | 10x Genomics cell barcode whitelist URL or path | `https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz` |
+| `--reference_genome` | Reference genome FASTA file URL or path | [GENCODE GRCh38.p13](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz) |
+| `--gtf` | GTF annotation file URL or path | [GENCODE v32 GTF](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz) |
+| `--NUMTs_regions` | Nuclear mitochondrial DNA regions BED file URL or path | [hg38 NUMTs blacklist](https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed) |
+| `--10x_whitelist` | 10x Genomics cell barcode whitelist URL or path | [10x v3 whitelist](https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz) |
 | `--ref` | Reference genome directory | - |
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` |
 | `--whitelist` | 10x v3 whitelist file | - |
@@ -236,7 +236,7 @@ Phylogeny Reconstruction parameters control phylogeny reconstruction from filter
 See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) Supplementary Informations for details.
 
 ## Configuration
-Any custom configuration can be passed with the `-c <user.config>` syntax. See the [`config/user.config`](config/user.config) file.
+Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` option. See the [`config/user.config`](config/user.config) file for a minimal example of config file tailored for an HPC environment.
 
 ## Examples
 Exmples 
