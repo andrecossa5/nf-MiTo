@@ -14,6 +14,10 @@ OUTPUT="$2"
 
 echo "Filtering GTF: $INPUT -> $OUTPUT"
 
+# Count gene types in the input GTF
+echo "Gene types found in input GTF:"
+grep -v '^#' "$INPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
+
 # Copy header lines
 grep '^#' "$INPUT" > "$OUTPUT" || true
 
@@ -34,5 +38,9 @@ awk -F'\t' 'BEGIN {OFS="\t"}
         print $0
     }
 }' "$INPUT" >> "$OUTPUT"
+
+# Count gene types in the output GTF
+echo "Gene types retained in filtered GTF:"
+grep -v '^#' "$OUTPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
 
 echo "GTF filtering completed"
