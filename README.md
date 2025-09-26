@@ -14,10 +14,6 @@
     Integrated Nextflow pipeline for mitochondrial SNV-based<br>single-cell lineage tracing and multi-omics
   </p>
   
-  <div style="margin-top: 25px; font-size: 0.9em; color: #cbd5e0; opacity: 0.8;">
-    🔬 Advanced Bioinformatics | ⚡ High Performance | 🌐 Cloud Ready
-  </div>
-  
 </div>
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
