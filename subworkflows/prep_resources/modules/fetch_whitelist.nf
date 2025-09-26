@@ -14,6 +14,7 @@ process FETCH_WHITELIST {
   script:
   """
   wget -O 10x_v3_whitelist.txt.gz ${params.tenx_whitelist}
+  gunzip 10x_v3_whitelist.txt.gz
   """
 
   stub:
