@@ -62,7 +62,7 @@ for additional type information. See also [MiTo: tracing the phenotypic evolutio
 
 ### Input/Output parameters
 
-Input/Output Options control nf-MiTo pipeline I/O operations.
+Input/Output Options control nf-MiTo pipeline I/O operations:
 
 <table>
 <thead>
@@ -119,6 +119,7 @@ Input/Output Options control nf-MiTo pipeline I/O operations.
 </tbody>
 </table>
 
+
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
 to raw sequencing data. 3 alternative inputs are supported here: 
 
@@ -170,15 +171,60 @@ The `--output_folder` parameter is always required from the user.
 
 Reference Genome parameters control nf-MiTo pipeline resources for alignment of sequencing reads. 
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--build_STAR_index` | Build STAR index from reference files | `true` |
-| `--prebuilt_STAR_index` | Path to prebuilt STAR index directory | `null` |
-| `--reference_genome` | Reference genome FASTA file URL or path | [GENCODE GRCh38.p13](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz) |
-| `--gtf` | GTF annotation file URL or path | [GENCODE v32 GTF](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz) |
-| `--NUMTs_regions` | Nuclear mitochondrial DNA regions BED file URL or path | [hg38 NUMTs blacklist](https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed) |
-| `--tenx_whitelist` | 10x Genomics cell barcode whitelist URL or path | [10x v3 whitelist](https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz) |
-| `--string_MT` | Mitochondrial chromosome identifier | `chrM` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--build_STAR_index</code></td>
+<td align="left">Build STAR index from reference files</td>
+<td align="left"><code>true</code></td>
+<td align="left">Boolean</td>
+</tr>
+<tr>
+<td align="left"><code>--prebuilt_STAR_index</code></td>
+<td align="left">Path to prebuilt STAR index directory</td>
+<td align="left"><code>null</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
+<td align="left"><code>--reference_genome</code></td>
+<td align="left">Reference genome FASTA file URL or path</td>
+<td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz">GENCODE GRCh38.p13</a></td>
+<td align="left">Path/URL</td>
+</tr>
+<tr>
+<td align="left"><code>--gtf</code></td>
+<td align="left">GTF annotation file URL or path</td>
+<td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz">GENCODE v32 GTF</a></td>
+<td align="left">Path/URL</td>
+</tr>
+<tr>
+<td align="left"><code>--NUMTs_regions</code></td>
+<td align="left">Nuclear mitochondrial DNA regions BED file URL or path</td>
+<td align="left"><a href="https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed">hg38 NUMTs blacklist</a></td>
+<td align="left">Path/URL</td>
+</tr>
+<tr>
+<td align="left"><code>--tenx_whitelist</code></td>
+<td align="left">10x Genomics cell barcode whitelist URL or path</td>
+<td align="left"><a href="https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz">10x v3 whitelist</a></td>
+<td align="left">Path/URL</td>
+</tr>
+<tr>
+<td align="left"><code>--string_MT</code></td>
+<td align="left">Mitochondrial chromosome identifier</td>
+<td align="left"><code>chrM</code></td>
+<td align="left">String</td>
+</tr>
+</tbody>
+</table>
 
 By default, nf-MiTo pulls a reference genome and its annotations from Gencode, and build a STAR index from scratch (i.e., `--build_STAR_index` = `true`). In alternative custom genomes and annotations can be passed (i.e., downloadable URLs, `--reference_genome` and `--gtf` options), or, one can pre-build its own STAR index, and then pass it with the `--prebuilt_STAR_index` option (see the [PREPROCESS](docs/PREPROCESS.md) and [create_STAR_index](docs/create_STAR_index.md) tutorials). 
 
@@ -187,10 +233,30 @@ By default, nf-MiTo pulls a reference genome and its annotations from Gencode, a
 scLT system parameters specify for the scLT system at hand, and (if `--scLT_system` = `MAESTER`) the chosen
 pre-processing tool.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--scLT_system` | scLT system [`MAESTER`, `RedeeM`, `Cas9`, `scWGS`] | `MAESTER` | |
-| `--pp_method` | Preprocessing method [`magatk`, `mito_preprocessing`, `cellsnp-lite`, `samtools`, `freebayes`] | `maegatk` | |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--scLT_system</code></td>
+<td align="left">scLT system [<code>MAESTER</code>, <code>RedeeM</code>, <code>Cas9</code>, <code>scWGS</code>]</td>
+<td align="left"><code>MAESTER</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--pp_method</code></td>
+<td align="left">Preprocessing method [<code>magatk</code>, <code>mito_preprocessing</code>, <code>cellsnp-lite</code>, <code>samtools</code>, <code>freebayes</code>]</td>
+<td align="left"><code>maegatk</code></td>
+<td align="left">String</td>
+</tr>
+</tbody>
+</table>
 
 If `--scLT_system` != `MAESTER`, AFMs needs to be generated with MiTo utilities. See ... vignette.
 
@@ -198,15 +264,60 @@ If `--scLT_system` != `MAESTER`, AFMs needs to be generated with MiTo utilities.
 
 Sequencing Data Preprocessing parameters control how MT-reads are pre-processed (i.e., main workflow or PREPROCESS entrypoint).
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--CBs_chunk_size` | Cell barcodes chunk size | `3000` |
-| `--fgbio_UMI_consensus_mode` | UMI-based read grouping strategy | `Identity` |
-| `--fgbio_UMI_consensus_edits` | Max UMI edit distance for read grouping  | `0` |
-| `--fgbio_min_reads_mito` | Min reads for consensus sequence generation | `3` |
-| `--fgbio_base_error_rate_mito` | Max fraction of discordant bases in a read group | `0.25` |
-| `--fgbio_base_quality` | Min base-calling quality of consensus bases | `30` |
-| `--fgbio_min_alignment_quality` | Minimum alignment quality of consensus reads | `60` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--CBs_chunk_size</code></td>
+<td align="left">Cell barcodes chunk size</td>
+<td align="left"><code>3000</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_UMI_consensus_mode</code></td>
+<td align="left">UMI-based read grouping strategy</td>
+<td align="left"><code>Identity</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_UMI_consensus_edits</code></td>
+<td align="left">Max UMI edit distance for read grouping</td>
+<td align="left"><code>0</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_min_reads_mito</code></td>
+<td align="left">Min reads for consensus sequence generation</td>
+<td align="left"><code>3</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_base_error_rate_mito</code></td>
+<td align="left">Max fraction of discordant bases in a read group</td>
+<td align="left"><code>0.25</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_base_quality</code></td>
+<td align="left">Min base-calling quality of consensus bases</td>
+<td align="left"><code>30</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--fgbio_min_alignment_quality</code></td>
+<td align="left">Minimum alignment quality of consensus reads</td>
+<td align="left"><code>60</code></td>
+<td align="left">Integer</td>
+</tr>
+</tbody>
+</table>
 
 `--CBs_chunk_size` sets the chunk size (i.e., number of cell barcodes) into which the MT-library 
 bam file is splitted for parallel pre-processing. All the other parameters control how single-cell
@@ -216,13 +327,48 @@ MT-libraries are processed (N.B. when `--pp_method` is `maegatk` or `mito_prepro
 
 Cell Filtering parameters parameters specify for cell Quality Control (QC) operations.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--min_nUMIs` | Minimum UMIs per cell | `500` |
-| `--min_n_genes` | Minimum genes per cell | `250` |
-| `--max_perc_mt` | Maximum mitochondrial read percentage | `0.15` |
-| `--n_mads` | n MADs | 3 |
-| `--cell_filter` | MT-library filtering strategy [`null`, `filter1`, `filter2`]  | `filter2` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--min_nUMIs</code></td>
+<td align="left">Minimum UMIs per cell</td>
+<td align="left"><code>500</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--min_n_genes</code></td>
+<td align="left">Minimum genes per cell</td>
+<td align="left"><code>250</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--max_perc_mt</code></td>
+<td align="left">Maximum mitochondrial read percentage</td>
+<td align="left"><code>0.15</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--n_mads</code></td>
+<td align="left">n MADs</td>
+<td align="left"><code>3</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--cell_filter</code></td>
+<td align="left">MT-library filtering strategy [<code>null</code>, <code>filter1</code>, <code>filter2</code>]</td>
+<td align="left"><code>filter2</code></td>
+<td align="left">String</td>
+</tr>
+</tbody>
+</table>
 
 `--min_nUMIs`, `--min_n_genes`, `--max_perc_mt` and `--n_mads` are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* `--raw_input_data_type` = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (`--n_mads` * MADs, Median Absolute Deviations).
 
@@ -233,26 +379,126 @@ On the contrary, the `--cell_filter` parameter is used across all workflows, and
 Allele Frequency Matrix Preprocessing parameters control how the AFM generated after raw reads pre-processing
 is filtered and how cell genotypes are assigned.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--filtering` | MT-SNVs filtering method [`null`, `MiTo`, `MQuad`] | `MiTo` |
-| `--filter_dbs` | MT-SNVs database filtering | `true` |
-| `--spatial_metrics` | Spatial metrics calculation | `false` |
-| `--filter_moran` | Spatially segregated MT-SNVs filtering | `true` |
-| `--min_cov` | Min MT-SNV site coverage | `5` |
-| `--min_var_quality` | Min (average) ALT allele base-calling quality | `30` |
-| `--min_frac_negative` | Min fraction of negative cells | `0.2` |
-| `--min_n_positive` | Min n of positive cells | `5` |
-| `--af_confident_detection` | AF threshold for "confident" detection | `0.02` |
-| `--min_n_confidently_detected` | Min n of confidently detected cells | `2` |
-| `--min_mean_AD_in_positives` | Min mean AD in +cells | `1.25` |
-| `--min_mean_DP_in_positives` | Min mean DP in +cells | `25` |
-| `--t_prob` | Probability threshold for MiTo genotyping | `0.7` |
-| `--min_AD` | Minimum allelic depth | `2` |
-| `--min_cell_prevalence` | Min MT-SNV prevalence for MiTo genotyping | `0.05` |
-| `--t_vanilla` | AF threshold for vanilla genotyping | `0` |
-| `--bin_method` | Genotyping method [`MiTo`, `vanilla`] | `MiTo` |
-| `--min_n_var` | Minimum number of variants per cell | `1` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--filtering</code></td>
+<td align="left">MT-SNVs filtering method [<code>null</code>, <code>MiTo</code>, <code>MQuad</code>]</td>
+<td align="left"><code>MiTo</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--filter_dbs</code></td>
+<td align="left">MT-SNVs database filtering</td>
+<td align="left"><code>true</code></td>
+<td align="left">Boolean</td>
+</tr>
+<tr>
+<td align="left"><code>--spatial_metrics</code></td>
+<td align="left">Spatial metrics calculation</td>
+<td align="left"><code>false</code></td>
+<td align="left">Boolean</td>
+</tr>
+<tr>
+<td align="left"><code>--filter_moran</code></td>
+<td align="left">Spatially segregated MT-SNVs filtering</td>
+<td align="left"><code>true</code></td>
+<td align="left">Boolean</td>
+</tr>
+<tr>
+<td align="left"><code>--min_cov</code></td>
+<td align="left">Min MT-SNV site coverage</td>
+<td align="left"><code>5</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--min_var_quality</code></td>
+<td align="left">Min (average) ALT allele base-calling quality</td>
+<td align="left"><code>30</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--min_frac_negative</code></td>
+<td align="left">Min fraction of negative cells</td>
+<td align="left"><code>0.2</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--min_n_positive</code></td>
+<td align="left">Min n of positive cells</td>
+<td align="left"><code>5</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--af_confident_detection</code></td>
+<td align="left">AF threshold for "confident" detection</td>
+<td align="left"><code>0.02</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--min_n_confidently_detected</code></td>
+<td align="left">Min n of confidently detected cells</td>
+<td align="left"><code>2</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--min_mean_AD_in_positives</code></td>
+<td align="left">Min mean AD in +cells</td>
+<td align="left"><code>1.25</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--min_mean_DP_in_positives</code></td>
+<td align="left">Min mean DP in +cells</td>
+<td align="left"><code>25</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--t_prob</code></td>
+<td align="left">Probability threshold for MiTo genotyping</td>
+<td align="left"><code>0.7</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--min_AD</code></td>
+<td align="left">Minimum allelic depth</td>
+<td align="left"><code>2</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--min_cell_prevalence</code></td>
+<td align="left">Min MT-SNV prevalence for MiTo genotyping</td>
+<td align="left"><code>0.05</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--t_vanilla</code></td>
+<td align="left">AF threshold for vanilla genotyping</td>
+<td align="left"><code>0</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--bin_method</code></td>
+<td align="left">Genotyping method [<code>MiTo</code>, <code>vanilla</code>]</td>
+<td align="left"><code>MiTo</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--min_n_var</code></td>
+<td align="left">Minimum number of variants per cell</td>
+<td align="left"><code>1</code></td>
+<td align="left">Integer</td>
+</tr>
+</tbody>
+</table>
 
 `--min_cov`, `--min_var_quality`, `--min_frac_negative`, `--min_n_positive`, `--af_confident_detection`, `--min_n_confidently_detected`, `--min_mean_AD_in_positives`, `--min_mean_DP_in_positives` are active if `--filtering` = `MiTo`. Otherwise all AFM characters are retained (`--filtering` = `null`) or MT-SNVs filtering is performed with the MQuad method (`--filtering` = `MQuad`). 
 
@@ -260,17 +506,72 @@ is filtered and how cell genotypes are assigned.
 
 Phylogeny Reconstruction parameters control phylogeny reconstruction from filtered character matrices.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--distance_metric` | Distance metric [`weighted_jaccard`, `jaccard`, `correlation`, `cosine`] | `weighted_jaccard` |
-| `--tree_algorithm` | Algorithm [`cassiopeia`, `iqtree`, `mpboot`] | `cassiopeia` |
-| `--cassiopeia_solver` | Solver [`UPMGA`, `NJ`, `spectral`, `shared_muts`, `greedy`, `max_cut`] | `UPMGA` |
-| `--n_boot_replicates` | Bootstrap replicates | `100` |
-| `--boot_strategy` | Bootstrap strategy [`feature_resampling`, `jacknife`] | `feature_resampling` |
-| `--frac_char_resampling` | % resampled characters | `0.8` |
-| `--support_method` | Support method [`tbe`, `fbp`] | `tbe` |
-| `--annotate_tree` | Tree annotation method | `MiTo` |
-| `--max_fraction_unassigned` | Tree annotation method | `0.1` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--distance_metric</code></td>
+<td align="left">Distance metric [<code>weighted_jaccard</code>, <code>jaccard</code>, <code>correlation</code>, <code>cosine</code>]</td>
+<td align="left"><code>weighted_jaccard</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--tree_algorithm</code></td>
+<td align="left">Algorithm [<code>cassiopeia</code>, <code>iqtree</code>, <code>mpboot</code>]</td>
+<td align="left"><code>cassiopeia</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--cassiopeia_solver</code></td>
+<td align="left">Solver [<code>UPMGA</code>, <code>NJ</code>, <code>spectral</code>, <code>shared_muts</code>, <code>greedy</code>, <code>max_cut</code>]</td>
+<td align="left"><code>UPMGA</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--n_boot_replicates</code></td>
+<td align="left">Bootstrap replicates</td>
+<td align="left"><code>100</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left"><code>--boot_strategy</code></td>
+<td align="left">Bootstrap strategy [<code>feature_resampling</code>, <code>jacknife</code>]</td>
+<td align="left"><code>feature_resampling</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--frac_char_resampling</code></td>
+<td align="left">% resampled characters</td>
+<td align="left"><code>0.8</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
+<td align="left"><code>--support_method</code></td>
+<td align="left">Support method [<code>tbe</code>, <code>fbp</code>]</td>
+<td align="left"><code>tbe</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--annotate_tree</code></td>
+<td align="left">Tree annotation method</td>
+<td align="left"><code>MiTo</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--max_fraction_unassigned</code></td>
+<td align="left">Max fraction of unassigned cells</td>
+<td align="left"><code>0.1</code></td>
+<td align="left">Float</td>
+</tr>
+</tbody>
+</table>
 
 ## Configuration
 Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` option. See the [`config/user.config`](config/user.config) file for a minimal example for an HPC environment.
