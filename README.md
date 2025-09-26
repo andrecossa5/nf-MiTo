@@ -45,20 +45,20 @@ nf-MiTo runs on any machine/HPC cluster supporting Docker/Singularity containers
 nextflow run main.nf -c <user.config> -params-file <params.json> -profile <chosen_profiles> -entry <chosen_entrypoint>
 ```
 
-With a single command, the user can provide its custom:
+With a single command, the user can specify for custom:
 
-- Run [configuration](https://www.nextflow.io/docs/latest/config.html): `-c <user.config>`, 
-- Parameters [parameters](https://www.nextflow.io/docs/latest/config.html#parameters): `-params-file <params.json>`, 
-- Profiles [profiles](https://www.nextflow.io/docs/latest/config.html#config-profiles): `-profile <chosen_profiles>`
+- Run configs: `-c <user.config>`, 
+- Parameters: `-params-file <params.json>`, 
+- Profiles: `-profile <chosen_profiles>`
 
 and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
-`TUNE`, `EXPLORE`, `INFER`, with the `-entry <chosen_entrypoint>` option).
+`TUNE`, `EXPLORE`, `INFER`, with the `-entry <chosen_entrypoint>` option). See [configuration](https://www.nextflow.io/docs/latest/config.html) for details.
 
 ## Parameters
 
-nf-MiTo implements n=56 parameters controlling one or more of the available entrypoints.
-These parameters are grouped in 8 distinct groups. See also `nextflow.config` and `nextflow_schema.json` 
-for additional type information. 
+nf-MiTo implements n=... parameters controlling one or more of the available entrypoints. 
+These parameters are grouped in 8 distinct groups. See `nextflow.config` and `nextflow_schema.json` 
+for additional type information. See also [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) main text and Supplementary Informations for detailed benchmarks.
 
 ### Input/Output parameters
 
@@ -133,15 +133,9 @@ Reference Genome parameters control nf-MiTo pipeline resources for alignment of 
 | `--gtf` | GTF annotation file URL or path | [GENCODE v32 GTF](https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz) |
 | `--NUMTs_regions` | Nuclear mitochondrial DNA regions BED file URL or path | [hg38 NUMTs blacklist](https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed) |
 | `--tenx_whitelist` | 10x Genomics cell barcode whitelist URL or path | [10x v3 whitelist](https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz) |
-| `--ref` | Reference genome directory | - |
 | `--string_MT` | Mitochondrial chromosome identifier | `chrM` |
-| `--whitelist` | 10x v3 whitelist file | - |
 
-The `--ref` and `whitelist` parameters are required only for the main workflow and the PREPROCESS entrypoint.
-
-The `--ref` parameter must pointo to valid STAR index folder, which will be used by [STAR Solo](https://doi.org/10.1101/2021.05.05.442755) for paired-end reads alignment. Following [best practices](10.1038/s41596-022-00795-3) for MT-SNVs data analysis, this STAR index should be build with a reference genome with masked NUMTs. 
-
-The `--whitelist` parameter indicate the 10x v3 cell barcode whitelist, which can be downloaded from [10x](https://kb.10xgenomics.com/hc/en-us/articles/115004506263-What-is-a-barcode-inclusion-list-formerly-barcode-whitelist) site. This whitelist is used by STAR Solo to correct cellular barcodes prior than MT-library bam filtering and processing.
+By default, nf-MiTo pulls a reference genome and its annotations from Gencode, and build a STAR index from scratch (i.e., `--build_STAR_index` = `true`). In alternative custom genomes and annotations can be passed (i.e., downloadable URLs, `--reference_genome` and `--gtf` options), or, one can pre-build its own STAR index, and then pass it with the `--prebuilt_STAR_index` option (see the [PREPROCESS](docs/PREPROCESS.md) and [create_STAR_index](docs/create_STAR_index.md) tutorials). 
 
 ### scLT System parameters
 
@@ -153,7 +147,7 @@ pre-processing tool.
 | `--scLT_system` | scLT system [`MAESTER`, `RedeeM`, `Cas9`, `scWGS`] | `MAESTER` | |
 | `--pp_method` | Preprocessing method [`magatk`, `mito_preprocessing`, `cellsnp-lite`, `samtools`, `freebayes`] | `maegatk` | |
 
-If `--scLT_system` != `MAESTER`, AFMs needs to be generated with MiTo utilities. See [...] vignette.
+If `--scLT_system` != `MAESTER`, AFMs needs to be generated with MiTo utilities. See ... vignette.
 
 ### Sequencing Data Preprocessing parameters
 
@@ -187,7 +181,7 @@ Cell Filtering parameters parameters specify for cell Quality Control (QC) opera
 
 `--min_nUMIs`, `--min_n_genes`, `--max_perc_mt` and `--n_mads` are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* `--raw_input_data_type` = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (`--n_mads` * MADs, Median Absolute Deviations).
 
-On the contrary, the `--cell_filter` parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., `--scLT_system` in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) Supplementary Informations for details.
+On the contrary, the `--cell_filter` parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., `--scLT_system` in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
 
 ### Allele Frequency Matrix Preprocessing parameters
 
@@ -215,7 +209,7 @@ is filtered and how cell genotypes are assigned.
 | `--bin_method` | Genotyping method [`MiTo`, `vanilla`] | `MiTo` |
 | `--min_n_var` | Minimum number of variants per cell | `1` |
 
-`--min_cov`, `--min_var_quality`, `--min_frac_negative`, `--min_n_positive`, `--af_confident_detection`, `--min_n_confidently_detected`, `--min_mean_AD_in_positives`, `--min_mean_DP_in_positives` are active if `--filtering` = `MiTo`. Otherwise all AFM characters are retained (`--filtering` = `null`) or MT-SNVs filtering is performed with the MQuad method (`--filtering` = `MQuad`). See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) Supplementary Informations for details on MT-SNVs filering and genotyping.
+`--min_cov`, `--min_var_quality`, `--min_frac_negative`, `--min_n_positive`, `--af_confident_detection`, `--min_n_confidently_detected`, `--min_mean_AD_in_positives`, `--min_mean_DP_in_positives` are active if `--filtering` = `MiTo`. Otherwise all AFM characters are retained (`--filtering` = `null`) or MT-SNVs filtering is performed with the MQuad method (`--filtering` = `MQuad`). 
 
 ### Phylogeny Reconstruction parameters
 
@@ -233,13 +227,11 @@ Phylogeny Reconstruction parameters control phylogeny reconstruction from filter
 | `--annotate_tree` | Tree annotation method | `MiTo` |
 | `--max_fraction_unassigned` | Tree annotation method | `0.1` |
 
-See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) Supplementary Informations for details.
-
 ## Configuration
-Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` option. See the [`config/user.config`](config/user.config) file for a minimal example of config file tailored for an HPC environment.
+Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` option. See the [`config/user.config`](config/user.config) file for a minimal example for an HPC environment.
 
 ## Examples
-Exmples 
+Tutorials for the main entrypoints and use-cases can be found [here](docs). 
 
 ## Best practices
 
