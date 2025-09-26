@@ -7,6 +7,7 @@ nextflow.enable.dsl = 2
 process BUILD_INDEX {
 
   label 'scLT'
+  publishDir "${params.output_folder}/resources", mode: 'copy'
 
   input:
   path(genome)
