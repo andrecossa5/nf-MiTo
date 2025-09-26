@@ -15,13 +15,13 @@ OUTPUT="$2"
 echo "Filtering GTF: $INPUT -> $OUTPUT"
 
 # Count gene types in the input GTF
-echo "Gene types found in input GTF:"
-grep -v '^#' "$INPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
+# echo "Gene types found in input GTF:"
+# grep -v '^#' "$INPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
 
 # Copy header lines
 grep '^#' "$INPUT" > "$OUTPUT" || true
 
-# Filter GTF using basic AWK compatible with older versions
+# Filter GTF using basic AWK
 awk -F'\t' 'BEGIN {OFS="\t"} 
 !/^#/ {
     # Look for gene_type or gene_biotype in the attributes column
@@ -40,7 +40,7 @@ awk -F'\t' 'BEGIN {OFS="\t"}
 }' "$INPUT" >> "$OUTPUT"
 
 # Count gene types in the output GTF
-echo "Gene types retained in filtered GTF:"
-grep -v '^#' "$OUTPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
+# echo "Gene types retained in filtered GTF:"
+# grep -v '^#' "$OUTPUT" | grep -E 'gene_type|gene_biotype' | sed -E 's/.*gene_(type|biotype) "([^"]+)".*/\2/' | sort | uniq -c | sort -nr
 
 echo "GTF filtering completed"
