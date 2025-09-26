@@ -1,17 +1,13 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="image/nf-MiTo.pdf">
-  <source media="(prefers-color-scheme: light)" srcset="image/nf-MiTo.pdf">
-  <img alt="nf-MiTo Logo" src="image/nf-MiTo.pdf" width="300" style="margin-bottom: 20px;">
-</picture>
+<img alt="nf-MiTo Logo" src="image/nf-MiTo.pdf" width="400" style="margin-bottom: 30px;">
 
-<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; border-radius: 15px; margin: 20px auto; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-  <h1 style="border: none; font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 4em; font-weight: 900; color: white; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); margin: 0; letter-spacing: 3px; text-transform: uppercase;">
-    🧬 nf-MiTo 🧬
+<div style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #9b59b6 100%); padding: 50px 30px; border-radius: 20px; margin: 20px auto; max-width: 900px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); border: 3px solid rgba(255,255,255,0.1);">
+  <h1 style="border: none; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace; font-size: 5em; font-weight: 800; color: #ffffff; text-shadow: 4px 4px 8px rgba(0,0,0,0.4); margin: 0; letter-spacing: 0.1em; position: relative;">
+    <span style="color: #e74c3c; text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);">nf</span><span style="color: #f39c12; margin: 0 0.1em;">-</span><span style="color: #2ecc71; text-shadow: 0 0 20px rgba(46, 204, 113, 0.5);">MiTo</span>
   </h1>
-  <div style="width: 100px; height: 4px; background: linear-gradient(90deg, #FFD700, #FFA500); margin: 20px auto; border-radius: 2px;"></div>
-  <p style="font-size: 1.3em; font-weight: 400; color: #f0f0f0; margin: 20px 0 0 0; line-height: 1.7; font-style: italic;">
+  <div style="width: 150px; height: 5px; background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71); margin: 30px auto; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>
+  <p style="font-size: 1.4em; font-weight: 300; color: #ecf0f1; margin: 25px 0 0 0; line-height: 1.8; font-style: italic; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
     Integrated Nextflow pipeline for mitochondrial SNV-based<br>single-cell lineage tracing and multi-omics
   </p>
 </div>
