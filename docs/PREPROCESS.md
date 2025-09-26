@@ -1,10 +1,10 @@
 # PREPROCESS tutorial
 
-nf-MiTo implements an automated workflow (PREPROCESS entrypoint, `-entry PREPROCESS` option) for pre-processing of raw sequencing data from both MAESTER and 10x libraries. Here we will pre-process a minimal test dataset with paired-end FASTQ files for n=5 cells. The whole workflow should take ..., most of which will be needed for building the genome index needed for sequence alignment. 
+nf-MiTo implements an automated workflow (PREPROCESS entrypoint, `-entry PREPROCESS` option) for pre-processing of raw sequencing data from both MAESTER and 10x libraries. Here we will pre-process a minimal test dataset with paired-end FASTQ files for n=5 cells. The whole workflow should take ~45 minutes, most of which (~35) will be needed for building the genome index needed for sequence alignment. 
 
 # Prerequisites
 
-Raw-reads pre-processing requires at least ~50 GB RAM, and at least ... of scratch space (regardless of the minimal dataset, STAR needs ~30GB to build a genome index and load it into memory for alignment). 
+Raw-reads pre-processing requires at least ~50 GB RAM, and at least 0.1-0.5 TB of scratch space depending on the dataset. Note that, regardless of the minimal dataset in this tutorial (<0.5 GB), STAR still needs ~30GB to build a genome index and load it into memory for alignment. 
 We would also need one between one between docker/apptainer/singularity in our $PATH, together with Nextflow.
 We can check this with:
 
@@ -102,33 +102,68 @@ nextflow run main.nf -profile docker,local -params-file user_params.json -entry 
 After a successfull run, the output folder `<path to output folder>` should contains all the following outputs:
 
 ```
-└── test
-    ├── adata.h5ad
-    ├── afm_unfiltered.h5ad
-    ├── cell_barcodes.txt
-    ├── MT.preprocess.ouput
-    │   └── tables
-    │       ├── A.txt.gz
-    │       ├── coverage.txt.gz
-    │       ├── C.txt.gz
-    │       ├── depth.txt.gz
-    │       ├── G.txt.gz
-    │       └── T.txt.gz
-    └── Solo.output
-        ├── Aligned.sortedByCoord.out.bam
-        ├── Features.stats
-        ├── filtered
-        │   ├── barcodes.tsv.gz
-        │   ├── features.tsv.gz
-        │   └── matrix.mtx.gz
-        ├── raw
-        │   ├── barcodes.tsv.gz
-        │   ├── features.tsv.gz
-        │   └── matrix.mtx.gz
-        └── Summary.csv
+└── PREPROCESS
+    ├── resources
+    │   └── STAR_index
+    │       ├── chrLength.txt
+    │       ├── chrNameLength.txt
+    │       ├── chrName.txt
+    │       ├── chrStart.txt
+    │       ├── exonGeTrInfo.tab
+    │       ├── exonInfo.tab
+    │       ├── geneInfo.tab
+    │       ├── Genome
+    │       ├── genomeParameters.txt
+    │       ├── Log.out
+    │       ├── SA
+    │       ├── SAindex
+    │       ├── sjdbInfo.txt
+    │       ├── sjdbList.fromGTF.out.tab
+    │       ├── sjdbList.out.tab
+    │       └── transcriptInfo.tab
+    └── test
+        ├── adata.h5ad
+        ├── afm_unfiltered.h5ad
+        ├── cell_barcodes.txt
+        ├── MT.preprocess.ouput
+        │   └── tables
+        │       ├── A.txt.gz
+        │       ├── coverage.txt.gz
+        │       ├── C.txt.gz
+        │       ├── depth.txt.gz
+        │       ├── G.txt.gz
+        │       └── T.txt.gz
+        └── Solo.output
+            ├── Aligned.sortedByCoord.out.bam
+            ├── Features.stats
+            ├── filtered
+            │   ├── barcodes.tsv.gz
+            │   ├── features.tsv.gz
+            │   └── matrix.mtx.gz
+            ├── raw
+            │   ├── barcodes.tsv.gz
+            │   ├── features.tsv.gz
+            │   └── matrix.mtx.gz
+            └── Summary.csv
 ```
 
-...
+The `resources` folder store the STAR index we have built (available for further use).
+
+For all the other samples specified in the first columns of the `--raw_data_input_file` (`test` in this case), the `--output_folder` directory contains:
+
+* `adata.h5ad`: AnnData object containing gene expression count matrix and cell metadata from Quality-Controlled (QC) cells. Includes UMI counts per gene, cell filtering statistics, and quality control metrics
+* `afm_unfiltered.h5ad`: AnnData object containing the Allele Frequency Matrix (AFM) with mitochondrial variant data from QC cells. Contains base counts (A, C, G, T) at each MT position for each cell, along with coverage and quality metrics
+* `cell_barcodes.txt`: Text file listing cell barcodes that passed quality control filters (without sample name suffixes). These barcodes correspond to cells included in both the gene expression and MT datasets
+* `MT.preprocess.ouput/`: Directory containing detailed MT preprocessing results:
+  * `tables/`: Base-specific count tables (A.txt.gz, C.txt.gz, G.txt.gz, T.txt.gz) with UMI counts for each base at each MT position per cell
+  * `coverage.txt.gz`: Per-position coverage depth across all cells
+  * `depth.txt.gz`: Total sequencing depth statistics per cell and position
+* `Solo.output/`: STAR Solo alignment results for the gene expression (TENX) library:
+  * `Aligned.sortedByCoord.out.bam`: Coordinate-sorted BAM file with aligned reads
+  * `filtered/`: Cell Ranger-compatible filtered count matrices (barcodes, features, matrix)
+  * `raw/`: Unfiltered count matrices including all detected barcodes
+  * `Features.stats` and `Summary.csv`: Alignment and quantification statistics
+
 
 # Alternative pre-processing workflows
 

@@ -75,43 +75,43 @@ Input/Output Options control nf-MiTo pipeline I/O operations:
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--raw_data_input_type</code></td>
+<td align="left" style="white-space: nowrap;"><code>--raw_data_input_type</code></td>
 <td align="left">Input data type [<code>fastq</code>, <code>fastq, MAESTER</code>, <code>mitobam</code>]</td>
 <td align="left"><code>mitobam</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--raw_data_input</code></td>
+<td align="left" style="white-space: nowrap;"><code>--raw_data_input</code></td>
 <td align="left">Raw data CSV file, preprocessing workflows</td>
 <td align="left"><code>–</code></td>
 <td align="left">Path</td>
 </tr>
 <tr>
-<td align="left"><code>--afm_input</code></td>
+<td align="left" style="white-space: nowrap;"><code>--afm_input</code></td>
 <td align="left">AFM data CSV file, inference workflows</td>
 <td align="left"><code>–</code></td>
 <td align="left">Path</td>
 </tr>
 <tr>
-<td align="left"><code>--output_folder</code></td>
+<td align="left" style="white-space: nowrap;"><code>--output_folder</code></td>
 <td align="left">Output directory path</td>
 <td align="left"><code>–</code></td>
 <td align="left">Path</td>
 </tr>
 <tr>
-<td align="left"><code>--path_meta</code></td>
+<td align="left" style="white-space: nowrap;"><code>--path_meta</code></td>
 <td align="left">Cell metadata file path</td>
 <td align="left"><code>null</code></td>
 <td align="left">Path</td>
 </tr>
 <tr>
-<td align="left"><code>--lineage_column</code></td>
+<td align="left" style="white-space: nowrap;"><code>--lineage_column</code></td>
 <td align="left">Cell metadata column with lineage annotation</td>
 <td align="left"><code>null</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--path_tuning</code></td>
+<td align="left" style="white-space: nowrap;"><code>--path_tuning</code></td>
 <td align="left">Tuning results file from TUNE workflow</td>
 <td align="left"><code>null</code></td>
 <td align="left">Path</td>
@@ -182,43 +182,43 @@ Reference Genome parameters control nf-MiTo pipeline resources for alignment of 
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--build_STAR_index</code></td>
+<td align="left" style="white-space: nowrap;"><code>--build_STAR_index</code></td>
 <td align="left">Build STAR index from reference files</td>
 <td align="left"><code>true</code></td>
 <td align="left">Boolean</td>
 </tr>
 <tr>
-<td align="left"><code>--prebuilt_STAR_index</code></td>
+<td align="left" style="white-space: nowrap;"><code>--prebuilt_STAR_index</code></td>
 <td align="left">Path to prebuilt STAR index directory</td>
 <td align="left"><code>null</code></td>
 <td align="left">Path</td>
 </tr>
 <tr>
-<td align="left"><code>--reference_genome</code></td>
+<td align="left" style="white-space: nowrap;"><code>--reference_genome</code></td>
 <td align="left">Reference genome FASTA file URL or path</td>
 <td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz">GENCODE GRCh38.p13</a></td>
 <td align="left">Path/URL</td>
 </tr>
 <tr>
-<td align="left"><code>--gtf</code></td>
+<td align="left" style="white-space: nowrap;"><code>--gtf</code></td>
 <td align="left">GTF annotation file URL or path</td>
 <td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz">GENCODE v32 GTF</a></td>
 <td align="left">Path/URL</td>
 </tr>
 <tr>
-<td align="left"><code>--NUMTs_regions</code></td>
+<td align="left" style="white-space: nowrap;"><code>--NUMTs_regions</code></td>
 <td align="left">Nuclear mitochondrial DNA regions BED file URL or path</td>
 <td align="left"><a href="https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed">hg38 NUMTs blacklist</a></td>
 <td align="left">Path/URL</td>
 </tr>
 <tr>
-<td align="left"><code>--tenx_whitelist</code></td>
+<td align="left" style="white-space: nowrap;"><code>--tenx_whitelist</code></td>
 <td align="left">10x Genomics cell barcode whitelist URL or path</td>
 <td align="left"><a href="https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz">10x v3 whitelist</a></td>
 <td align="left">Path/URL</td>
 </tr>
 <tr>
-<td align="left"><code>--string_MT</code></td>
+<td align="left" style="white-space: nowrap;"><code>--string_MT</code></td>
 <td align="left">Mitochondrial chromosome identifier</td>
 <td align="left"><code>chrM</code></td>
 <td align="left">String</td>
@@ -244,13 +244,13 @@ pre-processing tool.
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--scLT_system</code></td>
+<td align="left" style="white-space: nowrap;"><code>--scLT_system</code></td>
 <td align="left">scLT system [<code>MAESTER</code>, <code>RedeeM</code>, <code>Cas9</code>, <code>scWGS</code>]</td>
 <td align="left"><code>MAESTER</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--pp_method</code></td>
+<td align="left" style="white-space: nowrap;"><code>--pp_method</code></td>
 <td align="left">Preprocessing method [<code>magatk</code>, <code>mito_preprocessing</code>, <code>cellsnp-lite</code>, <code>samtools</code>, <code>freebayes</code>]</td>
 <td align="left"><code>maegatk</code></td>
 <td align="left">String</td>
@@ -275,43 +275,43 @@ Sequencing Data Preprocessing parameters control how MT-reads are pre-processed 
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--CBs_chunk_size</code></td>
+<td align="left" style="white-space: nowrap;"><code>--CBs_chunk_size</code></td>
 <td align="left">Cell barcodes chunk size</td>
 <td align="left"><code>3000</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_UMI_consensus_mode</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_UMI_consensus_mode</code></td>
 <td align="left">UMI-based read grouping strategy</td>
 <td align="left"><code>Identity</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_UMI_consensus_edits</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_UMI_consensus_edits</code></td>
 <td align="left">Max UMI edit distance for read grouping</td>
 <td align="left"><code>0</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_min_reads_mito</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_min_reads_mito</code></td>
 <td align="left">Min reads for consensus sequence generation</td>
 <td align="left"><code>3</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_base_error_rate_mito</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_base_error_rate_mito</code></td>
 <td align="left">Max fraction of discordant bases in a read group</td>
 <td align="left"><code>0.25</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_base_quality</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_base_quality</code></td>
 <td align="left">Min base-calling quality of consensus bases</td>
 <td align="left"><code>30</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--fgbio_min_alignment_quality</code></td>
+<td align="left" style="white-space: nowrap;"><code>--fgbio_min_alignment_quality</code></td>
 <td align="left">Minimum alignment quality of consensus reads</td>
 <td align="left"><code>60</code></td>
 <td align="left">Integer</td>
@@ -338,31 +338,31 @@ Cell Filtering parameters parameters specify for cell Quality Control (QC) opera
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--min_nUMIs</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_nUMIs</code></td>
 <td align="left">Minimum UMIs per cell</td>
 <td align="left"><code>500</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--min_n_genes</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_n_genes</code></td>
 <td align="left">Minimum genes per cell</td>
 <td align="left"><code>250</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--max_perc_mt</code></td>
+<td align="left" style="white-space: nowrap;"><code>--max_perc_mt</code></td>
 <td align="left">Maximum mitochondrial read percentage</td>
 <td align="left"><code>0.15</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--n_mads</code></td>
+<td align="left" style="white-space: nowrap;"><code>--n_mads</code></td>
 <td align="left">n MADs</td>
 <td align="left"><code>3</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--cell_filter</code></td>
+<td align="left" style="white-space: nowrap;"><code>--cell_filter</code></td>
 <td align="left">MT-library filtering strategy [<code>null</code>, <code>filter1</code>, <code>filter2</code>]</td>
 <td align="left"><code>filter2</code></td>
 <td align="left">String</td>
@@ -390,109 +390,109 @@ is filtered and how cell genotypes are assigned.
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--filtering</code></td>
+<td align="left" style="white-space: nowrap;"><code>--filtering</code></td>
 <td align="left">MT-SNVs filtering method [<code>null</code>, <code>MiTo</code>, <code>MQuad</code>]</td>
 <td align="left"><code>MiTo</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--filter_dbs</code></td>
+<td align="left" style="white-space: nowrap;"><code>--filter_dbs</code></td>
 <td align="left">MT-SNVs database filtering</td>
 <td align="left"><code>true</code></td>
 <td align="left">Boolean</td>
 </tr>
 <tr>
-<td align="left"><code>--spatial_metrics</code></td>
+<td align="left" style="white-space: nowrap;"><code>--spatial_metrics</code></td>
 <td align="left">Spatial metrics calculation</td>
 <td align="left"><code>false</code></td>
 <td align="left">Boolean</td>
 </tr>
 <tr>
-<td align="left"><code>--filter_moran</code></td>
+<td align="left" style="white-space: nowrap;"><code>--filter_moran</code></td>
 <td align="left">Spatially segregated MT-SNVs filtering</td>
 <td align="left"><code>true</code></td>
 <td align="left">Boolean</td>
 </tr>
 <tr>
-<td align="left"><code>--min_cov</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_cov</code></td>
 <td align="left">Min MT-SNV site coverage</td>
 <td align="left"><code>5</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--min_var_quality</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_var_quality</code></td>
 <td align="left">Min (average) ALT allele base-calling quality</td>
 <td align="left"><code>30</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--min_frac_negative</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_frac_negative</code></td>
 <td align="left">Min fraction of negative cells</td>
 <td align="left"><code>0.2</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--min_n_positive</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_n_positive</code></td>
 <td align="left">Min n of positive cells</td>
 <td align="left"><code>5</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--af_confident_detection</code></td>
+<td align="left" style="white-space: nowrap;"><code>--af_confident_detection</code></td>
 <td align="left">AF threshold for "confident" detection</td>
 <td align="left"><code>0.02</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--min_n_confidently_detected</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_n_confidently_detected</code></td>
 <td align="left">Min n of confidently detected cells</td>
 <td align="left"><code>2</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--min_mean_AD_in_positives</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_mean_AD_in_positives</code></td>
 <td align="left">Min mean AD in +cells</td>
 <td align="left"><code>1.25</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--min_mean_DP_in_positives</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_mean_DP_in_positives</code></td>
 <td align="left">Min mean DP in +cells</td>
 <td align="left"><code>25</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--t_prob</code></td>
+<td align="left" style="white-space: nowrap;"><code>--t_prob</code></td>
 <td align="left">Probability threshold for MiTo genotyping</td>
 <td align="left"><code>0.7</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--min_AD</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_AD</code></td>
 <td align="left">Minimum allelic depth</td>
 <td align="left"><code>2</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--min_cell_prevalence</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_cell_prevalence</code></td>
 <td align="left">Min MT-SNV prevalence for MiTo genotyping</td>
 <td align="left"><code>0.05</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--t_vanilla</code></td>
+<td align="left" style="white-space: nowrap;"><code>--t_vanilla</code></td>
 <td align="left">AF threshold for vanilla genotyping</td>
 <td align="left"><code>0</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--bin_method</code></td>
+<td align="left" style="white-space: nowrap;"><code>--bin_method</code></td>
 <td align="left">Genotyping method [<code>MiTo</code>, <code>vanilla</code>]</td>
 <td align="left"><code>MiTo</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--min_n_var</code></td>
+<td align="left" style="white-space: nowrap;"><code>--min_n_var</code></td>
 <td align="left">Minimum number of variants per cell</td>
 <td align="left"><code>1</code></td>
 <td align="left">Integer</td>
@@ -517,55 +517,55 @@ Phylogeny Reconstruction parameters control phylogeny reconstruction from filter
 </thead>
 <tbody>
 <tr>
-<td align="left"><code>--distance_metric</code></td>
+<td align="left" style="white-space: nowrap;"><code>--distance_metric</code></td>
 <td align="left">Distance metric [<code>weighted_jaccard</code>, <code>jaccard</code>, <code>correlation</code>, <code>cosine</code>]</td>
 <td align="left"><code>weighted_jaccard</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--tree_algorithm</code></td>
+<td align="left" style="white-space: nowrap;"><code>--tree_algorithm</code></td>
 <td align="left">Algorithm [<code>cassiopeia</code>, <code>iqtree</code>, <code>mpboot</code>]</td>
 <td align="left"><code>cassiopeia</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--cassiopeia_solver</code></td>
+<td align="left" style="white-space: nowrap;"><code>--cassiopeia_solver</code></td>
 <td align="left">Solver [<code>UPMGA</code>, <code>NJ</code>, <code>spectral</code>, <code>shared_muts</code>, <code>greedy</code>, <code>max_cut</code>]</td>
 <td align="left"><code>UPMGA</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--n_boot_replicates</code></td>
+<td align="left" style="white-space: nowrap;"><code>--n_boot_replicates</code></td>
 <td align="left">Bootstrap replicates</td>
 <td align="left"><code>100</code></td>
 <td align="left">Integer</td>
 </tr>
 <tr>
-<td align="left"><code>--boot_strategy</code></td>
+<td align="left" style="white-space: nowrap;"><code>--boot_strategy</code></td>
 <td align="left">Bootstrap strategy [<code>feature_resampling</code>, <code>jacknife</code>]</td>
 <td align="left"><code>feature_resampling</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--frac_char_resampling</code></td>
+<td align="left" style="white-space: nowrap;"><code>--frac_char_resampling</code></td>
 <td align="left">% resampled characters</td>
 <td align="left"><code>0.8</code></td>
 <td align="left">Float</td>
 </tr>
 <tr>
-<td align="left"><code>--support_method</code></td>
+<td align="left" style="white-space: nowrap;"><code>--support_method</code></td>
 <td align="left">Support method [<code>tbe</code>, <code>fbp</code>]</td>
 <td align="left"><code>tbe</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--annotate_tree</code></td>
+<td align="left" style="white-space: nowrap;"><code>--annotate_tree</code></td>
 <td align="left">Tree annotation method</td>
 <td align="left"><code>MiTo</code></td>
 <td align="left">String</td>
 </tr>
 <tr>
-<td align="left"><code>--max_fraction_unassigned</code></td>
+<td align="left" style="white-space: nowrap;"><code>--max_fraction_unassigned</code></td>
 <td align="left">Max fraction of unassigned cells</td>
 <td align="left"><code>0.1</code></td>
 <td align="left">Float</td>
