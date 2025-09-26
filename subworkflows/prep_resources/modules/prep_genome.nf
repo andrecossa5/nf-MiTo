@@ -13,7 +13,7 @@ process PREP_GENOME {
 
   script:
   """
-  wget ${params.reference_genome} | gunzip > genome.fa
+  wget -qO- ${params.reference_genome} | pigz -dc -p ${task.cpus} > genome.fa
   wget ${params.NUMTs_regions} -O hg38.full.blacklist.bed
   bedtools maskfasta -fi genome.fa -bed hg38.full.blacklist.bed -fo masked_genome.fa
   """
