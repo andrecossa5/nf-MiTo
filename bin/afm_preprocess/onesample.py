@@ -313,7 +313,7 @@ def main():
     lineage_column = kwargs['lineage_column']
     if lineage_column is not None and lineage_column in tree.cell_meta.columns:
         metrics[f'n_{lineage_column}_groups'] = tree.cell_meta[lineage_column].nunique()
-        metrics['AUPRC'] = mt.ut.distance_AUPRC(afm.obsp['distances'].A, afm.obs[lineage_column])
+        metrics['AUPRC'] = mt.ut.distance_AUPRC(afm.obsp['distances'].toarray(), afm.obs[lineage_column])
         test = tree.cell_meta['MiTo clone'].isna()
         metrics['ARI'] = mt.ut.custom_ARI(tree.cell_meta.loc[~test, lineage_column], tree.cell_meta.loc[~test, 'MiTo clone'])
         metrics['NMI'] = mt.ut.normalized_mutual_info_score(
