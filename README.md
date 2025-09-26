@@ -1,9 +1,27 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="image/nf-MiTo.pdf">
+  <source media="(prefers-color-scheme: light)" srcset="image/nf-MiTo.pdf">
+  <img alt="nf-MiTo Logo" src="image/nf-MiTo.pdf" width="300" style="margin-bottom: 20px;">
+</picture>
+
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; border-radius: 15px; margin: 20px auto; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+  <h1 style="border: none; font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 4em; font-weight: 900; color: white; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); margin: 0; letter-spacing: 3px; text-transform: uppercase;">
+    🧬 nf-MiTo 🧬
+  </h1>
+  <div style="width: 100px; height: 4px; background: linear-gradient(90deg, #FFD700, #FFA500); margin: 20px auto; border-radius: 2px;"></div>
+  <p style="font-size: 1.3em; font-weight: 400; color: #f0f0f0; margin: 20px 0 0 0; line-height: 1.7; font-style: italic;">
+    Integrated Nextflow pipeline for mitochondrial SNV-based<br>single-cell lineage tracing and multi-omics
+  </p>
+</div>
+
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2025.06.17.660165-blue)](https://doi.org/10.1101/2025.06.17.660165)
 
-# nf-MiTo
-
-Integrated Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing and multi-omics.
+</div>
 
 ## Overview
 
