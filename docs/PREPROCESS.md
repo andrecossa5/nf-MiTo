@@ -152,18 +152,20 @@ The `resources` folder store the STAR index we have built (available for further
 For all the other samples specified in the first columns of the `--raw_data_input_file` (`test` in this case), the `--output_folder` directory contains:
 
 * `adata.h5ad`: AnnData object containing gene expression count matrix and cell metadata from Quality-Controlled (QC) cells. Includes UMI counts per gene, cell filtering statistics, and quality control metrics
+
 * `afm_unfiltered.h5ad`: AnnData object containing the Allele Frequency Matrix (AFM) with mitochondrial variant data from QC cells. Contains base counts (A, C, G, T) at each MT position for each cell, along with coverage and quality metrics
+
 * `cell_barcodes.txt`: Text file listing cell barcodes that passed quality control filters (without sample name suffixes). These barcodes correspond to cells included in both the gene expression and MT datasets
+
 * `MT.preprocess.ouput/`: Directory containing detailed MT preprocessing results:
-  * `tables/`: Base-specific count tables (A.txt.gz, C.txt.gz, G.txt.gz, T.txt.gz) with UMI counts for each base at each MT position per cell
+  * Base-specific count tables (`A.txt.gz`, `C.txt.gz`, `G.txt.gz`, `T.txt.gz`) with UMI counts at each MT position per cell
   * `coverage.txt.gz`: Per-position coverage depth across all cells
   * `depth.txt.gz`: Total sequencing depth statistics per cell and position
 * `Solo.output/`: STAR Solo alignment results for the gene expression (TENX) library:
   * `Aligned.sortedByCoord.out.bam`: Coordinate-sorted BAM file with aligned reads
-  * `filtered/`: Cell Ranger-compatible filtered count matrices (barcodes, features, matrix)
+  * `filtered/`: filtered (STAR Solo cell calling) count matrices (barcodes, features, matrix)
   * `raw/`: Unfiltered count matrices including all detected barcodes
   * `Features.stats` and `Summary.csv`: Alignment and quantification statistics
-
 
 # Alternative pre-processing workflows
 
