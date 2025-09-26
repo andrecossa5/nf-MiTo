@@ -64,15 +64,60 @@ for additional type information. See also [MiTo: tracing the phenotypic evolutio
 
 Input/Output Options control nf-MiTo pipeline I/O operations.
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--raw_data_input_type` | Input data type [`fastq`, `fastq, MAESTER`, `mitobam`] | `mitobam` | 
-| `--raw_data_input` | Raw data CSV file, preprocessing workflows | `–` |
-| `--afm_input` | AFM data CSV file, inference workflows | `–` |
-| `--output_folder` | Output directory path | `–` |
-| `--path_meta` | Cell metadata file path | `null` |
-| `--lineage_column` | Cell metadata column with lineage annotation | `null` |
-| `--path_tuning` | Tuning results file from TUNE workflow | `null` |
+<table>
+<thead>
+<tr>
+<th align="left">Parameter</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>--raw_data_input_type</code></td>
+<td align="left">Input data type [<code>fastq</code>, <code>fastq, MAESTER</code>, <code>mitobam</code>]</td>
+<td align="left"><code>mitobam</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--raw_data_input</code></td>
+<td align="left">Raw data CSV file, preprocessing workflows</td>
+<td align="left"><code>–</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
+<td align="left"><code>--afm_input</code></td>
+<td align="left">AFM data CSV file, inference workflows</td>
+<td align="left"><code>–</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
+<td align="left"><code>--output_folder</code></td>
+<td align="left">Output directory path</td>
+<td align="left"><code>–</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
+<td align="left"><code>--path_meta</code></td>
+<td align="left">Cell metadata file path</td>
+<td align="left"><code>null</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
+<td align="left"><code>--lineage_column</code></td>
+<td align="left">Cell metadata column with lineage annotation</td>
+<td align="left"><code>null</code></td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>--path_tuning</code></td>
+<td align="left">Tuning results file from TUNE workflow</td>
+<td align="left"><code>null</code></td>
+<td align="left">Path</td>
+</tr>
+</tbody>
+</table>
 
 For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
 to raw sequencing data. 3 alternative inputs are supported here: 
