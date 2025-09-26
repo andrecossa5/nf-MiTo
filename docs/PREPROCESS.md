@@ -13,9 +13,9 @@ apptainer
 nextflow
 ```
 
-**N.B.**: In this tutorial, we will align reads to a genome index built from scratch. nf-MiTo will fetch a genome reference and its annotations from Gencode, and build a STAR index following best practices for single-cell and MT-reads pre-processing (see in [10x documentation](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-3p-references) and in [Lareau et al.](10.1038/s41596-022-00795-3)). This genome index will be available for further runs (through the `--prebuilt_STAR_index` parameter). Alternatively, one can:
+**N.B.**: In this tutorial, we will align reads to a genome index built from scratch. nf-MiTo will fetch a genome reference and its annotations from Gencode, and build a STAR index following best practices for single-cell and MT-reads pre-processing (see in [10x documentation](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-3p-references) and in [Lareau et al.](10.1038/s41596-022-00795-3)). This genome index will be available for further runs (through the <span style="white-space: nowrap;">`--prebuilt_STAR_index`</span> parameter). Alternatively, one can:
 
-1. Specify for a different genome and matched annotations (i.e., `--reference_genome`, `--gtf` parameters)
+1. Specify for a different genome and matched annotations (i.e., <span style="white-space: nowrap;">`--reference_genome`</span>, <span style="white-space: nowrap;">`--gtf`</span> parameters)
 2. Pre-build a custom STAR index (see [`create_STAR_index.md`](create_STAR_index.md) tutorial).
 
 # Download data
@@ -50,14 +50,29 @@ We have downloaded our test dataset. We are now ready to prep our `raw_data_inpu
 
 # Prep input file
 
-We prep our `--raw_data_input` CSV file following this template:
+We prep our <span style="white-space: nowrap;">`--raw_data_input`</span> CSV file following this template:
 
-```
-| sample | fastq_folder | library |
-|-----------|-------------|---------|
-| `test` | <path to MAESTER_small> | `MT` |
-| `test` | <path to TENX_small> | `TENX` |
-```
+<table>
+<thead>
+<tr>
+<th align="left">sample</th>
+<th align="left">fastq_folder</th>
+<th align="left">library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>test</code></td>
+<td align="left">&lt;path to MAESTER_small&gt;</td>
+<td align="left"><code>MT</code></td>
+</tr>
+<tr>
+<td align="left"><code>test</code></td>
+<td align="left">&lt;path to TENX_small&gt;</td>
+<td align="left"><code>TENX</code></td>
+</tr>
+</tbody>
+</table>
 
 # Set parameters
 
@@ -149,7 +164,7 @@ After a successfull run, the output folder `<path to output folder>` should cont
 
 The `resources` folder store the STAR index we have built (available for further use).
 
-For all the other samples specified in the first columns of the `--raw_data_input_file` (`test` in this case), the `--output_folder` directory contains:
+For all the other samples specified in the first columns of the <span style="white-space: nowrap;">`--raw_data_input_file`</span> (`test` in this case), the <span style="white-space: nowrap;">`--output_folder`</span> directory contains:
 
 * `adata.h5ad`: AnnData object containing gene expression count matrix and cell metadata from Quality-Controlled (QC) cells. Includes UMI counts per gene, cell filtering statistics, and quality control metrics
 
@@ -169,7 +184,7 @@ For all the other samples specified in the first columns of the `--raw_data_inpu
 
 # Alternative pre-processing workflows
 
-Alternative inputs (`--raw_data_input_type` and `--raw_data_input` parameters) and pre-processing tools/pipelines (`--pp_method`) can be specified in `user_params.json`, and passed to the pipeline with the `-params-file` option.
+Alternative inputs (<span style="white-space: nowrap;">`--raw_data_input_type`</span> and <span style="white-space: nowrap;">`--raw_data_input`</span> parameters) and pre-processing tools/pipelines (<span style="white-space: nowrap;">`--pp_method`</span>) can be specified in `user_params.json`, and passed to the pipeline with the `-params-file` option.
 See the [README](../README.md) for details.
 
 
