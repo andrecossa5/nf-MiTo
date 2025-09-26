@@ -1,15 +1,23 @@
 <div align="center">
 
-<img alt="nf-MiTo Logo" src="image/nf-MiTo.pdf" width="400" style="margin-bottom: 30px;">
+<img src="image/nf_mito.png" alt="nf-MiTo Logo" width="500" style="margin-bottom: 30px;">
 
-<div style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #9b59b6 100%); padding: 50px 30px; border-radius: 20px; margin: 20px auto; max-width: 900px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); border: 3px solid rgba(255,255,255,0.1);">
-  <h1 style="border: none; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace; font-size: 5em; font-weight: 800; color: #ffffff; text-shadow: 4px 4px 8px rgba(0,0,0,0.4); margin: 0; letter-spacing: 0.1em; position: relative;">
-    <span style="color: #e74c3c; text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);">nf</span><span style="color: #f39c12; margin: 0 0.1em;">-</span><span style="color: #2ecc71; text-shadow: 0 0 20px rgba(46, 204, 113, 0.5);">MiTo</span>
+<div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a85b6 100%); padding: 60px 40px; border-radius: 25px; margin: 30px auto; max-width: 1000px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 4px solid rgba(255,255,255,0.15);">
+  
+  <h1 style="border: none; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Menlo', 'Consolas', monospace; font-size: 6em; font-weight: 900; margin: 20px 0; letter-spacing: 0.05em; text-transform: none; line-height: 1;">
+    <span style="background: linear-gradient(45deg, #ff6b6b, #ff8e53, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.4));">nf</span><span style="color: #ffffff; margin: 0 0.08em; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.6));">-</span><span style="background: linear-gradient(45deg, #4ecdc4, #44a08d, #093637); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.4));">MiTo</span>
   </h1>
-  <div style="width: 150px; height: 5px; background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71); margin: 30px auto; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>
-  <p style="font-size: 1.4em; font-weight: 300; color: #ecf0f1; margin: 25px 0 0 0; line-height: 1.8; font-style: italic; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+  
+  <div style="width: 200px; height: 6px; background: linear-gradient(90deg, #ff6b6b, #ff8e53, #4ecdc4, #44a08d); margin: 35px auto; border-radius: 3px; box-shadow: 0 3px 12px rgba(0,0,0,0.4);"></div>
+  
+  <p style="font-size: 1.5em; font-weight: 400; color: #f8f9fa; margin: 30px 0 10px 0; line-height: 1.6; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); max-width: 800px; margin-left: auto; margin-right: auto;">
     Integrated Nextflow pipeline for mitochondrial SNV-based<br>single-cell lineage tracing and multi-omics
   </p>
+  
+  <div style="margin-top: 25px; font-size: 0.9em; color: #cbd5e0; opacity: 0.8;">
+    🔬 Advanced Bioinformatics | ⚡ High Performance | 🌐 Cloud Ready
+  </div>
+  
 </div>
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
