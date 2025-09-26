@@ -57,7 +57,7 @@ We prep our <span style="white-space: nowrap;">`--afm_input`</span> CSV file fol
 <tbody>
 <tr>
 <td align="left"><code>test_0.1</code></td>
-<td align="left">&lt;MDA_clones&gt;</td>
+<td align="left"><code>MDA_clones<code></td>
 <td align="left"><code>path to AFM</code></td>
 </tr>
 </tbody>
