@@ -614,9 +614,8 @@ Tutorials for the main entrypoints and use-cases can be found [here](docs).
 
 If you use nf-MiTo in your research, please cite:
 
-```
-MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics. doi:https://doi.org/10.1101/2025.06.17.660165
-```
+
+*MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics. Andrea Cossa, Alberto Dalmasso, Guido Campani, Elisa Bugani, Chiara Caprioli, Noemi Bulla, Andrea Tirelli, Yinxiu Zhan, Pier Giuseppe Pelicci. biorxiv. doi:https://doi.org/10.1101/2025.06.17.660165*
 
 ## License
 
