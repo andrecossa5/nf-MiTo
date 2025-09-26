@@ -120,10 +120,10 @@ Input/Output Options control nf-MiTo pipeline I/O operations:
 </table>
 
 
-For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the `--raw_data_input` parameter is required. This parameter points to a CSV file sheet storing IDs and paths
+For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the <span style="white-space: nowrap;">`--raw_data_input`</span> parameter is required. This parameter points to a CSV file sheet storing IDs and paths
 to raw sequencing data. 3 alternative inputs are supported here: 
 
-1. `--raw_data_input_type` = `fastq`. The user need to pre-process both MAESTER and TENX sequening data. MAESTER and TENX FASTQs are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
+1. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `fastq`. The user need to pre-process both MAESTER and TENX sequening data. MAESTER and TENX FASTQs are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following a sample sheet (CSV file):
 
 | sample | fastq_folder | library |
 |-----------|-------------|---------|
@@ -132,7 +132,7 @@ to raw sequencing data. 3 alternative inputs are supported here:
 
 Each sample is linked to a `fastq_folder` for its `MAESTER` and `TENX` (i.e., GEX) library, respectively. 
 
-2. `--raw_data_input_type` = `fastq, MAESTER`. The user is only interested into MAESTER data pre-processing (i.e., GEX data has been analyzed independently). MAESTER FASTQs are passed (`--raw_data_input` parameter) with the following sample sheet (CSV file):
+2. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `fastq, MAESTER`. The user is only interested into MAESTER data pre-processing (i.e., GEX data has been analyzed independently). MAESTER FASTQs are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following sample sheet (CSV file):
 
 | sample | fastq_folder | cell_barcodes |
 |-----------|-------------|---------|
@@ -140,7 +140,7 @@ Each sample is linked to a `fastq_folder` for its `MAESTER` and `TENX` (i.e., GE
 
 Each sample is linked to a `fastq_folder` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests (e.g., qualified cell barcodes from independent GEX data analysis). Only reads associated to these cell barcodes will be filtered during pre-processing of `MAESTER` library.
 
-3. `--raw_data_input_type` = `mitobam`. The user already has aligned MAESTER libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (`--raw_data_input` parameter) with the following a sample sheet (CSV file):
+3. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `mitobam`. The user already has aligned MAESTER libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following a sample sheet (CSV file):
 
 | sample | bam | cell_barcodes |
 |-----------|-------------|---------|
@@ -148,7 +148,7 @@ Each sample is linked to a `fastq_folder` for its `MAESTER` library, and a `cell
 
 Each sample is linked to a `MT bam file` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests. The bam file should have `CB` and `UB` tags, specifying for cell barcode and UMI, respectively.
 
-All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw data pre-processing. Thus, it is assumed that properly formatted AFMs have been generated *before* running these workflows. These AFMs are passed (i.e., `--afm_input`) with the following a sample sheet (CSV file):
+All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw data pre-processing. Thus, it is assumed that properly formatted AFMs have been generated *before* running these workflows. These AFMs are passed (i.e., <span style="white-space: nowrap;">`--afm_input`</span>) with the following a sample sheet (CSV file):
 
 | job_id | sample | afm |
 |-----------|-------------|---------|
@@ -156,16 +156,16 @@ All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw da
 
 The `job_id` here serve as label links a certain sample (`sample_name`) with a specific AFM (`AFM path`, e.g. from different raw data pre-processing workflows).
 
-The `--output_folder` parameter is always required from the user.
+The <span style="white-space: nowrap;">`--output_folder`</span> parameter is always required from the user.
 
-(Optional) the user can provide its custom cell metadata (`--path_meta` parameter, default is `null`). To be valid, these metadata should be formatted as a CSV file indexed with 10x cell barcodes to which their sample name is appended (`_<sample name>`):
+(Optional) the user can provide its custom cell metadata (<span style="white-space: nowrap;">`--path_meta`</span> parameter, default is `null`). To be valid, these metadata should be formatted as a CSV file indexed with 10x cell barcodes to which their sample name is appended (`_<sample name>`):
 
 | cell | col1 | col2 | 
 |-----------|-------------|---------|
 | cell1_sampleA | ... | ... | 
 | celln_sampleB | ... | ... | 
 
-`--lineage_column` can specify for an orthogonal lineage measurement (i.e., lentiviral barcodes) or inference (e.g. gene-expression derived cell types). If valid, these labels can be used as to compute variant enrichments in these cell groups, or to quantify the relationship with inferred MT-clones. 
+<span style="white-space: nowrap;">`--lineage_column`</span> can specify for an orthogonal lineage measurement (i.e., lentiviral barcodes) or inference (e.g. gene-expression derived cell types). If valid, these labels can be used as to compute variant enrichments in these cell groups, or to quantify the relationship with inferred MT-clones. 
 
 ### Reference Genome parameters
 
@@ -226,11 +226,11 @@ Reference Genome parameters control nf-MiTo pipeline resources for alignment of 
 </tbody>
 </table>
 
-By default, nf-MiTo pulls a reference genome and its annotations from Gencode, and build a STAR index from scratch (i.e., `--build_STAR_index` = `true`). In alternative custom genomes and annotations can be passed (i.e., downloadable URLs, `--reference_genome` and `--gtf` options), or, one can pre-build its own STAR index, and then pass it with the `--prebuilt_STAR_index` option (see the [PREPROCESS](docs/PREPROCESS.md) and [create_STAR_index](docs/create_STAR_index.md) tutorials). 
+By default, nf-MiTo pulls a reference genome and its annotations from Gencode, and build a STAR index from scratch (i.e., <span style="white-space: nowrap;">`--build_STAR_index`</span> = `true`). In alternative custom genomes and annotations can be passed (i.e., downloadable URLs, <span style="white-space: nowrap;">`--reference_genome`</span> and <span style="white-space: nowrap;">`--gtf`</span> options), or, one can pre-build its own STAR index, and then pass it with the <span style="white-space: nowrap;">`--prebuilt_STAR_index`</span> option (see the [PREPROCESS](docs/PREPROCESS.md) and [create_STAR_index](docs/create_STAR_index.md) tutorials). 
 
 ### scLT System parameters
 
-scLT system parameters specify for the scLT system at hand, and (if `--scLT_system` = `MAESTER`) the chosen
+scLT system parameters specify for the scLT system at hand, and (if <span style="white-space: nowrap;">`--scLT_system`</span> = `MAESTER`) the chosen
 pre-processing tool.
 
 <table>
@@ -258,7 +258,7 @@ pre-processing tool.
 </tbody>
 </table>
 
-If `--scLT_system` != `MAESTER`, AFMs needs to be generated with MiTo utilities. See ... vignette.
+If <span style="white-space: nowrap;">`--scLT_system`</span> != `MAESTER`, AFMs needs to be generated with MiTo utilities. See ... vignette.
 
 ### Sequencing Data Preprocessing parameters
 
@@ -319,9 +319,9 @@ Sequencing Data Preprocessing parameters control how MT-reads are pre-processed 
 </tbody>
 </table>
 
-`--CBs_chunk_size` sets the chunk size (i.e., number of cell barcodes) into which the MT-library 
+<span style="white-space: nowrap;">`--CBs_chunk_size`</span> sets the chunk size (i.e., number of cell barcodes) into which the MT-library 
 bam file is splitted for parallel pre-processing. All the other parameters control how single-cell
-MT-libraries are processed (N.B. when `--pp_method` is `maegatk` or `mito_preprocessing`, see [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) supplementary information for a detailed breakdown of this parameters and their usage in different pre-processing pipelines). In general, [fgbio](https://fulcrumgenomics.github.io/fgbio/) is used for consensus sequence generation. Resulting consunsus reads are then processed to obtain single-cell allelic tables storing consensus UMI counts for all bases (i.e., basecalls) at each MT-genome position. These basecalls are annotated with different statistics (e.g., average base calling quality and consensus score).  
+MT-libraries are processed (N.B. when <span style="white-space: nowrap;">`--pp_method`</span> is `maegatk` or `mito_preprocessing`, see [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) supplementary information for a detailed breakdown of this parameters and their usage in different pre-processing pipelines). In general, [fgbio](https://fulcrumgenomics.github.io/fgbio/) is used for consensus sequence generation. Resulting consunsus reads are then processed to obtain single-cell allelic tables storing consensus UMI counts for all bases (i.e., basecalls) at each MT-genome position. These basecalls are annotated with different statistics (e.g., average base calling quality and consensus score).  
 
 ### Cell Filtering parameters
 
@@ -370,9 +370,9 @@ Cell Filtering parameters parameters specify for cell Quality Control (QC) opera
 </tbody>
 </table>
 
-`--min_nUMIs`, `--min_n_genes`, `--max_perc_mt` and `--n_mads` are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* `--raw_input_data_type` = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (`--n_mads` * MADs, Median Absolute Deviations).
+<span style="white-space: nowrap;">`--min_nUMIs`</span>, <span style="white-space: nowrap;">`--min_n_genes`</span>, <span style="white-space: nowrap;">`--max_perc_mt`</span> and <span style="white-space: nowrap;">`--n_mads`</span> are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* <span style="white-space: nowrap;">`--raw_input_data_type`</span> = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (<span style="white-space: nowrap;">`--n_mads`</span> * MADs, Median Absolute Deviations).
 
-On the contrary, the `--cell_filter` parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., `--scLT_system` in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
+On the contrary, the <span style="white-space: nowrap;">`--cell_filter`</span> parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., <span style="white-space: nowrap;">`--scLT_system`</span> in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
 
 ### Allele Frequency Matrix Preprocessing parameters
 
@@ -500,7 +500,7 @@ is filtered and how cell genotypes are assigned.
 </tbody>
 </table>
 
-`--min_cov`, `--min_var_quality`, `--min_frac_negative`, `--min_n_positive`, `--af_confident_detection`, `--min_n_confidently_detected`, `--min_mean_AD_in_positives`, `--min_mean_DP_in_positives` are active if `--filtering` = `MiTo`. Otherwise all AFM characters are retained (`--filtering` = `null`) or MT-SNVs filtering is performed with the MQuad method (`--filtering` = `MQuad`). 
+<span style="white-space: nowrap;">`--min_cov`</span>, <span style="white-space: nowrap;">`--min_var_quality`</span>, <span style="white-space: nowrap;">`--min_frac_negative`</span>, <span style="white-space: nowrap;">`--min_n_positive`</span>, <span style="white-space: nowrap;">`--af_confident_detection`</span>, <span style="white-space: nowrap;">`--min_n_confidently_detected`</span>, <span style="white-space: nowrap;">`--min_mean_AD_in_positives`</span>, <span style="white-space: nowrap;">`--min_mean_DP_in_positives`</span> are active if <span style="white-space: nowrap;">`--filtering`</span> = `MiTo`. Otherwise all AFM characters are retained (<span style="white-space: nowrap;">`--filtering`</span> = `null`) or MT-SNVs filtering is performed with the MQuad method (<span style="white-space: nowrap;">`--filtering`</span> = `MQuad`). 
 
 ### Phylogeny Reconstruction parameters
 
