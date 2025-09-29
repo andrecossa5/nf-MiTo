@@ -24,9 +24,6 @@ workflow process_tree {
         ch_annot = ch_input.filter(it -> it[2]=="observed").combine(ch_tree, by:[0,1])
         PROCESS_TREE(ch_annot) 
         TREE_METRICS(PROCESS_TREE.out.annotated_tree)
-        if (params.lineage_column) {
-            PATH(ch_annot.map{it->tuple(it[0],it[1],[it[4]])})
-        } 
 
     emit:
 
