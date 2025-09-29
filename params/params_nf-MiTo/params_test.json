@@ -6,6 +6,7 @@
     "raw_data_input_type" : "fastq",
     "raw_data_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/raw_data_input_fastq.csv",
     "afm_input" : "/Users/IEO5505/Desktop/MI_TO/example_mito/input/afm_input.csv",
+    "coverage_input" : null,
     "path_meta" : null,
     "path_tuning" : null,
     "output_folder" : "/Users/IEO5505/Desktop/MI_TO/example_mito/results",

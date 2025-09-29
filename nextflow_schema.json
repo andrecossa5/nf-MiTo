@@ -29,6 +29,12 @@
                     "description": "Path to CSV file containing allelic frequency matrix (AFM) input information",
                     "help_text": "CSV file containing job_id, sample, and afm path columns for direct AFM analysis."
                 },
+                "coverage_input": {
+                    "type": ["string", "null"],
+                    "description": "Path to CSV file containing coverage tables of the samples",
+                    "default": null,
+                    "help_text": "CSV file containing sample, and coverage path columns. Only for EXPLORE workflow."
+                },
                 "output_folder": {
                     "type": "string",
                     "description": "The output directory where the results will be saved",

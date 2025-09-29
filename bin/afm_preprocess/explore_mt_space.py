@@ -137,7 +137,7 @@ def main():
 
     # Read and format coverage 
     df_coverage_input = pd.read_csv(args.coverage_input, index_col=0)
-    path_cov = df_coverage_input.loc[args.job_id, 'path']
+    path_cov = df_coverage_input.loc[args.job_id, 'coverage']
     sample = df_coverage_input.loc[args.job_id, 'sample']
     cov = mt.io.read_coverage(afm_raw, path_cov, sample)
 

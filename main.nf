@@ -6,7 +6,6 @@ include { preprocess } from "./subworkflows/preprocess/main"
 include { createPreprocessingChannel } from "./subworkflows/preprocess/main"
 include { afm_preprocess } from "./subworkflows/afm_preprocess/main"
 include { createAFMChannel } from "./subworkflows/afm_preprocess/main"
-include { createAFMChannelWithCoverage } from "./subworkflows/explore/main"
 include { build_tree } from "./subworkflows/tree_build/main"
 include { process_tree } from "./subworkflows/tree_process/main"
 include { tune } from "./subworkflows/tune/main"
@@ -68,6 +67,10 @@ if (params.help) {
                                        
         --afm_input                    CSV file with AFM paths (job_id,sample,afm)
                                        Required for: TUNE, EXPLORE, INFER, BENCH
+                                       
+        --coverage_input               CSV file with coverage table paths (job_id,sample,coverage)
+                                       Optional for EXPLORE workflows
+                                       (default: ${params.coverage_input})
                                        
         --output_folder                Output directory path (REQUIRED)
                                        Will be created if it doesn't exist
@@ -296,7 +299,7 @@ workflow TUNE {
 
 workflow EXPLORE {
 
-    ch_jobs = createAFMChannelWithCoverage()
+    ch_jobs = createAFMChannel()
     explore(ch_jobs)
 
 }

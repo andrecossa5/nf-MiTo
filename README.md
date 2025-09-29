@@ -111,6 +111,12 @@ Input/Output Options control nf-MiTo pipeline I/O operations:
 <td align="left">Path</td>
 </tr>
 <tr>
+<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;coverage_input</code></td>
+<td align="left">Coverage tables CSV file for coverage analysis</td>
+<td align="left"><code>null</code></td>
+<td align="left">Path</td>
+</tr>
+<tr>
 <td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;output_folder</code></td>
 <td align="left">Output directory path</td>
 <td align="left"><code>–</code></td>
@@ -173,6 +179,14 @@ All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw da
 | `job_id` | `sample_name` | `AFM path` |
 
 The `job_id` here serve as label links a certain sample (`sample_name`) with a specific AFM (`AFM path`, e.g. from different raw data pre-processing workflows).
+
+(Optional) the user can also provide coverage tables for analysis (<span style="white-space: nowrap;">`--coverage_input`</span> parameter, default is `null`). These coverage tables are passed with the following sample sheet (CSV file):
+
+| job_id | sample | coverage |
+|-----------|-------------|---------|
+| `job_id` | `sample_name` | `coverage table path` |
+
+The coverage tables can be used in EXPLORE workflows for advanced visualization and analysis of mitochondrial variant coverage patterns.
 
 The <span style="white-space: nowrap;">`--output_folder`</span> parameter is always required from the user.
 
