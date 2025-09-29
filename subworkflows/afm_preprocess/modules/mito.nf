@@ -49,7 +49,7 @@ process MITO {
     --filter_moran ${params.filter_moran} \
     --filter_dbs ${params.filter_dbs} \
     --spatial_metrics ${params.spatial_metrics} \
-    --ncores ${task.cpus}
+    --ncores ${task.cpus} \
     ${path_tuning} \
     ${lineage_column} \
     """
