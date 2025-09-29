@@ -25,41 +25,25 @@ workflow tune {
 
     main: 
 
-        // Validate that required tuning parameters are arrays
-        if (!(params.min_n_positive instanceof List)) {
-            error "TUNE workflow requires --min_n_positive to be an array (e.g., '[5,10,15]')"
-        }
-        if (!(params.af_confident_detection instanceof List)) {
-            error "TUNE workflow requires --af_confident_detection to be an array (e.g., '[0.01,0.02,0.05]')"
-        }
-        if (!(params.min_n_confidently_detected instanceof List)) {
-            error "TUNE workflow requires --min_n_confidently_detected to be an array (e.g., '[2,5,10]')"
-        }
-        if (!(params.min_mean_AD_in_positives instanceof List)) {
-            error "TUNE workflow requires --min_mean_AD_in_positives to be an array (e.g., '[1.0,1.25,1.5]')"
-        }
-        if (!(params.min_AD instanceof List)) {
-            error "TUNE workflow requires --min_AD to be an array (e.g., '[1,2,3]')"
-        }
-        if (!(params.bin_method instanceof List)) {
-            error "TUNE workflow requires --bin_method to be an array (e.g., '[\"MiTo\",\"vanilla\"]')"
-        }
-        if (!(params.t_prob instanceof List)) {
-            error "TUNE workflow requires --t_prob to be an array (e.g., '[0.5,0.7,0.9]')"
-        }
-        if (!(params.min_cell_prevalence instanceof List)) {
-            error "TUNE workflow requires --min_cell_prevalence to be an array (e.g., '[0.01,0.05,0.1]')"
-        } 
+        // Convert parameters to lists for flexible handling
+        def min_n_positive_list = params.min_n_positive instanceof List ? params.min_n_positive : [params.min_n_positive]
+        def af_confident_detection_list = params.af_confident_detection instanceof List ? params.af_confident_detection : [params.af_confident_detection]
+        def min_n_confidently_detected_list = params.min_n_confidently_detected instanceof List ? params.min_n_confidently_detected : [params.min_n_confidently_detected]
+        def min_mean_AD_in_positives_list = params.min_mean_AD_in_positives instanceof List ? params.min_mean_AD_in_positives : [params.min_mean_AD_in_positives]
+        def min_AD_list = params.min_AD instanceof List ? params.min_AD : [params.min_AD]
+        def bin_method_list = params.bin_method instanceof List ? params.bin_method : [params.bin_method]
+        def t_prob_list = params.t_prob instanceof List ? params.t_prob : [params.t_prob]
+        def min_cell_prevalence_list = params.min_cell_prevalence instanceof List ? params.min_cell_prevalence : [params.min_cell_prevalence]
 
         ch_input = ch_input.map{ it -> tuple(it[1], it[2]) }
-                .combine(Channel.fromList(params.min_n_positive))
-                .combine(Channel.fromList(params.af_confident_detection))
-                .combine(Channel.fromList(params.min_n_confidently_detected))
-                .combine(Channel.fromList(params.min_mean_AD_in_positives))
-                .combine(Channel.fromList(params.min_AD))
-                .combine(Channel.fromList(params.bin_method))
-                .combine(Channel.fromList(params.t_prob))
-                .combine(Channel.fromList(params.min_cell_prevalence))
+                .combine(Channel.fromList(min_n_positive_list))
+                .combine(Channel.fromList(af_confident_detection_list))
+                .combine(Channel.fromList(min_n_confidently_detected_list))
+                .combine(Channel.fromList(min_mean_AD_in_positives_list))
+                .combine(Channel.fromList(min_AD_list))
+                .combine(Channel.fromList(bin_method_list))
+                .combine(Channel.fromList(t_prob_list))
+                .combine(Channel.fromList(min_cell_prevalence_list))
                 .map{
                     def (a, b, c, d, e, f, g, h, i, l) = it
                     tuple(a, b, c, d, e, f, g, h, i, l, generateRandomCode())
