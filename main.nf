@@ -6,6 +6,7 @@ include { preprocess } from "./subworkflows/preprocess/main"
 include { createPreprocessingChannel } from "./subworkflows/preprocess/main"
 include { afm_preprocess } from "./subworkflows/afm_preprocess/main"
 include { createAFMChannel } from "./subworkflows/afm_preprocess/main"
+include { createAFMChannelWithCoverage } from "./subworkflows/explore/main"
 include { build_tree } from "./subworkflows/tree_build/main"
 include { process_tree } from "./subworkflows/tree_process/main"
 include { tune } from "./subworkflows/tune/main"
@@ -295,7 +296,7 @@ workflow TUNE {
 
 workflow EXPLORE {
 
-    ch_jobs = createAFMChannel()
+    ch_jobs = createAFMChannelWithCoverage()
     explore(ch_jobs)
 
 }

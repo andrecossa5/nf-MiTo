@@ -11,16 +11,15 @@ process VIZ_MT_SPACE {
     publishDir "${params.output_folder}/${sample}", mode: 'copy'
 
     input:
-    tuple val(job_id), val(sample), val(ch_matrix)
+    tuple val(job_id), val(sample), val(ch_matrix), val(coverage_input)
  
     output:
     tuple val(job_id), val(sample), path("${job_id}"), emit: plots
 
     script:
-    
+
     // Handle CLI from params (only conditional for null-defaulting parameters)
     def covariate = params.covariate ? "--covariate ${params.covariate}" : ""
-    def coverage_input = params.coverage_input ? "--coverage_input ${params.coverage_input}" : ""
     def path_tuning = params.path_tuning ? "--path_tuning ${params.path_tuning}" : ""
 
     """
@@ -31,8 +30,8 @@ process VIZ_MT_SPACE {
     --ncores ${task.cpus} \
     --filter_dbs ${params.filter_dbs} \
     --max_fraction_unassigned ${params.max_fraction_unassigned} \
+    --coverage_input ${coverage_input} \
     ${path_tuning} \
-    ${coverage_input} \
     ${covariate}
     """
 
