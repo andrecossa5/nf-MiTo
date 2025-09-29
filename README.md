@@ -611,9 +611,6 @@ Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` op
 ## Examples
 Tutorials for the main entrypoints and use-cases can be found [here](docs). 
 
-## Best practices
-
-
 ## Troubleshooting
 
 1. **Memory Errors**: Increase memory allocation in configuration
