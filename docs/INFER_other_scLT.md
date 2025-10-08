@@ -7,6 +7,7 @@ In this tutorial, we will reproduce the steps needed to infer lineages from char
 1. The [KP-tracer](10.1016/j.cell.2022.04.015) mouse data, a Cas9-based lineage recorder system
 2. The single-cell Whole Genome Sequencing (scWGS) data from [Fabre et al.](https://doi.org/10.1038/s41586-022-04785-z)
 3. The [RedeeM](https://doi.org/10.1038/s41586-024-07066-z) data (MT-SNVs enriched from 10x Multiome scATAC-seq libraries)
+4. The [EPI-clone](https://doi.org/10.1038/s41586-025-09041-8) data (Tapestri-enriched DNA-methylation status at single-CpG resolution)
 
 **N.B** Here, starting from publicly available resources, we will download, pre-process and build Allele Frequency Matrices (AFMs) ready for nf-MiTo analysis. This analysis is the same described in our [pre-print](https://doi.org/10.1101/2025.06.17.660165) (Figure 5). However, for practical considerations, here we will be using only 1 representative sample for scLT system. The user is encouraged to go through the original works for information about specific scLT systems and pre-processing operations needed. 
 
@@ -162,9 +163,9 @@ nextflow run main.nf -profile docker,local -params-file user_params.json -entry 
 
 as before.
 
-
 # RedeeM data
-Finally, we take care of the RedeeM data. Here, we will follow the recipe from [Lareau et al.,](https://github.com/caleblareau/redeem-reanalysis-reproducibility), for the sample `Young1.T1.HSC.Consensus.final`:
+For Redeem data, we will follow the recipe from [Lareau et al.,](https://github.com/caleblareau/redeem-reanalysis-reproducibility), 
+for the sample `Young1.T1.HSC.Consensus.final`.
 
 First, we download the data, and inspect its content:
 
@@ -238,9 +239,64 @@ afm
 
 nf-MiTo INFER can be launched on this AFM as previously shown for Cas9 and scWGS matrices, this time with `--scLT_system` == `RedeeM` and `--distance_metric` == `jaccard` or `weighted_jaccard`.
 
+
+# EPI-clone data
+Finally, we can explore EPI-clone methylation data. First, we download the data from mouse experiments (see 
+[EPI-clone](https://doi.org/10.1038/s41586-025-09041-8)), and inspect its content:
+
+```bash
+wget https://figshare.com/ndownloader/files/42479346 
+mv seurat_for_figshare.rds seurat_42479346.rds
+```
+
+We can extract from the seurat object the needed slots (i.e., cell metadata and binary methylation profiles):
+
+```R
+seurat <- readRDS('seurat_42479346.rds')
+write.csv(seurat@meta.data, 'cell_meta.csv')   
+write.csv(as.data.frame(t(seurat@assays$DNAm@data)), 'DNAm_binary.csv')
+```
+
+We will need also epimutation annotations and selection tables. For this experiment (see pubblication main Fig.1):
+
+```bash
+wget https://raw.githubusercontent.com/veltenlab/EPI-clone/main/infos/panel_info_dropout_pwm.tsv
+wget https://raw.githubusercontent.com/veltenlab/EPI-clone/main/infos/cpg_selection.csv
+```
+
+Our input folder should look something like this:
+
+```
+├── DNAm_binary.csv
+├── cells_meta.csv
+├── cpg_selection.csv
+├── panel_info_dropout_pwm.tsv
+└── seurat_42479346.rds
+```
+
+To build EPI-clones AFMs, we proceed as the usual (N.B. in this case we need to extract cells from single samples, 
+so we need to provide also `path_meta` to the `mt.io.make_afm` function).
+
+```python
+import mito as mt
+
+# Make AFM
+path_ch_matrix = '<your path to EPI-clone data folder>'
+path_meta = '<your path to EPI-clone data folder>/cells_meta.csv'
+sample = 'LARRY_mouse1'
+afm = mt.io.make_afm(path_ch_matrix, sample=sample, path_meta=path_meta, scLT_system='EPI-clone')
+afm
+
+# Write out 
+# afm.write('afm.h5ad')
+```
+
+nf-MiTo INFER can be launched as shown before, with `--scLT_system` == `EPI-clone`. The preferred metric for this scLT lineage tracer is `--distance_metric` == `jaccard`.
+
+
 # TODO:
 * Add functionalities to annotate tree with other than MT-SNVs data (in progress)
-* Add workflows for scWGS, Cas9 and RedeeM pre-processing from raw sequencing data (long term) 
+* Add workflows for scWGS, Cas9, RedeeM, and EPI-clone pre-processing from raw sequencing data (long term) 
 
 
 

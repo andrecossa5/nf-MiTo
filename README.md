@@ -11,7 +11,7 @@
   <div style="width: 200px; height: 6px; background: linear-gradient(90deg, #ff6b6b, #ff8e53, #4ecdc4, #44a08d); margin: 35px auto; border-radius: 3px; box-shadow: 0 3px 12px rgba(0,0,0,0.4);"></div>
   
   <p style="font-size: 1.5em; font-weight: 400; color: #f8f9fa; margin: 30px 0 10px 0; line-height: 1.6; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); max-width: 800px; margin-left: auto; margin-right: auto;">
-    Integrated Nextflow pipeline for mitochondrial SNV-based<br>single-cell lineage tracing and multi-omics
+    Mitochondrial lineage tracing and single-cell multi-omics (Nextflow)
   </p>
   
 </div>
@@ -34,14 +34,14 @@ The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) da
 4. Calculation of cell-cell distances
 5. Lineage inference
 
-nf-MiTo supports lineage inference (step 2-5, from pre-processed character matrices) of other lineage tracing systems, including RedeeM (MT-DNA, enriched from 10x multiome libraries), Cas9-based lineage recorders, and single-cell Whole Genome Sequencing data (scWGS), representing a novel unifying framework for scLT data analysis.
+nf-MiTo supports lineage inference (step 2-5, from pre-processed character matrices) of other lineage tracing systems, including RedeeM (MT-DNA, enriched from 10x multiome libraries), Cas9-based lineage recorders, single-cell Whole Genome Sequencing data (scWGS), and Methylation scLT data (EPI-clone system), representing a novel unifying framework for scLT data analysis.
 
 See our recent pre-print [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for detailed explanations and benchmarks.
 
 ### Key Features
 
 - 📁 **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
-- 🧬 **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, and scWGS systems
+- 🧬 **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, scWGS, and EPI-clone systems
 - ⚡  **Highly optimized methods for MT-scLT data analysis**: [MiTo](https://github.com/andrecossa5/MiTo) python package functionalities, at scale
 - 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction and boostrap algorithms
 - 🎯 **Estensive parameter optimization**: built-in parameter tuning workflow
@@ -277,7 +277,7 @@ pre-processing tool.
 <tbody>
 <tr>
 <td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;scLT_system</code></td>
-<td align="left">scLT system [<code>MAESTER</code>, <code>RedeeM</code>, <code>Cas9</code>, <code>scWGS</code>]</td>
+<td align="left">scLT system [<code>MAESTER</code>, <code>RedeeM</code>, <code>Cas9</code>, <code>scWGS</code>, <code>EPI-clone</code>]</td>
 <td align="left"><code>MAESTER</code></td>
 <td align="left">String</td>
 </tr>

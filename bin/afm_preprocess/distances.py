@@ -100,10 +100,10 @@ def main():
     # Bootstrap
     if scLT_system in ['MAESTER', 'RedeeM']:
         afm_new = mt.tl.bootstrap_MiTo(afm, **kwargs)
-    elif scLT_system in ['scWGS', 'Cas9']:
+    elif scLT_system in ['scWGS', 'Cas9', 'EPI-clone']:
         afm_new = mt.tl.bootstrap_bin(afm, **kwargs)
     else:
-        raise ValueError(f'{scLT_system} unavailable! Choose a scLT_system among MAESTER, RedeeeM, scWGS and Cas9.')
+        raise ValueError(f'{scLT_system} unavailable! Choose a scLT_system among MAESTER, RedeeeM, scWGS and Cas9, EPI-clone.')
 
     # Compute distances, recalling 
     mt.pp.compute_distances(
