@@ -215,6 +215,30 @@
                     "description": "Number of median absolute deviations for outlier detection",
                     "default": 3,
                     "minimum": 1
+                },
+                "mean_cov_all": {
+                    "type": "integer",
+                    "description": "Minimum mean coverage across all mitochondrial sites",
+                    "default": 20,
+                    "minimum": 1
+                },
+                "median_cov_target": {
+                    "type": "integer",
+                    "description": "Target median coverage for mitochondrial variants",
+                    "default": 25,
+                    "minimum": 1
+                },
+                "min_perc_covered_sites": {
+                    "type": "number",
+                    "description": "Minimum percentage of mitochondrial sites covered",
+                    "default": 0.75,
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "cell_filter": {
+                    "type": "string",
+                    "description": "Cell filtering strategy",
+                    "default": "filter2"
                 }
             }
         },
@@ -228,11 +252,6 @@
                     "type": "boolean",
                     "description": "Filter doublets/blacklisted variants",
                     "default": true
-                },
-                "cell_filter": {
-                    "type": "string",
-                    "description": "Cell filtering strategy",
-                    "default": "filter2"
                 },
                 "filtering": {
                     "type": "string",

@@ -31,9 +31,12 @@
     "min_n_genes" : 250,
     "max_perc_mt" : 0.15,
     "n_mads" : 3,
+    "mean_cov_all" : 20,
+    "median_cov_target": 25,
+    "min_perc_covered_sites": 0.75,
+    "cell_filter": "filter1",
 
     "filter_dbs" : true,
-    "cell_filter": "filter2",
     "filtering": "MiTo",
     "spatial_metrics" : false,
     "filter_moran" : true,

@@ -39,6 +39,9 @@ process ONESAMPLE {
     --job_id ${job_id} \
     --sample ${sample} \
     --cell_filter ${params.cell_filter} \
+    --mean_cov_all ${params.mean_cov_all} \
+    --median_cov_target ${params.median_cov_target} \
+    --min_perc_covered_sites ${params.min_perc_covered_sites} \
     --filtering ${params.filtering} \
     --min_cell_number ${params.min_cell_number} \
     --min_cov ${params.min_cov} \

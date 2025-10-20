@@ -48,6 +48,27 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
+    '--mean_cov_all', 
+    type=float,
+    default=10,
+    help='Mean MT-genome coverage. Default: 10.'
+)
+
+my_parser.add_argument(
+    '--median_cov_target',
+    type=float,
+    default=25,
+    help='Median coverage in MAESTER target regions. Default: 25.'
+)  
+
+my_parser.add_argument(
+    '--min_perc_covered_sites',
+    type=float,
+    default=.75,
+    help='Minimum percentage of covered target sites. Default: .75.'
+) 
+
+my_parser.add_argument(
     '--filtering', 
     type=str,
     default=None,
@@ -262,7 +283,13 @@ def main():
 
     # Filter matrix and calculate metrics
     afm = sc.read(args.path_afm)
-    afm = mt.pp.filter_cells(afm, cell_filter=cell_filter)
+    afm = mt.pp.filter_cells(
+        afm, 
+        cell_filter=cell_filter,
+        mean_cov_all=args.mean_cov_all,
+        median_cov_target=args.median_cov_target,
+        min_perc_covered_sites=args.min_perc_covered_sites
+    )
     afm, tree = mt.pp.filter_afm(
         afm,
         filtering_kwargs=filtering_kwargs,

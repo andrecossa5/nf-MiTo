@@ -394,6 +394,24 @@ Cell Filtering parameters parameters specify for cell Quality Control (QC) opera
 <td align="left">Integer</td>
 </tr>
 <tr>
+<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;mean_cov_all</code></td>
+<td align="left">Minimum mean coverage across all mitochondrial sites</td>
+<td align="left"><code>20</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;median_cov_target</code></td>
+<td align="left">Minimum median coverage of MAESTER target sites</td>
+<td align="left"><code>25</code></td>
+<td align="left">Integer</td>
+</tr>
+<tr>
+<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_perc_covered_sites</code></td>
+<td align="left">Minimum percentage of mitochondrial sites covered</td>
+<td align="left"><code>0.75</code></td>
+<td align="left">Float</td>
+</tr>
+<tr>
 <td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;cell_filter</code></td>
 <td align="left">MT-library filtering strategy [<code>null</code>, <code>filter1</code>, <code>filter2</code>]</td>
 <td align="left"><code>filter2</code></td>
@@ -404,7 +422,9 @@ Cell Filtering parameters parameters specify for cell Quality Control (QC) opera
 
 <span style="white-space: nowrap;">`--min_nUMIs`</span>, <span style="white-space: nowrap;">`--min_n_genes`</span>, <span style="white-space: nowrap;">`--max_perc_mt`</span> and <span style="white-space: nowrap;">`--n_mads`</span> are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* <span style="white-space: nowrap;">`--raw_input_data_type`</span> = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (<span style="white-space: nowrap;">`--n_mads`</span> * MADs, Median Absolute Deviations).
 
-On the contrary, the <span style="white-space: nowrap;">`--cell_filter`</span> parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., <span style="white-space: nowrap;">`--scLT_system`</span> in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
+The mitochondrial coverage parameters <span style="white-space: nowrap;">`--mean_cov_all`</span>, <span style="white-space: nowrap;">`--median_cov_target`</span>, and <span style="white-space: nowrap;">`--min_perc_covered_sites`</span> control quality filtering based on mitochondrial library coverage metrics. These parameters set thresholds for mean coverage across all mitochondrial sites, the median coverage of MAESTER target sites, and minimum percentage of covered sites, respectively.
+
+The <span style="white-space: nowrap;">`--cell_filter`</span> parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., <span style="white-space: nowrap;">`--scLT_system`</span> in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
 
 ### Allele Frequency Matrix Preprocessing parameters
 
