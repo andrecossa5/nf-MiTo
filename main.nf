@@ -1,4 +1,4 @@
-// nf-MiTo, tested
+// nf-MiTo
 nextflow.enable.dsl = 2
 
 // Include subworkflows
