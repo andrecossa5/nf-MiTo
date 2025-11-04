@@ -492,6 +492,16 @@
                     "description": "Maximum number of vireoSNP clusters",
                     "default": 15,
                     "minimum": 2
+                },
+                "help": {
+                    "type": "boolean",
+                    "description": "Show help message and exit",
+                    "default": false
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Show version information and exit",
+                    "default": false
                 }
             }
         }

@@ -28,7 +28,7 @@ Before going further, make sure the folder contains the `KPTracer.alleleTable.FI
 ls KPTracer-Data/KPTracer.alleleTable.FINAL.txt.gz
 ```
 
-From this table, we can now use MiTo I/O functions to generate a AFMs in AnnData format. In this case we will do it for sample 3726_NT_T1.
+From this table, we can now use MiTo I/O functions to generate a AFMs in AnnData format. In this case we will do it for sample 3726_NT_T1. To calculate empirical INDEL priors, we will group counts by `priors_groupby` = `MetFamily`. To get the character matrix of sample 3726_NT_T1, we will subset the table by `sample_col` = `Tumor`:
 
 ```python
 import mito as mt
@@ -36,11 +36,13 @@ import mito as mt
 # Make AFM
 path_ch_matrix = '<your path to KPTracer.alleleTable.FINAL.txt.gz>'
 sample = '3726_NT_T1'
-afm = mt.io.make_afm(path_ch_matrix, sample=sample, scLT_system='Cas9')
+afm = mt.io.make_afm(
+    path_ch_matrix, 
+    sample=sample, 
+    scLT_system='Cas9',
+    kwargs={'priors_groupby':'MetFamily', 'sample_col':'Tumor'}
+)
 afm
-
-# Write out 
-# afm.write('afm.h5ad')
 ```
 
 That's it. We can now prepare our `--afm_input` as per the [INFER tutorial](2.INFER.md):
@@ -117,9 +119,6 @@ path_ch_matrix = '<your path to filtered_muts_PD34493_standard.csv>'
 sample = 'PD34493'
 afm = mt.io.make_afm(path_ch_matrix, sample=sample, scLT_system='scWGS')
 afm
-
-# Write out 
-# afm.write('afm.h5ad')
 ```
 
 We can now prepare our `--afm_input` as before:
@@ -196,13 +195,30 @@ Young1.T1.HSC.Consensus.final
 ├── TotalRawBamRows.Mito
 ```
 
-From this variant calls, we will perform an interactive variant filtering, as suggested in [Lareau et al.,](https://github.com/caleblareau/redeem-reanalysis-reproducibility) (see also the ongoing debate on RedeeM data quality).
+From the `RedeemV` houtput, we can either build an unfiltered AFM with `MiTo`, or use `RedeemR` (Weng et al., 2024) pipeline for variant filtering (as suggested in [Lareau et al.,](https://github.com/caleblareau/redeem-reanalysis-reproducibility) see also the ongoing debate on RedeeM data quality).
+
+For the former case:
+
+```python
+import mito as mt
+
+path_ch_matrix = '<path to Young1.T1.HSC.Consensus.final>'
+afm = mt.io.make_afm(
+    path_ch_matrix=path_ch_matrix, 
+    scLT_system='RedeeM',
+    pp_method='RedeemV',
+    kwargs={'edge_trim': 5, 'treshold': 'Sensitive'}
+)
+afm
+```
+
+while for the latter we first filter `Redeem-V` raw genotypes with `RedeemR`
 
 ```R
 library(tidyverse)
 library(redeemR)
 
-path_input <- '<your path here/Young1.T1.HSC.Consensus.final/'
+path_input <- '<path to Young1.T1.HSC.Consensus.final>'
 
 # Create trimmed-ends basecall table
 VariantsGTSummary <- redeemR.read.trim(
@@ -216,25 +232,28 @@ redeemR <- Create_redeemR_model(VariantsGTSummary, qualifiedCellCut=10, VAFcut=1
 redeemR <- clean_redeem(redeemR, fdr=0.05)
 redeemR <- clean_redeem_removehot(redeemR)
 
-# Extract filtered_basecalls, cell_meta an var_meta tables to build the AFM in python.
-write.csv(redeemR@GTsummary.filtered, paste0(path_input, 'filtered_basecalls.csv'))
-write.csv(redeemR@CellMeta, paste0(path_input, 'cell_meta.csv'))
-write.csv(redeemR@V.fitered,  paste0(path_input, 'var_meta.csv'))
+# Write filtered basecalls
+filtered_counts <- redeemR@GTsummary.filtered %>% 
+    select(Cell, Variants, Freq, depth) %>% 
+    rename(AD_trimmed=Freq, DP=depth)
+filtered_counts$Variants <- str_replace(
+    filtered_counts$Variants, "_([ACGTN])_([ACGTN])$", "_\\1>\\2"
+)
+write_tsv(filtered_counts.trimmed, paste0(path_input, '/FilteredCounts.trimmed')) 
 ```
 
-With these tables, we can now build our AFM with `MiTo`:
+With these filtered counts, we can now build our AFM with `MiTo`:
 
 ```python
 import mito as mt
 
-# Make AFM
-path_ch_matrix = '<your path to Young1.T1.HSC.Consensus.final folder>'
-sample = 'Young1.T1.HSC.Consensus.final'
-afm = mt.io.make_afm(path_ch_matrix, sample=sample, scLT_system='RedeeM')
+path_ch_matrix = '<path to Young1.T1.HSC.Consensus.final>'
+afm = mt.io.make_afm(
+    path_ch_matrix=path_ch_matrix, 
+    scLT_system='RedeeM',
+    pp_method='RedeemR'
+)
 afm
-
-# Write out 
-# afm.write('afm.h5ad')
 ```
 
 nf-MiTo INFER can be launched on this AFM as previously shown for Cas9 and scWGS matrices, this time with `--scLT_system` == `RedeeM` and `--distance_metric` == `jaccard` or `weighted_jaccard`.
@@ -286,9 +305,6 @@ path_meta = '<your path to EPI-clone data folder>/cells_meta.csv'
 sample = 'LARRY_mouse1'
 afm = mt.io.make_afm(path_ch_matrix, sample=sample, path_meta=path_meta, scLT_system='EPI-clone')
 afm
-
-# Write out 
-# afm.write('afm.h5ad')
 ```
 
 nf-MiTo INFER can be launched as shown before, with `--scLT_system` == `EPI-clone`. The preferred metric for this scLT lineage tracer is `--distance_metric` == `jaccard`.
