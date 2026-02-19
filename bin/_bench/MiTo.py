@@ -6,6 +6,8 @@ import scanpy as sc
 import pickle
 import mito as mt
 from sklearn.metrics import normalized_mutual_info_score
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -22,19 +24,19 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None.'
 )
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id. Default: None.'
 )
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'

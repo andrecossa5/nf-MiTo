@@ -3,7 +3,7 @@
 # Build cassiopeia
 
 ########################################################################
- 
+
 # Libraries
 import os
 import argparse
@@ -15,21 +15,21 @@ my_parser = argparse.ArgumentParser(
 )
 
 my_parser.add_argument(
-    '--tree', 
+    '--tree',
     type=str,
     default=None,
     help='Path to annotated_tree in .pickle format. Default: .. .'
 )
 
 my_parser.add_argument(
-    '--lineage_column', 
+    '--lineage_column',
     type=str,
     default=None,
     help='lineage_column. Default: None .'
 )
 
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id. Default: None.'
@@ -56,6 +56,8 @@ import pickle
 import numpy as np
 import pandas as pd
 import mito as mt
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 from itertools import chain
 
 ########################################################################
@@ -69,19 +71,19 @@ def main():
     # Load tree
     with open(path_tree, 'rb') as f:
         tree = pickle.load(f)
-    
+
     # n cells
     metrics['n_cells'] = tree.layers['transformed'].shape[0]
 
     # Character metrics
     n_unique_char_states = np.unique(tree.layers['transformed'].values.flatten()).size
-    if n_unique_char_states <=3:      
-        # SNVs: RedeeM and MAESTER (binary char matrices: 0,1 states), scWGS (ternary char matrices: 0,0.5,1 states)                                                                                   
+    if n_unique_char_states <=3:
+        # SNVs: RedeeM and MAESTER (binary char matrices: 0,1 states), scWGS (ternary char matrices: 0,0.5,1 states)
         metrics['n_characters'] = tree.layers['transformed'].shape[1]
         metrics['median_char_per_cell'] = np.median(np.sum(tree.layers['transformed']>0, axis=1))
         nrow, ncol = tree.layers['transformed'].shape
         metrics['density'] = np.sum(tree.layers['transformed'].values>0) / (nrow*ncol)
-    else:                                                                   
+    else:
         # INDELs (-1 state: missing info, 0 INDEL state: uncut, others: unique indel states)
         # see https://www.sc-best-practices.org/trajectories/lineage_tracing.html#
         metrics['n_characters'] = tree.layers['transformed'].apply(lambda x: x[x>0].unique().size, axis=0).sum()

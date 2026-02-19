@@ -9,6 +9,8 @@ import pandas as pd
 import pickle
 import mito as mt
 from sklearn.metrics import silhouette_score, normalized_mutual_info_score
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -25,19 +27,19 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None.'
 )
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id. Default: None.'
 )
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'
@@ -75,7 +77,7 @@ def main():
         scores.append(silhouette_avg)
 
     labels = mt.tl.leiden_clustering(conn, res=resolutions[np.argmax(scores)])
-    d['% unassigned'] = 0            
+    d['% unassigned'] = 0
     d['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'], labels)
     d['NMI'] = normalized_mutual_info_score(afm.obs['GBC'], labels)
     d['labels'] = pd.Series([ f'leiden_{x}' for x in labels ], index=afm.obs_names)

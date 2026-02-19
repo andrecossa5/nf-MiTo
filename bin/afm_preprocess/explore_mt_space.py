@@ -4,7 +4,7 @@
 
 ########################################################################
 
-# Libraries 
+# Libraries
 import os
 import argparse
 
@@ -20,77 +20,77 @@ my_parser = argparse.ArgumentParser(
 # Add arguments
 
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'
 )
 
 my_parser.add_argument(
-    '--path_tuning', 
+    '--path_tuning',
     type=str,
     default=None,
     help='Path to tuning output folder. Default: None.'
 )
 
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None.'
 )
 
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='Job id. Default: None.'
 )
 
 my_parser.add_argument(
-    '--ncores', 
+    '--ncores',
     type=int,
     default=1,
     help='n cores to use. Default: 1.'
 )
 
 my_parser.add_argument(
-    '--filter_dbs', 
+    '--filter_dbs',
     type=str,
     default="true",
     help='Filter MT-SNVs with dbSNP and REDIdb database. Default: true.'
 )
 
 my_parser.add_argument(
-    '--covariate', 
+    '--covariate',
     type=str,
     default=None,
     help='Covariate to plot. Default: None.'
 )
 
 my_parser.add_argument(
-    '--spatial_metrics', 
+    '--spatial_metrics',
     type=str,
     default="false",
     help='Add spatial metrics. Default: false.'
 )
 
 my_parser.add_argument(
-    '--filter_moran', 
+    '--filter_moran',
     type=str,
     default="true",
     help='Add filtering for spatial autocorrelation. Default: true.'
 )
 
 my_parser.add_argument(
-    '--coverage_input', 
+    '--coverage_input',
     type=str,
     default=None,
     help='Path to coverage file. Default: None.'
 )
 
 my_parser.add_argument(
-    '--max_fraction_unassigned', 
+    '--max_fraction_unassigned',
     type=float,
     default=.05,
     help='Max fraction unassigned cells. Default: 0.05.'
@@ -112,9 +112,11 @@ args = my_parser.parse_args()
 # Code
 import pandas as pd
 import scanpy as sc
-import mito as mt 
+import mito as mt
 import matplotlib.pyplot as plt
 import plotting_utils as plu
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 ########################################################################
 
@@ -135,7 +137,7 @@ def main():
     mt.pp.annotate_vars(afm_raw)
     afm_raw = mt.pp.filter_baseline(afm_raw)
 
-    # Read and format coverage 
+    # Read and format coverage
     df_coverage_input = pd.read_csv(args.coverage_input, index_col=0)
     path_cov = df_coverage_input.loc[args.job_id, 'coverage']
     sample = df_coverage_input.loc[args.job_id, 'sample']
@@ -179,15 +181,15 @@ def main():
     plu.format_ax(ax=ax, ylabel='Mean nAD / +cells', xlabel='n +cells', reduced_spines=True)
 
     ax = fig.add_subplot(1,4,3, polar=True)
-    mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax, 
-                      kwargs_subset={'markersize':8, 'c':'#05A8B3'}, 
+    mt.pl.MT_coverage_polar(cov, var_subset=afm.var_names, ax=ax,
+                      kwargs_subset={'markersize':8, 'c':'#05A8B3'},
                       kwargs_main={'c':'#303030', 'linewidth':1.5, 'alpha':.7})
 
     ax = fig.add_subplot(1,4,4)
     ref_df = mt.ut.load_mt_gene_annot()
     df_plot = ref_df.query('mut in @afm.var_names')
     plu.counts_plot(df_plot, 'Symbol', width=.8, ax=ax, color='#C0C0C0', edgecolor='k', with_label=False)
-    plu.format_ax(ax=ax, xticks=df_plot.index, rotx=90, 
+    plu.format_ax(ax=ax, xticks=df_plot.index, rotx=90,
                   ylabel='n MT-SNVs', xlabel='Gene', reduced_spines=True)
 
     fig.subplots_adjust(bottom=.25, top=.8, left=.1, right=.9, wspace=.4)
@@ -228,9 +230,9 @@ def main():
     # 4. Viz tree
     fig, ax = plt.subplots(figsize=(4.7,5))
     mt.pl.plot_tree(
-        tree, ax=ax, 
-        features=list(cmaps.keys()), 
-        colorstrip_width=5, 
+        tree, ax=ax,
+        features=list(cmaps.keys()),
+        colorstrip_width=5,
         categorical_cmaps=cmaps,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
@@ -249,39 +251,39 @@ def main():
     fig, axs = plt.subplots(1,2,figsize=(15,8), gridspec_kw={'wspace': 0.4})
 
     mt.pl.plot_tree(
-        tree, ax=axs[0], 
-        colorstrip_spacing=.000001, colorstrip_width=2, 
+        tree, ax=axs[0],
+        colorstrip_spacing=.000001, colorstrip_width=2,
         orient='down',
         features=list(cmaps.keys()),
         characters=model.ordered_muts, layer='raw',
         categorical_cmaps=cmaps,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
-        show_internal=True, 
+        show_internal=True,
         internal_node_kwargs={'markersize':8}
     )
     plu.add_cbar(
-        model.tree.layers['transformed'].values.flatten(), 
-        palette='mako', label='AF', 
+        model.tree.layers['transformed'].values.flatten(),
+        palette='mako', label='AF',
         ticks_size=8, label_size=9, vmin=.0, vmax=.1,
         ax=axs[0], layout=( (1.02,.3,.02,.2), 'right', 'vertical' )
     )
 
     mt.pl.plot_tree(
         tree, ax=axs[1],
-        colorstrip_spacing=.000001, colorstrip_width=2, 
+        colorstrip_spacing=.000001, colorstrip_width=2,
         orient='down',
         features=list(cmaps.keys()),
         characters=model.ordered_muts, layer='transformed',
         categorical_cmaps=cmaps,
         feature_internal_nodes='similarity',
         internal_node_subset=model.clonal_nodes,
-        show_internal=True, 
+        show_internal=True,
         internal_node_kwargs={'markersize':8}
     )
     plu.add_legend(
-        label='Genotype', ax=axs[1], 
-        colors={'REF':'b', 'ALT':'r'}, loc='center left', 
+        label='Genotype', ax=axs[1],
+        colors={'REF':'b', 'ALT':'r'}, loc='center left',
         bbox_to_anchor=(1,.4),
         ticks_size=8, artists_size=10, label_size=9
     )

@@ -9,6 +9,8 @@ import pickle
 import mito as mt
 from CCLONE.cluster.NMF import get_wNMF_matrices, NMF_weighted, orth_score
 from sklearn.metrics import normalized_mutual_info_score
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -25,25 +27,25 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None.'
 )
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id. Default: None.'
 )
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'
 )
 my_parser.add_argument(
-    '--maxK', 
+    '--maxK',
     type=int,
     default=15,
     help='Max number of k cluster to try. Default: 15.'
@@ -89,7 +91,7 @@ def main():
     test = np.isnan(labels)
     d['% unassigned'] = test.sum() / labels.size
     d['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'][~test], labels[~test])
-    d['NMI'] = normalized_mutual_info_score(afm.obs['GBC'][~test], labels[~test])  
+    d['NMI'] = normalized_mutual_info_score(afm.obs['GBC'][~test], labels[~test])
     d['labels'] = pd.Series([ f'CClone_{x}' for x in labels ], index=afm.obs_names)
 
     # Write

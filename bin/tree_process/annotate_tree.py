@@ -3,7 +3,7 @@
 # Build cassiopeia
 
 ########################################################################
- 
+
 # Libraries
 import os
 import argparse
@@ -16,28 +16,28 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--afm', 
+    '--afm',
     type=str,
     default=None,
     help='Path to afm in afm.h5ad format. Default: .. .'
 )
 
 my_parser.add_argument(
-    '--tree', 
+    '--tree',
     type=str,
     default=None,
     help='Path to tree in .newick format. Default: .. .'
 )
 
 my_parser.add_argument(
-    '--annotate_tree', 
+    '--annotate_tree',
     type=str,
     default=None,
     help='Path to tree in .newick format. Default: None.'
 )
 
 my_parser.add_argument(
-    '--max_fraction_unassigned', 
+    '--max_fraction_unassigned',
     type=float,
     default=.05,
     help='Max fraction of unassigned cells. Default: .05.'
@@ -65,6 +65,8 @@ import pickle
 import scanpy as sc
 import pandas as pd
 import mito as mt
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -93,7 +95,7 @@ def main():
     # Write as pickle
     with open('annotated_tree.pickle', 'wb') as f:
         pickle.dump(tree.copy(), f)
-    
+
 
     ##
 

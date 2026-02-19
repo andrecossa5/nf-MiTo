@@ -22,42 +22,42 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--input', 
+    '--input',
     type=str,
     default=None,
     help='Path to filtered/ folder from CellRanger/STARSolo. Default: None'
 )
 
 my_parser.add_argument(
-    '--path_meta', 
+    '--path_meta',
     type=str,
     default=None,
     help='Path to cells_meta.csv. Default: None'
 )
 
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None'
 )
 
 my_parser.add_argument(
-    '--min_nUMIs', 
+    '--min_nUMIs',
     type=int,
     default=500,
     help='Min n of UMIs allowed. Default: 500'
 )
 
 my_parser.add_argument(
-    '--min_n_genes', 
+    '--min_n_genes',
     type=int,
     default=250,
     help='Min n of genes allowed. Default: 250'
 )
 
 my_parser.add_argument(
-    '--max_perc_mt', 
+    '--max_perc_mt',
     type=float,
     default=1,
     help='Max % of MT-gene counts allowed. Default: 1'
@@ -84,6 +84,8 @@ import os
 import numpy as np
 import pandas as pd
 import scanpy as sc
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -91,7 +93,7 @@ import scanpy as sc
 
 def main():
 
-    # Read data data 
+    # Read data data
     adata = sc.read_10x_mtx(path_input)
     adata.obs_names = adata.obs_names.map(lambda x: f'{x}_{sample}') # NB: covention needed on meta df
 
@@ -100,9 +102,9 @@ def main():
 
         meta = pd.read_csv(path_meta, index_col=0)
         if sample in meta['sample'].unique():
-            meta = meta.query('sample==@sample').copy()  
-            cell_keep = list(set(meta.index) & set(adata.obs_names))   
-            assert len(cell_keep>0)     
+            meta = meta.query('sample==@sample').copy()
+            cell_keep = list(set(meta.index) & set(adata.obs_names))
+            assert len(cell_keep>0)
             adata.var['n_cells'] = (adata.X>0).sum(axis=0).toarray()
             adata.var['pct_cells'] = (adata.X>0).sum(axis=0).toarray() / adata.shape[0] * 100
             gene_keep = adata.var.query('pct_cells>=.01').index
@@ -115,7 +117,7 @@ def main():
 
         # Assign sample name
         adata.obs = adata.obs.assign(sample=sample)
-   
+
         # Basic QC, all samples together (all cells also)
         adata.var["mt"] = adata.var_names.str.startswith("MT-")
         adata.obs['total_counts'] = adata.X.toarray().sum(axis=1)
@@ -137,7 +139,7 @@ def main():
     adata.write('adata.h5ad')
     (
         adata.obs_names
-        .map(lambda x: x.split('_')[0])     # Again, no sample name for splitting bams  
+        .map(lambda x: x.split('_')[0])     # Again, no sample name for splitting bams
         .to_series()
         .to_csv('cell_barcodes.txt', header=False, index=False)
     )

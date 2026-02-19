@@ -10,6 +10,8 @@ from kneed import KneeLocator
 from vireoSNP import BinomMixtureVB
 import mito as mt
 from sklearn.metrics import normalized_mutual_info_score
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ##
@@ -20,32 +22,32 @@ my_parser = argparse.ArgumentParser(
     prog='vireo',
     description=
     """
-    vireoSNP clonal inference, bayesian (ELBO-based) hyper-parameter 
+    vireoSNP clonal inference, bayesian (ELBO-based) hyper-parameter
     tuning.
     """
 )
 
 # Add arguments
 my_parser.add_argument(
-    '--sample', 
+    '--sample',
     type=str,
     default=None,
     help='Sample name. Default: None.'
 )
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id. Default: None.'
 )
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'
 )
 my_parser.add_argument(
-    '--maxK', 
+    '--maxK',
     type=int,
     default=15,
     help='Max number of k cluster to try. Default: 15.'
@@ -87,7 +89,7 @@ def main():
     n_clones = knee
 
     _model = BinomMixtureVB(n_var=afm.shape[1], n_cell=afm.shape[0], n_donor=n_clones)
-    _model.fit(afm.layers['AD'].T, afm.layers['site_coverage'].T, 
+    _model.fit(afm.layers['AD'].T, afm.layers['site_coverage'].T,
                min_iter=30, n_init=50, max_iter=500, max_iter_pre=250, random_seed=1234)
 
     clonal_assignment = _model.ID_prob
@@ -100,7 +102,7 @@ def main():
     d['% unassigned'] = test.sum() / labels.size
     d['ARI'] = mt.ut.custom_ARI(afm.obs['GBC'][~test], labels[~test])
     d['NMI'] = normalized_mutual_info_score(afm.obs['GBC'][~test], labels[~test])
-    d['labels'] = pd.Series(labels, index=afm.obs_names)   
+    d['labels'] = pd.Series(labels, index=afm.obs_names)
     d['labels'].loc[lambda x: ~x.isna()] = (
         d['labels']
         .loc[lambda x: ~x.isna()]

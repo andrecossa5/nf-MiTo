@@ -4,7 +4,7 @@
 
 ########################################################################
 
-# Libraries 
+# Libraries
 import argparse
 
 # Create the parser
@@ -18,21 +18,21 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--path_afm', 
+    '--path_afm',
     type=str,
     default='.',
     help='Path to afm.h5ad file. Default: . .'
 )
 
 my_parser.add_argument(
-    '--metric', 
+    '--metric',
     type=str,
     default='jaccard',
     help='Distance metric. Default: jaccard.'
 )
 
 my_parser.add_argument(
-    '--n_cores', 
+    '--n_cores',
     type=int,
     default=1,
     help='n cores to use. Default: 1.'
@@ -46,7 +46,9 @@ my_parser.add_argument(
 
 # Code
 import scanpy as sc
-import mito as mt 
+import mito as mt
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 
 ########################################################################
@@ -66,7 +68,7 @@ def main():
     afm.uns['genotyping'] = {'layer':'bin', 'bin_method':'', 'binarization_kwargs':{}}
     mt.pp.compute_distances(afm, precomputed=True, metric=metric, ncores=n_cores)
     afm.write('afm.h5ad')
-            
+
 
     ##
 

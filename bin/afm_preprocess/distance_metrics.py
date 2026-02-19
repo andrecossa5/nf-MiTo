@@ -4,7 +4,7 @@
 
 ########################################################################
 
-# Libraries 
+# Libraries
 import os
 import argparse
 
@@ -19,42 +19,42 @@ my_parser = argparse.ArgumentParser(
 
 # Add arguments
 my_parser.add_argument(
-    '--afm', 
+    '--afm',
     type=str,
     default=None,
     help='List of paths to all bootstrapped afm.h5ad files. Default: None'
 )
 
 my_parser.add_argument(
-    '--replicates', 
+    '--replicates',
     type=str,
     default=None,
     help='List of replicates identifiers mapping to all afm.h5ad files. Default: None'
 )
 
 my_parser.add_argument(
-    '--job_id', 
+    '--job_id',
     type=str,
     default=None,
     help='job_id identifier. Default: None .'
 )
 
 my_parser.add_argument(
-    '--n_cores', 
+    '--n_cores',
     type=int,
     default=8,
     help='n cores to use. Default: 8.'
 )
 
 my_parser.add_argument(
-    '--K', 
+    '--K',
     type=int,
     default=10,
     help='k NN for NN metrics. Default: 10.'
 )
 
 my_parser.add_argument(
-    '--lineage_column', 
+    '--lineage_column',
     type=str,
     default=None,
     help='Lineage column for benchmark. Default: None.'
@@ -83,7 +83,9 @@ lineage_column = args.lineage_column
 # Code
 import numpy as np
 import scanpy as sc
-import mito as mt 
+import mito as mt
+import anndata
+anndata.settings.allow_write_nullable_strings = True
 
 ########################################################################
 
@@ -104,9 +106,9 @@ def main():
     meta = afm.obs
 
     if lineage_column is not None and lineage_column in meta.columns:
-        
+
         labels = meta[lineage_column].astype(str)
-    
+
         # kNN metrics
         D = DISTANCES['observed'].toarray()
         idx = mt.pp.kNN_graph(D=D, k=K, from_distances=True)[0]
@@ -116,7 +118,7 @@ def main():
         metrics['kBET_rejection_rate'] = 1-acc_rate
         metrics['median_NN_entropy'] = median_entropy
         metrics['median_NN_purity'] = median_purity
-    
+
         # AUPRC
         metrics['AUPRC'] = mt.ut.distance_AUPRC(D, labels)
 
@@ -124,7 +126,7 @@ def main():
     L = []
     for k in DISTANCES:
         L.append(DISTANCES[k].toarray().flatten())
-    del DISTANCES 
+    del DISTANCES
     metrics['corr'] = np.mean(np.corrcoef(np.array(L)))
 
     # Save
