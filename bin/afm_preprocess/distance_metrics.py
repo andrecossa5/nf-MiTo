@@ -112,10 +112,10 @@ def main():
         # kNN metrics
         D = DISTANCES['observed'].toarray()
         idx = mt.pp.kNN_graph(D=D, k=K, from_distances=True)[0]
-        _, _, acc_rate = mt.ut.kbet(idx, labels, only_score=False)
+        # _, _, acc_rate = mt.ut.kbet(idx, labels, only_score=False)
         median_entropy = mt.ut.NN_entropy(idx, labels)
         median_purity = mt.ut.NN_purity(idx, labels)
-        metrics['kBET_rejection_rate'] = 1-acc_rate
+        # metrics['kBET_rejection_rate'] = 1-acc_rate
         metrics['median_NN_entropy'] = median_entropy
         metrics['median_NN_purity'] = median_purity
 
