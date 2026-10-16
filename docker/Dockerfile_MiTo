@@ -35,13 +35,15 @@ RUN mkdir -p /.numba_cache && chmod 1777 /.numba_cache
 ENV NUMBA_CACHE_DIR=/.numba_cache
 
 ## MiTo, from PyPI. The legacy API (scmito<2) is what nf-MiTo's scripts call.
+## The version is read from the package metadata, not by importing MiTo: the import JIT-compiles with
+## numba, which crashes when the x86_64 image is built under QEMU emulation (e.g. on Apple silicon).
 ## MITO_SOURCE is a pip requirement; a wheel in the build context can be tested with
 ##   --build-arg MITO_SOURCE=/ctx/<wheel>.whl   (the context is mounted at /ctx)
 ARG MITO_SOURCE="scmito==1.0.2"
 RUN --mount=type=bind,target=/ctx \
     mamba install --yes -n base python=3.12 \
     && pip install --no-cache-dir "${MITO_SOURCE}" \
-    && python -c "import mito; print('MiTo', mito.__version__)"
+    && python -c "import importlib.metadata as m; print('scmito', m.version('scmito'))"
 
 ## Build and push (x86_64 for the cluster, whatever the build machine is):
 ##   docker build --platform linux/x86_64 -f docker/Dockerfile_MiTo -t acox1/mito:1.0.2 docker/
