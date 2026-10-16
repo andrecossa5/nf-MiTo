@@ -2,38 +2,50 @@
 
 ################################################################
 
-## Start Debian basic image: NBBB ricordarsi --platform linux/x86_64 in docker build
-FROM python:3.9-bullseye
+## Debian 12 (bookworm). The Python of the image comes from Miniforge below, so the base needs no Python.
+## (The former python:3.9-bullseye base can no longer be built: Debian 11's package archive is gone.)
+FROM debian:bookworm-slim
 
 ## Change as u want
 LABEL mantainer = "andrea.cossa@ieo.it"
 
-## Compilers, utilities, git
+## Compilers and utilities (cassiopeia-mt, a MiTo dependency, builds C++ extensions)
 RUN apt-get --quiet update --yes \
-    && apt-get --quiet upgrade --yes \
-    && apt-get --quiet install --yes \
+    && apt-get --quiet install --yes --no-install-recommends \
+      ca-certificates \
       libcurl4-openssl-dev \
       libssl-dev \
       libxml2-dev \
       build-essential \
-      libz-dev \
+      zlib1g-dev \
       wget \
       procps \
-      git \
       cmake \
     && rm -rf /var/lib/apt/lists/*
 
-## Mamba
-RUN wget https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-24.11.3-0-Linux-x86_64.sh \
-    && bash Miniforge3-24.11.3-0-Linux-x86_64.sh -b -p /mambaforge
+## Mamba (the installer matching the machine: x86_64 for the HPC image, aarch64 on Apple silicon)
+RUN ARCH=$(uname -m) \
+    && wget https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-24.11.3-0-Linux-${ARCH}.sh \
+    && bash Miniforge3-24.11.3-0-Linux-${ARCH}.sh -b -p /mambaforge \
+    && rm Miniforge3-24.11.3-0-Linux-${ARCH}.sh
 ENV PATH="/mambaforge/bin/:$PATH"
 
-## Clone repo and install code
-RUN git clone https://github.com/andrecossa5/MiTo.git \
-    && cd MiTo \
-    && mamba env update -n base -f envs/environment.yml \
-    && cd .. \
-    && pip install . 
+## Numba cache in a writable place (containers may run on a read-only filesystem)
+RUN mkdir -p /.numba_cache && chmod 1777 /.numba_cache
+ENV NUMBA_CACHE_DIR=/.numba_cache
+
+## MiTo, from PyPI. The legacy API (scmito<2) is what nf-MiTo's scripts call.
+## MITO_SOURCE is a pip requirement; a wheel in the build context can be tested with
+##   --build-arg MITO_SOURCE=/ctx/<wheel>.whl   (the context is mounted at /ctx)
+ARG MITO_SOURCE="scmito==1.0.2"
+RUN --mount=type=bind,target=/ctx \
+    mamba install --yes -n base python=3.12 \
+    && pip install --no-cache-dir "${MITO_SOURCE}" \
+    && python -c "import mito; print('MiTo', mito.__version__)"
+
+## Build and push (x86_64 for the cluster, whatever the build machine is):
+##   docker build --platform linux/x86_64 -f docker/Dockerfile_MiTo -t acox1/mito:1.0.2 docker/
+##   docker push acox1/mito:1.0.2
 
 ## Default command to initialize the container
 CMD [ "bash" ]
