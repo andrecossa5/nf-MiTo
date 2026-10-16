@@ -46,8 +46,6 @@ process MITO {
     --bin_method ${params.bin_method} \
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \
-    --k ${params.k} \
-    --gamma ${params.gamma} \
     --min_n_var ${params.min_n_var} \
     --filter_moran ${params.filter_moran} \
     --filter_dbs ${params.filter_dbs} \

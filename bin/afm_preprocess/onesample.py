@@ -167,20 +167,6 @@ my_parser.add_argument(
 )
 
 my_parser.add_argument(
-    '--k',
-    type=int,
-    default=5,
-    help='k neighbors to smooth genotipe if bin_method==MiTo_smooth. Default: 5.'
-)
-
-my_parser.add_argument(
-    '--gamma',
-    type=float,
-    default=.25,
-    help='% posterior probability that is smoothed in bin_method==MiTo_smooth. Default: .25.'
-)
-
-my_parser.add_argument(
     '--min_n_var',
     type=int,
     default=1,

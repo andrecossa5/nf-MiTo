@@ -57,8 +57,6 @@ process ONESAMPLE {
     --min_AD ${min_AD} \
     --min_cell_prevalence ${min_cell_prevalence} \
     --bin_method ${bin_method} \
-    --k ${params.k} \
-    --gamma ${params.gamma} \
     --min_n_var ${params.min_n_var} \
     --solver ${params.cassiopeia_solver} \
     --metric ${params.distance_metric} \

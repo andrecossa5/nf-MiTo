@@ -582,7 +582,7 @@ Phylogeny Reconstruction parameters control phylogeny reconstruction from filter
 </tr>
 <tr>
 <td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;cassiopeia_solver</code></td>
-<td align="left">Solver [<code>UPMGA</code>, <code>NJ</code>, <code>spectral</code>, <code>shared_muts</code>, <code>greedy</code>, <code>max_cut</code>]</td>
+<td align="left">Solver [<code>UPMGA</code>, <code>NJ</code>, <code>spectral</code>, <code>greedy</code>]</td>
 <td align="left"><code>UPMGA</code></td>
 <td align="left">String</td>
 </tr>
@@ -640,6 +640,24 @@ Tutorials for the main entrypoints and use-cases can be found [here](docs).
 
 - **Issues**: Report bugs via GitHub Issues
 - **Discussions**: Community support via GitHub Discussions
+
+## Versions
+
+nf-MiTo calls the [MiTo](https://github.com/andrecossa5/MiTo) Python package, from the `acox1/mito` container
+(`config/base.config`, built from `docker/Dockerfile_MiTo`).
+
+| nf-MiTo | MiTo | Container | Notes |
+|---|---|---|---|
+| `v1.0.0` | `scmito>=1.0.2,<2` (the original MiTo API) | `acox1/mito:1.0.2` | the MiTo version of the paper analyses; downstream analyses in [MiTo_benchmark_repro](https://github.com/andrecossa5/MiTo_benchmark_repro) |
+
+MiTo 2.x has a new API (`mt.pp.filter_afm`, `mt.tl.annotate_clones`) that this release of nf-MiTo does not use yet:
+use MiTo 1.0.2 with it. A release of nf-MiTo for MiTo 2.x is in preparation.
+
+Compared with runs on the former `acox1/mito` images (MiTo v0.1.x), the kNN-based metrics of the `INFER`
+workflow (`median_NN_entropy`, `median_NN_purity`) differ, because MiTo now returns the `k` nearest neighbours where
+v0.1.x returned every other cell (see the [MiTo CHANGELOG](https://github.com/andrecossa5/MiTo/blob/master/CHANGELOG.md)).
+The options `--k` and `--gamma` (the removed `MiTo_smooth` genotyping) and the solvers `shared_muts` and `max_cut` are
+no longer available.
 
 ## Citation
 

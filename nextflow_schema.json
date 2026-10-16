@@ -387,18 +387,6 @@
                         "type": "string"
                     }
                 },
-                "k": {
-                    "type": "integer",
-                    "description": "Number of neighbors for kNN",
-                    "default": 5,
-                    "minimum": 1
-                },
-                "gamma": {
-                    "type": "number",
-                    "description": "Gamma parameter",
-                    "default": 0.25,
-                    "minimum": 0
-                },
                 "min_n_var": {
                     "type": "integer",
                     "description": "Minimum number of variants per cell",
