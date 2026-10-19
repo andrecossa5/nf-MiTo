@@ -14,10 +14,11 @@ process FILTER_BAM_CB {
     
     output:
     tuple val(sample_name), path("*.bam"), emit: bam
+    tuple val(sample_name), path("*.bam"), path(CBs), emit: bam_cbs
 
     script:
     """
-    python ${baseDir}/bin/preprocess/filter_bam_cb.py ${bam} ${CBs}
+    python ${baseDir}/bin/preprocess/filter_bam_cb.py ${bam} ${CBs} ${params.barcode_tag}
     """
 
     stub:

@@ -8,6 +8,8 @@ include { SPLIT_BAM } from "./modules/split_bam.nf"
 include { EXTRACT_FASTA } from "./modules/extract_fasta.nf"
 include { MAEGATK } from "./modules/maegatk.nf"
 include { COLLAPSE_MAEGATK } from "./modules/maegatk.nf"
+include { MGATK } from "./modules/mgatk.nf"
+include { COLLAPSE_MGATK } from "./modules/mgatk.nf"
 
 // 
 
@@ -52,11 +54,28 @@ workflow process_mitobam {
         }
         FILTER_BAM_CB(ch_chunks)
 
-        SPLIT_BAM(FILTER_BAM_CB.out.bam)
-        ch_cell_bams = processCellBams(SPLIT_BAM.out.cell_bams)
-        MAEGATK(ch_cell_bams, EXTRACT_FASTA.out.fasta)
-        COLLAPSE_MAEGATK(MAEGATK.out.tables.groupTuple(by:0))
-        ch_output = COLLAPSE_MAEGATK.out.ch_output
+        if (params.assay == "MAESTER") {
+
+            // maegatk: one BAM per cell
+            SPLIT_BAM(FILTER_BAM_CB.out.bam)
+            ch_cell_bams = processCellBams(SPLIT_BAM.out.cell_bams)
+            MAEGATK(ch_cell_bams, EXTRACT_FASTA.out.fasta)
+            COLLAPSE_MAEGATK(MAEGATK.out.tables.groupTuple(by:0))
+            ch_output = COLLAPSE_MAEGATK.out.ch_output
+
+        } else if (params.assay == "mtscATAC") {
+
+            // mgatk: counts per chunk of cell barcodes
+            ch_ref = EXTRACT_FASTA.out.fasta.map { it -> tuple(it[0], it[5]) }
+            MGATK(FILTER_BAM_CB.out.bam_cbs, ch_ref)
+            COLLAPSE_MGATK(MGATK.out.tables.groupTuple(by:0).map { s, files -> tuple(s, files.flatten()) }, ch_ref)
+            ch_output = COLLAPSE_MGATK.out.ch_output
+
+        } else {
+
+            error "process_mitobam: no tables workflow for assay ${params.assay}"
+
+        }
 
     emit:
 

@@ -14,7 +14,7 @@ include { process_mitobam } from "../process_mitobam/main"
 def checkParams() {
     // Assay -> pre-processing tool; assays implemented in this version
     def PP_METHODS = ['MAESTER': 'maegatk', 'mtscATAC': 'mgatk', 'ReDeeM': 'redeem-v']
-    def IMPLEMENTED = ['MAESTER']
+    def IMPLEMENTED = ['MAESTER', 'mtscATAC']
     if (!params.input)
         error "Error: --input (samplesheet CSV) is required"
     if (!PP_METHODS.containsKey(params.assay))
@@ -76,9 +76,12 @@ workflow preprocess {
         fastq = ch.filter { it[1] != null }
         bam = ch.filter { it[2] != null }
 
-        // MAESTER: the STAR index is built only if some sample starts from FASTQ
         ch_mitobam = bam.map { it -> tuple(it[0], it[2], it[3]) }
-        if (readSamplesheet().any { it[1] != null }) {
+        has_fastq = readSamplesheet().any { it[1] != null }
+
+        if (params.assay == "MAESTER" && has_fastq) {
+
+            // STAR-solo, MT reads; the index is built only if some sample starts from FASTQ
             prep_resources()
             get_maester_bam(
                 fastq.map { it -> tuple(it[0], it[1]) },
@@ -88,9 +91,16 @@ workflow preprocess {
             )
             ch_mitobam = ch_mitobam.mix(get_maester_bam.out.mitobam)
             genome = prep_resources.out.genome
+
+        } else if (has_fastq) {
+
+            error "FASTQ input is not implemented yet for assay ${params.assay}: give a MT BAM"
+
         } else {
+
             prep_genome()
             genome = prep_genome.out.genome
+
         }
 
         // Stage 2, MT BAM -> single-cell tables (tool-specific)

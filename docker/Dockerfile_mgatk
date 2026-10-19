@@ -1,0 +1,41 @@
+# mgatk image (mtscATAC): bwa-mem2 alignment, MT BAM extraction and mgatk counting. No R.
+
+################################################################
+
+FROM debian:bookworm-slim
+LABEL mantainer = "andrea.cossa@ieo.it"
+
+RUN apt-get --quiet update --yes \
+    && apt-get --quiet install --yes --no-install-recommends \
+      ca-certificates \
+      build-essential \
+      zlib1g-dev \
+      wget \
+      git \
+      procps \
+    && rm -rf /var/lib/apt/lists/*
+
+## Mamba (the installer matching the machine). NB: bwa-mem2 is x86_64 only: build with --platform linux/x86_64
+RUN ARCH=$(uname -m) \
+    && wget https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-24.11.3-0-Linux-${ARCH}.sh \
+    && bash Miniforge3-24.11.3-0-Linux-${ARCH}.sh -b -p /mambaforge \
+    && rm Miniforge3-24.11.3-0-Linux-${ARCH}.sh
+ENV PATH="/mambaforge/bin/:$PATH"
+
+## Tools
+RUN mamba install --yes -n base -c conda-forge -c bioconda \
+      python=3.12 pysam samtools bwa-mem2 bedtools pigz numpy pandas \
+    && mamba clean --all --yes
+
+## mgatk, pinned to a commit of the upstream repository (0.9.0)
+ARG MGATK_COMMIT=7ca7d74
+RUN pip install --no-cache-dir "git+https://github.com/caleblareau/mgatk@${MGATK_COMMIT}" \
+    && python -c "import importlib.metadata as m; print('mgatk', m.version('mgatk'))"
+
+## Build and push:
+##   docker build --platform linux/x86_64 -f docker/Dockerfile_mgatk -t acox1/mito-mgatk:2.0.0 docker/
+##   docker push acox1/mito-mgatk:2.0.0
+
+CMD [ "bash" ]
+
+#################################################################
