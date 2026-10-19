@@ -14,6 +14,7 @@ process FILTER_BAM_CB {
     
     output:
     tuple val(sample_name), path("*.bam"), emit: bam
+    tuple val(sample_name), path("*.bam"), path(CBs), emit: bam_cbs
 
     script:
     """

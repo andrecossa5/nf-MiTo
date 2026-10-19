@@ -10,6 +10,8 @@ include { MAEGATK } from "./modules/maegatk.nf"
 include { COLLAPSE_MAEGATK } from "./modules/maegatk.nf"
 include { MGATK } from "./modules/mgatk.nf"
 include { COLLAPSE_MGATK } from "./modules/mgatk.nf"
+include { REDEEM_CONSENSUS } from "./modules/redeem.nf"
+include { FINALIZE_REDEEM } from "./modules/redeem.nf"
 
 // 
 
@@ -72,6 +74,14 @@ workflow process_mitobam {
             MGATK(ch_cell_bams, ch_ref)
             COLLAPSE_MGATK(MGATK.out.tables.groupTuple(by:0), ch_ref)
             ch_output = COLLAPSE_MGATK.out.ch_output
+
+        } else if (params.assay == "ReDeeM") {
+
+            // RedeemV: molecule-level consensus per chunk of cell barcodes, then strand-bias filtering
+            ch_ref = EXTRACT_FASTA.out.fasta.map { it -> tuple(it[0], it[5]) }
+            REDEEM_CONSENSUS(FILTER_BAM_CB.out.bam_cbs, ch_ref)
+            FINALIZE_REDEEM(REDEEM_CONSENSUS.out.tables.groupTuple(by:0).map { s, g, c -> tuple(s, g.flatten(), c.flatten()) })
+            ch_output = FINALIZE_REDEEM.out.ch_output
 
         } else {
 

@@ -15,7 +15,7 @@ include { process_mitobam } from "../process_mitobam/main"
 def checkParams() {
     // Assay -> pre-processing tool; assays implemented in this version
     def PP_METHODS = ['MAESTER': 'maegatk', 'mtscATAC': 'mgatk', 'ReDeeM': 'redeem-v']
-    def IMPLEMENTED = ['MAESTER', 'mtscATAC']
+    def IMPLEMENTED = ['MAESTER', 'mtscATAC', 'ReDeeM']
     if (!params.input)
         error "Error: --input (samplesheet CSV) is required"
     if (!PP_METHODS.containsKey(params.assay))
@@ -93,9 +93,9 @@ workflow preprocess {
             ch_mitobam = ch_mitobam.mix(get_maester_bam.out.mitobam)
             genome = prep_resources.out.genome
 
-        } else if (params.assay == "mtscATAC" && has_fastq) {
+        } else if (["mtscATAC", "ReDeeM"].contains(params.assay) && has_fastq) {
 
-            // bwa-mem2 on the NUMT-masked genome, MT reads of the listed cells
+            // ATAC libraries (scATAC, Multiome ATAC): bwa-mem2 on the NUMT-masked genome, MT reads of the listed cells
             prep_genome()
             get_atac_bam(
                 fastq.map { it -> tuple(it[0], it[1]) },
