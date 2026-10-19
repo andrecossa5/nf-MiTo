@@ -48,7 +48,7 @@ process COLLAPSE_MAEGATK {
 
   tag "${sample_name}"
   label 'maegatk'
-  publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
+  publishDir "${params.output_folder}", mode: 'copy', saveAs: { fn -> file(fn).name }
 
   input:
   tuple val(sample_name), 
@@ -61,7 +61,7 @@ process COLLAPSE_MAEGATK {
       path(depth)
 
   output:
-  tuple val(sample_name), path('tables'), emit: ch_output
+  tuple val(sample_name), path('tables/*'), emit: ch_output
  
   script:
   """ 
@@ -78,6 +78,7 @@ process COLLAPSE_MAEGATK {
   stub:
   """
   mkdir tables
+  for l in A C G T coverage depth; do touch tables/\$l.txt.gz; done
   """
 
 }

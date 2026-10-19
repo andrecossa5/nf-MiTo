@@ -36,6 +36,8 @@ def readSamplesheet() {
     def rows = file(params.input, checkIfExists: true).splitCsv(header: true)
     if (rows.isEmpty())
         error "Samplesheet ${params.input} is empty"
+    if (rows.size() > 1)
+        error "Samplesheet ${params.input}: one library per run (the tables go straight to --output_folder): use one run and one --output_folder per library"
 
     return rows.collect { row ->
         def sample = row.sample?.trim()

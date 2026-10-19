@@ -50,7 +50,7 @@ process COLLAPSE_MGATK {
 
   tag "${sample_name}"
   label 'mgatk'
-  publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
+  publishDir "${params.output_folder}", mode: 'copy', saveAs: { fn -> file(fn).name }
 
   input:
   tuple val(sample_name),
@@ -64,7 +64,7 @@ process COLLAPSE_MGATK {
   tuple path(fasta), path(fai)
 
   output:
-  tuple val(sample_name), path('tables'), emit: ch_output
+  tuple val(sample_name), path('tables/*'), emit: ch_output
 
   script:
   """

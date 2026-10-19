@@ -54,12 +54,12 @@ nf-MiTo 2.0.0 does not use the MiTo package; there is no MiTo image. See [MiTo: 
 
 ### Samplesheet
 
-`--input` is a CSV with one row per library:
+`--input` is a CSV with the library of the run (one row):
 
 ```csv
 sample,fastq_dir,bam,cell_barcodes
-s1,/data/s1_fastq,,/data/s1_cells.txt
-s2,,/data/s2_MT.bam,/data/s2_cells.txt
+donorX,/data/donorX_fastq,,/data/donorX_cells.txt     # FASTQ input
+# donorX,,/data/donorX_MT.bam,/data/donorX_cells.txt  # or BAM input
 ```
 
 | Column | Description |
@@ -83,9 +83,12 @@ Use `-c <user.config>` for site settings (see [`config/user.config`](config/user
 
 ```
 <output_folder>/
-├── resources/                # reference index, whitelists (reusable)
-└── <sample>/MT.preprocess.ouput/    # the tables for this sample
+├── A.txt.gz, C.txt.gz, G.txt.gz, T.txt.gz, coverage.txt.gz, depth.txt.gz, refAllele.txt   # mtscATAC (maegatk: no refAllele.txt)
+│   or RawGenotypes.<level>.StrandBalance.gz, QualifiedTotalCts.gz, StrandBias*          # ReDeeM
+└── resources/                # reference index, whitelists (MAESTER, multiome), reusable
 ```
+
+The tables are copied directly into `--output_folder`, so a run processes **one library**: give each library (donor) its own `--output_folder`, e.g. `results/donorX`.
 
 Load them in MiTo (here for ReDeeM):
 

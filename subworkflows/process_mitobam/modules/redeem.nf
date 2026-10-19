@@ -38,13 +38,13 @@ process FINALIZE_REDEEM {
 
   tag "${sample_name}"
   label 'redeemv'
-  publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
+  publishDir "${params.output_folder}", mode: 'copy', saveAs: { fn -> file(fn).name }
 
   input:
   tuple val(sample_name), path(genotypes), path(counts)
 
   output:
-  tuple val(sample_name), path('tables'), emit: ch_output
+  tuple val(sample_name), path('tables/*'), emit: ch_output
 
   script:
   """
