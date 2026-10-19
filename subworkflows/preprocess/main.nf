@@ -5,6 +5,7 @@ nextflow.enable.dsl = 2
 include { prep_resources } from "../prep_resources/main"
 include { prep_genome } from "../prep_resources/main"
 include { get_maester_bam } from "../get_mitobam/main"
+include { get_atac_bam } from "../get_mitobam/main"
 include { process_mitobam } from "../process_mitobam/main"
 
 
@@ -91,6 +92,18 @@ workflow preprocess {
             )
             ch_mitobam = ch_mitobam.mix(get_maester_bam.out.mitobam)
             genome = prep_resources.out.genome
+
+        } else if (params.assay == "mtscATAC" && has_fastq) {
+
+            // bwa-mem2 on the NUMT-masked genome, MT reads of the listed cells
+            prep_genome()
+            get_atac_bam(
+                fastq.map { it -> tuple(it[0], it[1]) },
+                fastq.map { it -> tuple(it[0], it[3]) },
+                prep_genome.out.genome
+            )
+            ch_mitobam = ch_mitobam.mix(get_atac_bam.out.mitobam)
+            genome = prep_genome.out.genome
 
         } else if (has_fastq) {
 
