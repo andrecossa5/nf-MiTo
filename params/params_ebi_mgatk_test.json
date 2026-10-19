@@ -1,0 +1,9 @@
+{
+    "assay" : "mtscATAC",
+    "input" : "/nfs/research/coorenslab/cossa/nf_mito_test/mgatk_test_data/samplesheet.csv",
+    "output_folder" : "/nfs/research/coorenslab/cossa/nf_mito_test/results",
+    "reference_genome" : "/nfs/research/coorenslab/cossa/nf_mito_test/resources/GRCh38.d1.vd1.fa",
+    "NUMTs_regions" : "/nfs/research/coorenslab/cossa/nf_mito_test/resources/hg38.full.blacklist.bed",
+    "string_MT" : "chrM",
+    "barcode_tag" : "CB"
+}
