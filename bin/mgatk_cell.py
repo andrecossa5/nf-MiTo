@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 mgatk `bcall` counting for one cell: its own BAM (all reads of the cell, MT contig).

@@ -25,8 +25,6 @@ if (params.help) {
         --assay                  MAESTER | mtscATAC | ReDeeM (default: ${params.assay})
         --output_folder          Output directory (required)
         --string_MT              MT contig name (default: ${params.string_MT})
-
-    Work in progress: mgatk (mtscATAC) and RedeemV (ReDeeM) are being added.
     ==========================================================================
     """.stripIndent()
     exit(0)

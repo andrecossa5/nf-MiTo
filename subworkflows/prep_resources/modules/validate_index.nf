@@ -14,7 +14,7 @@ process VALIDATE_INDEX {
 
   script:
   """
-  python ${baseDir}/bin/prep_resources/validate_index.py ${params.prebuilt_STAR_index}
+  validate_index.py ${params.prebuilt_STAR_index}
   ln -s ${params.prebuilt_STAR_index} STAR_index
   ln -s ${params.prebuilt_STAR_index}/Genome genome.fa
   """

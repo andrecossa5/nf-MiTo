@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 Turn the bwa-mem2 SAM stream of barcoded scATAC reads into the MT BAM MiTo's tools need.

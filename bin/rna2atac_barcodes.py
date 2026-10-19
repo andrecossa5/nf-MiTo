@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 Translate Cell Ranger ARC (RNA-space) cell barcodes to the ATAC-space barcodes found in the reads

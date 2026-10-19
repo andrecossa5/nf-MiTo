@@ -18,7 +18,7 @@ process REDEEM_CONSENSUS {
   script:
   def idx = CBs.simpleName.split('_')[1]
   """
-  python ${baseDir}/bin/preprocess/redeem_consensus.py ${bam} ${CBs} ${fasta} chunk_${idx} \\
+  redeem_consensus.py ${bam} ${CBs} ${fasta} chunk_${idx} \\
     --redeemv_home ${params.redeemv_home} \\
     --barcode_tag ${params.barcode_tag} \\
     --base_quality ${params.redeem_base_quality}
@@ -49,7 +49,7 @@ process FINALIZE_REDEEM {
 
   script:
   """
-  python ${baseDir}/bin/preprocess/redeem_finalize.py tables \\
+  redeem_finalize.py tables \\
     --p_threshold ${params.redeem_strand_bias_p} \\
     --min_log2fc ${params.redeem_strand_bias_log2fc} \\
     --correction ${params.redeem_strand_bias_correction}

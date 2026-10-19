@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 RedeemV consensus calling for one chunk of cell barcodes (wraps RedeemV's mitoConsensus.py, unmodified).

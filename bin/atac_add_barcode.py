@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 Attach the cell barcode of a 10x ATAC / Multiome-ATAC library to the genomic reads.

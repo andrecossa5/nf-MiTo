@@ -18,7 +18,7 @@ process FILTER_BAM_CB {
 
     script:
     """
-    bash ${baseDir}/bin/preprocess/filter_bam_cb.sh ${bam} ${CBs} ${params.barcode_tag}
+    filter_bam_cb.sh ${bam} ${CBs} ${params.barcode_tag}
     """
 
     stub:

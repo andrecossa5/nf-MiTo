@@ -49,7 +49,7 @@ process ATAC_ADD_BARCODE {
 
   script:
   """
-  python ${baseDir}/bin/preprocess/atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded --rule ${params.atac_barcode_rule}
+  atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded --rule ${params.atac_barcode_rule}
   """
 
   stub:
@@ -97,7 +97,7 @@ process RNA2ATAC_BARCODES {
 
   script:
   """
-  python ${baseDir}/bin/preprocess/rna2atac_barcodes.py ${rna_cells} ${wl_rna} ${wl_atac} atac_cells.tsv
+  rna2atac_barcodes.py ${rna_cells} ${wl_rna} ${wl_atac} atac_cells.tsv
   """
 
   stub:
@@ -150,7 +150,7 @@ process BWAMEM2_MT {
   script:
   """
   bwa-mem2 mem -t ${task.cpus} ${index}/genome ${R1} ${R3} \\
-    | python ${baseDir}/bin/preprocess/atac_tag_bam.py ${params.string_MT} ${params.atac_min_mapq} ${params.barcode_tag} unsorted.bam
+    | atac_tag_bam.py ${params.string_MT} ${params.atac_min_mapq} ${params.barcode_tag} unsorted.bam
   samtools sort -@ ${task.cpus} -o mitobam.bam unsorted.bam
   samtools index -@ ${task.cpus} mitobam.bam
   rm unsorted.bam

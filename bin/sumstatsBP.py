@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 ###################################################
 # Summarizes the total number of reads per position

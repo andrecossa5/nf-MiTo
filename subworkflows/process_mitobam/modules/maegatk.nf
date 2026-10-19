@@ -25,7 +25,7 @@ process MAEGATK {
   
   script:
   """
-  python ${baseDir}/bin/preprocess/oneSample_maegatk.py ${bam} ${cell} chrM.fa 
+  oneSample_maegatk.py ${bam} ${cell} chrM.fa 
   rm *bam *bai *fastq *sam *log
   """
 

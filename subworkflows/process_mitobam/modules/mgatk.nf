@@ -28,7 +28,7 @@ process MGATK {
     params.mgatk_proper_paired ? '--proper_paired' : ''
   ].findAll { it }.join(' ')
   """
-  python ${baseDir}/bin/preprocess/mgatk_cell.py ${bam} ${cell} ${fasta} \\
+  mgatk_cell.py ${bam} ${cell} ${fasta} \\
     --umi_tag '${params.mgatk_umi_tag}' \\
     --base_qual ${params.mgatk_base_qual} \\
     --alignment_quality ${params.mgatk_alignment_quality} \\
@@ -68,7 +68,7 @@ process COLLAPSE_MGATK {
 
   script:
   """
-  python ${baseDir}/bin/preprocess/mgatk_collapse.py ${fasta} tables
+  mgatk_collapse.py ${fasta} tables
   """
 
   stub:

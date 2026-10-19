@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usage: bash filter_gtf.sh input.gtf output.gtf
 

@@ -14,7 +14,7 @@ process PREP_GTF {
   script:
   """
   wget -qO- ${params.gtf} | gunzip > genes.gtf
-  bash ${baseDir}/bin/prep_resources/filter_gtf.sh genes.gtf filtered_genes.gtf
+  filter_gtf.sh genes.gtf filtered_genes.gtf
   """
 
   stub:

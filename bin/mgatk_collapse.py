@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 Collapse the per-chunk mgatk tables of a library into the tables MiTo reads.

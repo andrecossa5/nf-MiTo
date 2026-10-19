@@ -24,7 +24,7 @@ process SPLIT_BAM {
 
     stub:
     """
-    python ${baseDir}/bin/preprocess/random_mock.py \
+    random_mock.py \
     rm -f *filtered_bam_cb*
     """
 

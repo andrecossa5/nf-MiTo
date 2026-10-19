@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 Split a .tsv.gz file of barcodes into chuncks of 3000 barcodes.
