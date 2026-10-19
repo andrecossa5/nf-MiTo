@@ -12,6 +12,7 @@ Writes <out_prefix>.{A,C,G,T,coverage}.txt (+ <out_prefix>.depth.txt).
 import os
 import argparse
 from pathlib import Path
+import pysam
 
 
 ##
@@ -40,6 +41,7 @@ args = parser.parse_args()
 def main():
 
     from mgatk.processing.one_slice_tenx import process_one_slice_tenx
+    from mgatk.processing.barcodes import chunk_barcoded_bam
 
     # Reference
     with open(args.fasta) as fh:
@@ -65,7 +67,7 @@ def main():
         'fasta_file': args.fasta,
         'remove_duplicates': 'False' if args.keep_duplicates else 'True',
         'barcode_tag': args.barcode_tag,
-        'umi_barcode': args.umi_tag,
+        'umi_barcode': 'MU',
         'handle_overlap': 'True' if args.handle_overlap else 'False',
         'proper_paired': 'True' if args.proper_paired else 'False',
         'base_qual': args.base_qual,
@@ -73,7 +75,15 @@ def main():
         'NHmax': args.NHmax,
         'NMmax': args.NMmax,
     }
-    process_one_slice_tenx(config, str(Path(args.bam).resolve()), sample)
+    # As `mgatk tenx` does: write the chunk's reads with a synthetic "MU" tag (cell barcode + UMI), which is
+    # what duplicate removal groups by. Without it, identical fragments of different cells would be merged.
+    pysam.index(args.bam)
+    barcoded = out / 'temp/barcoded_bams'
+    barcoded.mkdir(parents=True, exist_ok=True)
+    chunk_barcoded_bam(args.bam, str(barcoded), args.barcode_tag, args.barcodes, mito_chr, args.umi_tag or 'XX')
+    chunk_bam = barcoded / (Path(args.barcodes).stem + '.bam')
+
+    process_one_slice_tenx(config, str(chunk_bam), sample)
 
     for letter in ['A', 'C', 'G', 'T', 'coverage']:
         os.replace(out / f'temp/sparse_matrices/{sample}.{letter}.txt', f'{args.out_prefix}.{letter}.txt')
