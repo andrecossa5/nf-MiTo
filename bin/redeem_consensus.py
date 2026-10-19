@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-RedeemV consensus calling for one chunk of cell barcodes (wraps RedeemV's mitoConsensus.py, unmodified).
+RedeemV consensus calling for one chunk of cell barcodes (wraps RedeemV's mitoConsensus.py, next to this script, unmodified: chenweng1991/redeemV @ 5c34940).
 Usage: redeem_consensus.py <chunk.bam> <barcodes_<idx>.csv> <mt.fa> <out_prefix> [options]
 
 mitoConsensus.py works on a fixed folder layout, which is built here. Its output is completed as
@@ -28,7 +28,6 @@ parser.add_argument('bam')
 parser.add_argument('barcodes')
 parser.add_argument('fasta', help='MT FASTA (a single contig)')
 parser.add_argument('out_prefix')
-parser.add_argument('--redeemv_home', default=os.environ.get('REDEEMV_HOME', '/opt/redeemV'))
 parser.add_argument('--barcode_tag', default='CB')
 parser.add_argument('--base_quality', type=int, default=30)
 args = parser.parse_args()
@@ -41,9 +40,7 @@ LEVELS = ['Total', 'VerySensitive', 'Sensitive', 'Specific']
 
 def main():
 
-    script = Path(args.redeemv_home) / 'mitoConsensus' / 'mitoConsensus.py'
-    if not script.exists():
-        raise FileNotFoundError(f'{script} not found (set --redeemv_home)')
+    script = Path(__file__).resolve().parent / 'mitoConsensus.py'
 
     with open(args.fasta) as fh:
         seq = ''.join(x.strip() for x in fh if not x.startswith('>')).upper()

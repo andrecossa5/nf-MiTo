@@ -159,11 +159,6 @@
       "title": "RedeemV (ReDeeM) options",
       "type": "object",
       "properties": {
-        "redeemv_home": {
-          "type": "string",
-          "description": "RedeemV checkout",
-          "default": "/opt/redeemV"
-        },
         "redeem_base_quality": {
           "type": "integer",
           "description": "Minimum base quality",

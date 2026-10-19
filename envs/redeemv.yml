@@ -1,5 +1,5 @@
 # RedeemV image/env (ReDeeM): mitoConsensus.py and the strand-bias finalization.
-# RedeemV itself (no licence file) is cloned at a pinned commit, see docker/Dockerfile_redeemv or `redeemv_home`.
+# mitoConsensus.py (RedeemV @ 5c34940) is in bin/.
 name: mito-redeemv
 channels:
   - conda-forge
@@ -12,4 +12,4 @@ dependencies:
   - pandas
   - scipy
   - progress
-  - git
+  - click

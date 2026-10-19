@@ -19,7 +19,6 @@ process REDEEM_CONSENSUS {
   def idx = CBs.simpleName.split('_')[1]
   """
   redeem_consensus.py ${bam} ${CBs} ${fasta} chunk_${idx} \\
-    --redeemv_home ${params.redeemv_home} \\
     --barcode_tag ${params.barcode_tag} \\
     --base_quality ${params.redeem_base_quality}
   """
