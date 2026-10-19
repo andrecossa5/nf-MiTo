@@ -72,7 +72,9 @@ def storey_qvalues(p, lambdas=np.arange(0.05, 0.96, 0.05), df=3):
         mid = (lo + hi) / 2
         lo, hi = (mid, hi) if eff_df(10 ** mid) > df else (lo, mid)
     fit = make_smoothing_spline(lambdas, pi0_l, lam=10 ** ((lo + hi) / 2))(lambdas)
-    pi0 = min(max(fit[-1], 1e-8), 1.0)
+    pi0 = min(fit[-1], 1.0)
+    if pi0 <= 0:                                        # the R package stops here; fall back to the conservative pi0 = 1
+        pi0 = 1.0
 
     order = np.argsort(p)
     q = pi0 * m * p[order] / np.arange(1, m + 1)
