@@ -23,9 +23,9 @@ RUN ARCH=$(uname -m) \
 ENV PATH="/mambaforge/bin/:$PATH"
 
 ## Tools
-RUN mamba install --yes -n base -c conda-forge -c bioconda \
+RUN conda install --yes -n base -c conda-forge -c bioconda \
       python=3.12 pysam samtools bwa-mem2 bedtools pigz numpy pandas \
-    && mamba clean --all --yes
+    && conda clean --all --yes
 
 ## mgatk, pinned to a commit of the upstream repository (0.9.0)
 ARG MGATK_COMMIT=7ca7d74

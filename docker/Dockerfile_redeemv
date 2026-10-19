@@ -21,9 +21,9 @@ RUN ARCH=$(uname -m) \
 ENV PATH="/mambaforge/bin/:$PATH"
 
 ## mitoConsensus.py needs pysam, numpy, pandas, progress; the finalization needs scipy
-RUN mamba install --yes -n base -c conda-forge -c bioconda \
+RUN conda install --yes -n base -c conda-forge -c bioconda \
       python=3.12 pysam samtools numpy pandas scipy progress \
-    && mamba clean --all --yes
+    && conda clean --all --yes
 
 ## RedeemV, pinned to a commit (the repository has no licence file: it is cloned here, not redistributed in nf-MiTo)
 ARG REDEEMV_COMMIT=5c34940
