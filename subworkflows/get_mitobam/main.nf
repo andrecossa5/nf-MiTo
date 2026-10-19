@@ -4,7 +4,7 @@
 nextflow.enable.dsl = 2
 include { MERGE_R1 } from "../common/modules/merge_R1.nf"
 include { MERGE_R2 } from "../common/modules/merge_R2.nf"
-include { SOLO } from "../common/modules/Solo.nf"
+include { SOLO } from "./modules/Solo.nf"
 include { FILTER_MAESTER_BAM } from "./modules/filter_bam.nf"
 include { MERGE_ATAC_LANES } from "./modules/atac.nf"
 include { ATAC_ADD_BARCODE } from "./modules/atac.nf"
