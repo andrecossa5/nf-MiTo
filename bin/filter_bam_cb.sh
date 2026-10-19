@@ -28,6 +28,7 @@ picard FilterSamReads \
     -FILTER includeTagValues \
     --arguments_file "$args" \
     --QUIET true \
+    --VALIDATION_STRINGENCY SILENT \
     --COMPRESSION_LEVEL 1 \
     --MAX_RECORDS_IN_RAM 10000000
 
