@@ -51,7 +51,8 @@ process FINALIZE_REDEEM {
   """
   python ${baseDir}/bin/preprocess/redeem_finalize.py tables \\
     --p_threshold ${params.redeem_strand_bias_p} \\
-    --min_log2fc ${params.redeem_strand_bias_log2fc}
+    --min_log2fc ${params.redeem_strand_bias_log2fc} \\
+    --correction ${params.redeem_strand_bias_correction}
   """
 
   stub:
