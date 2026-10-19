@@ -2,8 +2,7 @@
     "assay": "mtscATAC",
     "input": "/nfs/research/coorenslab/cossa/nf_mito_test/mgatk_test_data/samplesheet.csv",
     "output_folder": "/nfs/research/coorenslab/cossa/nf_mito_test/results",
-    "reference_genome": "/nfs/research/coorenslab/cossa/nf_mito_test/resources/masked.fa",
-    "NUMTs_regions": null,
     "string_MT": "chrM",
-    "barcode_tag": "CB"
+    "barcode_tag": "CB",
+    "masked_ref": "/nfs/research/coorenslab/cossa/nf_mito_test/resources/masked.fa"
 }

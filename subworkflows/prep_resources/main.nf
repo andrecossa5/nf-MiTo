@@ -4,10 +4,14 @@
 nextflow.enable.dsl = 2
 include { FETCH_WHITELIST } from "./modules/fetch_whitelist.nf"
 include { PREP_GTF } from "./modules/prep_gtf.nf"
-include { PREP_GENOME } from "./modules/prep_genome.nf"
 include { BUILD_INDEX } from "./modules/build_index.nf"
 include { VALIDATE_INDEX } from "./modules/validate_index.nf"
 
+
+// The reference is given by the user: --masked_ref, a NUMT-masked, uncompressed genome FASTA
+def masked_ref() {
+    return Channel.value(file(params.masked_ref, checkIfExists: true))
+}
 
 //----------------------------------------------------------------------------//
 // prep_resources and prep_genome subworkflows
@@ -24,13 +28,11 @@ workflow prep_resources {
             
             VALIDATE_INDEX()
             star_index = VALIDATE_INDEX.out.star_index
-            genome = VALIDATE_INDEX.out.genome
 
         } else {
             
             PREP_GTF()
-            genome = params.NUMTs_regions ? PREP_GENOME().genome : Channel.value(file(params.reference_genome, checkIfExists: true))
-            BUILD_INDEX(genome, PREP_GTF.out.gtf)
+            BUILD_INDEX(masked_ref(), PREP_GTF.out.gtf)
             star_index = BUILD_INDEX.out.star_index
 
         }
@@ -39,7 +41,7 @@ workflow prep_resources {
 
         whitelist = whitelist
         star_index = star_index
-        genome = genome
+        genome = masked_ref()
     
 }
 
@@ -51,8 +53,7 @@ workflow prep_genome {
 
     main:
 
-        // --NUMTs_regions null: --reference_genome is already masked (uncompressed FASTA), used as it is
-        genome = params.NUMTs_regions ? PREP_GENOME().genome : Channel.value(file(params.reference_genome, checkIfExists: true))
+        genome = masked_ref()
 
     emit:
 

@@ -18,6 +18,8 @@ def checkParams() {
     def IMPLEMENTED = ['MAESTER', 'mtscATAC', 'ReDeeM']
     if (!params.input)
         error "Error: --input (samplesheet CSV) is required"
+    if (!params.masked_ref)
+        error "Error: --masked_ref (NUMT-masked genome FASTA, uncompressed) is required"
     if (!PP_METHODS.containsKey(params.assay))
         error "Error: --assay must be one of ${PP_METHODS.keySet().join(', ')}. Provided: ${params.assay}"
     if (!IMPLEMENTED.contains(params.assay))

@@ -37,6 +37,10 @@
       "title": "Reference options",
       "type": "object",
       "properties": {
+        "masked_ref": {
+          "type": "string",
+          "description": "NUMT-masked genome FASTA (uncompressed), required"
+        },
         "build_STAR_index": {
           "type": "boolean",
           "description": "Build the STAR index (MAESTER)",
@@ -46,23 +50,10 @@
           "type": "string",
           "description": "Path to a prebuilt STAR index"
         },
-        "reference_genome": {
-          "type": "string",
-          "description": "Reference genome FASTA (path or URL)",
-          "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz"
-        },
         "gtf": {
           "type": "string",
           "description": "Annotation GTF (path or URL)",
           "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz"
-        },
-        "NUMTs_regions": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "NUMT regions to mask (BED, path or URL). null: reference_genome is already masked (uncompressed FASTA) and used as it is",
-          "default": "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed"
         },
         "tenx_whitelist": {
           "type": "string",
@@ -74,7 +65,10 @@
           "description": "MT contig name",
           "default": "chrM"
         }
-      }
+      },
+      "required": [
+        "masked_ref"
+      ]
     },
     "preprocessing_options": {
       "title": "Preprocessing options",

@@ -13,7 +13,6 @@ dependencies:
   - fgbio=2.1.0
   - bwa
   - picard
-  - bedtools
   - pigz=2.8
   - star=2.7.9a
   - wget

@@ -40,7 +40,7 @@ Every assay follows the same two stages, starting from the library holding the M
 1. **Reads → MT BAM** (skipped if you give a BAM): one library-level, coordinate-sorted BAM of chrM reads with the cell barcode in a tag (`--barcode_tag`, default `CB`).
 2. **MT BAM → single-cell tables**: the BAM is split in chunks of cell barcodes (`--CBs_chunk_size`) and filtered with Picard `FilterSamReads`, then processed by the assay's tool (per cell for maegatk and mgatk, per chunk for RedeemV) and collapsed into the tables.
 
-For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked. By default the genome (`--reference_genome`) is downloaded and masked with `--NUMTs_regions`; with `"NUMTs_regions": null` in the params file, `--reference_genome` is taken as an already masked, uncompressed FASTA and used as it is.
+For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked. The masked genome is given with `--masked_ref` (an uncompressed FASTA); nf-MiTo does not download or mask a reference.
 
 nf-MiTo 2.0.0 does not use the MiTo package; there is no MiTo image. See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for the method.
 
@@ -74,7 +74,7 @@ s2,,/data/s2_MT.bam,/data/s2_cells.txt
 ```bash
 nextflow run andrecossa5/nf-MiTo -r v2.0.0 -profile singularity \
   --assay mtscATAC --input samplesheet.csv --output_folder results \
-  --reference_genome <GRCh38.fa(.gz)> --NUMTs_regions <NUMTs.bed>
+  --masked_ref <masked_GRCh38.fa>
 ```
 
 Use `-c <user.config>` for site settings (see [`config/user.config`](config/user.config)) and `-params-file <params.json>` for parameters. `-profile` is `docker`, `singularity` or `conda`; add `local` or a custom executor profile as needed. `nextflow run . --help` lists the parameters.
@@ -107,7 +107,7 @@ Defaults are in `nextflow.config` and typed in `nextflow_schema.json`.
 | Group | Parameters |
 |---|---|
 | Input/output | `--input`, `--assay` (`MAESTER`, `mtscATAC`, `ReDeeM`), `--output_folder`, `--barcode_tag` (`CB`) |
-| Reference | `--reference_genome`, `--NUMTs_regions`, `--string_MT` (`chrM`); MAESTER: `--gtf`, `--tenx_whitelist`, `--build_STAR_index`, `--prebuilt_STAR_index` |
+| Reference | `--masked_ref` (required), `--string_MT` (`chrM`); MAESTER: `--gtf`, `--tenx_whitelist`, `--build_STAR_index`, `--prebuilt_STAR_index` |
 | Chunking | `--CBs_chunk_size` (3000 barcodes) |
 | mtscATAC/ReDeeM reads | `--atac_min_mapq` (30), `--atac_barcode_rule` (`auto`), `--barcode_space` (`ATAC` or `RNA`), `--multiome_whitelist_rna`, `--multiome_whitelist_atac` |
 | mgatk | `--mgatk_keep_duplicates`, `--mgatk_handle_overlap`, `--mgatk_proper_paired`, `--mgatk_umi_tag`, `--mgatk_base_qual`, `--mgatk_alignment_quality`, `--mgatk_NHmax`, `--mgatk_NMmax` |
