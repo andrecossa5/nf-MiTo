@@ -16,7 +16,7 @@
   
 </div>
 
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A522.04.0-brightgreen.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A524.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://img.shields.io/badge/DOI-10.1101%2F2025.06.17.660165-blue)](https://doi.org/10.1101/2025.06.17.660165)
@@ -25,647 +25,129 @@
 
 ## Overview
 
-nf-MiTo is a flexible Nextflow pipeline for mitochondrial SNV-based single-cell lineage tracing (MT-scLT). 
-The pipeline is specifically focused on [MAESTER](10.1038/s41587-022-01210-8) data, where MT-SNVs are profiled from full lenght 10x cDNA. In particular, nf-MiTo implements end-to-end workflows for coupled analysis of Gene Expression (GEX) and MT-SNVs (MT) data raw sequencing data (.fastq or .bam format):
+nf-MiTo 2.0.0 is a Nextflow pipeline for the **preprocessing** of mitochondrial single-cell lineage tracing (MT-scLT) data. From sequencing reads (FASTQ) or an aligned BAM of the library holding the mitochondrial reads, it produces the single-cell allele tables read by [MiTo](https://github.com/andrecossa5/MiTo) (`mt.io.make_afm`). Filtering, genotyping, trees and clones are done in MiTo, not here.
 
-1. Preprocessing (raw sequencing data)
-2. Allele Frequency Matrix (AFM) filtering
-3. Cell Genotyping
-4. Calculation of cell-cell distances
-5. Lineage inference
+It packages three tools, one per assay:
 
-nf-MiTo supports lineage inference (step 2-5, from pre-processed character matrices) of other lineage tracing systems, including RedeeM (MT-DNA, enriched from 10x multiome libraries), Cas9-based lineage recorders, single-cell Whole Genome Sequencing data (scWGS), and Methylation scLT data (EPI-clone system), representing a novel unifying framework for scLT data analysis.
+| `--assay` | Library | Tool (`pp_method` in MiTo) | Alignment | Tables |
+|---|---|---|---|---|
+| `MAESTER` | 10x GEX + MAESTER MT amplicons | [maegatk](https://github.com/petervangalen/MAESTER-2021) (`maegatk`) | STARsolo | `A,C,G,T,coverage,depth.txt.gz` |
+| `mtscATAC` | 10x scATAC | [mgatk](https://github.com/caleblareau/mgatk) (`mgatk`), `bcall` mode | bwa-mem2 | `A,C,G,T,coverage,depth.txt.gz`, `refAllele.txt` |
+| `ReDeeM` | 10x Multiome ATAC, ReDeeM protocol | [RedeemV](https://github.com/chenweng1991/redeemV) (`redeem-v`) | bwa-mem2 | `RawGenotypes.<level>.StrandBalance.gz`, `QualifiedTotalCts.gz` |
 
-See our recent pre-print [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for detailed explanations and benchmarks.
+Every assay follows the same two stages, starting from the library holding the MT reads:
 
-### Key Features
+1. **Reads → MT BAM** (skipped if you give a BAM): one library-level, coordinate-sorted BAM of chrM reads with the cell barcode in a tag (`--barcode_tag`, default `CB`).
+2. **MT BAM → single-cell tables**: the BAM is split in chunks of cell barcodes (`--CBs_chunk_size`) and filtered with Picard `FilterSamReads`, then processed by the assay's tool (per cell for maegatk and mgatk, per chunk for RedeemV) and collapsed into the tables.
 
-- 📁 **Multiple raw data input formats**: raw FASTQ files mitochondrial BAM files
-- 🧬 **Multiple lineage tracing systems**: MAESTER, RedeeM, Cas9-based, scWGS, and EPI-clone systems
-- ⚡  **Highly optimized methods for MT-scLT data analysis**: [MiTo](https://github.com/andrecossa5/MiTo) python package functionalities, at scale
-- 🌳 **Flexible phylogeny reconstruction**: different phylogeny reconstruction and boostrap algorithms
-- 🎯 **Estensive parameter optimization**: built-in parameter tuning workflow
-- ** Visual Exploration of alternative character spaces and associated trees.
-- ☁️ **Scalable execution**: local, HPC, and cloud environment support
+For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked.
 
-## Quick Start
+nf-MiTo 2.0.0 does not use the MiTo package; there is no MiTo image. See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for the method.
+
+## Quick start
 
 ### Prerequisites
 
-- [Nextflow](https://www.nextflow.io/) (≥22.04.0)
-- [Docker](https://www.docker.com/), [Singularity](https://sylabs.io/singularity/) (preferred), or [Conda](https://conda.io/)
+- [Nextflow](https://www.nextflow.io/) ≥ 24.04.0
+- Docker, Singularity/Apptainer, or Conda (see [Software](#software)).
+- `mtscATAC` and `ReDeeM` use bwa-mem2, which is x86_64 only.
 
-### Basic Usage
+### Samplesheet
 
-nf-MiTo runs on any machine/HPC cluster supporting Docker/Singularity containers:
+`--input` is a CSV with one row per library:
 
-```bash
-nextflow run main.nf -c <user.config> -params-file <params.json> -profile <chosen_profiles> -entry <chosen_entrypoint>
+```csv
+sample,fastq_dir,bam,cell_barcodes
+s1,/data/s1_fastq,,/data/s1_cells.txt
+s2,,/data/s2_MT.bam,/data/s2_cells.txt
 ```
 
-With a single command, the user can specify for custom:
+| Column | Description |
+|---|---|
+| `sample` | Unique sample name. |
+| `fastq_dir` | Folder with the library's FASTQ files. Give **either** this or `bam`. MAESTER: `*R1*.fastq.gz` and `*R2*.fastq.gz`. mtscATAC/ReDeeM: cellranger-atac names `*_R1_*`, `*_R2_*` (16-nt barcode read), `*_R3_*`; lanes are concatenated in order. |
+| `bam` | Coordinate-sorted, indexed BAM of the MT reads, with the cell barcode in the `--barcode_tag` tag (and `UB` for MAESTER). For ReDeeM it must come from an alignment to a NUMT-masked genome. |
+| `cell_barcodes` | Required. One barcode per line, in the form found in the BAM tag. For reads, the barcode is matched with up to 1 mismatch; reads of other barcodes are dropped. With `--barcode_space RNA`, the list is in the RNA space (Cell Ranger ARC `barcodes.tsv`) and is converted to ATAC barcodes with the 10x Multiome whitelist pair. |
 
-- Run configs: `-c <user.config>`, 
-- Parameters: `-params-file <params.json>`, 
-- Profiles: `-profile <chosen_profiles>`
+### Run
 
-and opt for the main pipeline workflow (end-to-end), or one of the 4 alternative entrypoints (`PREPROCESS`,
-`TUNE`, `EXPLORE`, `INFER`, with the `-entry <chosen_entrypoint>` option). See [configuration](https://www.nextflow.io/docs/latest/config.html) for details.
+```bash
+nextflow run andrecossa5/nf-MiTo -r v2.0.0-rc1 -profile singularity \
+  --assay mtscATAC --input samplesheet.csv --output_folder results \
+  --reference_genome <GRCh38.fa(.gz)> --NUMTs_regions <NUMTs.bed>
+```
+
+Use `-c <user.config>` for site settings (see [`config/user.config`](config/user.config)) and `-params-file <params.json>` for parameters. `-profile` is `docker`, `singularity` or `conda`; add `local` or a custom executor profile as needed. `nextflow run . --help` lists the parameters.
+
+### Output
+
+```
+<output_folder>/
+├── resources/                # reference index, whitelists (reusable)
+└── <sample>/MT.preprocess.ouput/    # the tables for this sample
+```
+
+Load them in MiTo (here for ReDeeM):
+
+```python
+import mito as mt
+afm = mt.io.make_afm(path_to_tables, 'ReDeeM', 'redeem-v')   # or ('MAESTER', 'maegatk'), ('mtscATAC', 'mgatk')
+```
+
+## Assay notes
+
+- **MAESTER**: STARsolo on the GEX+MAESTER reads (`--tenx_whitelist`, `--gtf`; the STAR index is built once, or passed with `--prebuilt_STAR_index`, see [`docs/create_STAR_index.md`](docs/create_STAR_index.md)), MT reads kept with `--string_MT`, then UMI consensus (fgbio) and maegatk counting per cell.
+- **mtscATAC**: the barcode is read from the 16-nt barcode read (`--atac_barcode_rule auto` detects forward or reverse-complement), reads are aligned with bwa-mem2 and the MT pairs (`--atac_min_mapq`) are kept. mgatk runs in `bcall` mode on one BAM per cell, with the `--mgatk_*` filters.
+- **ReDeeM**: same alignment as mtscATAC. RedeemV's `mitoConsensus.py` (shipped in `bin/`, unmodified, from RedeemV commit `5c34940`) builds molecule consensus genotypes at four stringency levels (`Total`, `VerySensitive`, `Sensitive`, `Specific`). A **strand-bias filter** then runs per variant, pooled over all cells of the library: a two-sided binomial test of the plus/minus molecule counts against 0.5, converted to Storey q-values (`--redeem_strand_bias_correction storey`, as in RedeemV) or used as raw p-values (`none`). A variant is blacklisted if the p/q-value is below `--redeem_strand_bias_p` and the strands differ by more than `--redeem_strand_bias_log2fc`; its rows are removed unless they have duplex support. Every tested variant is listed in `StrandBiasTable.tsv.gz`.
 
 ## Parameters
 
-nf-MiTo implements n=... parameters controlling one or more of the available entrypoints. 
-These parameters are grouped in 8 distinct groups. See `nextflow.config` and `nextflow_schema.json` 
-for additional type information. See also [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) main text and Supplementary Informations for detailed benchmarks.
+Defaults are in `nextflow.config` and typed in `nextflow_schema.json`.
 
-### Input/Output parameters
+| Group | Parameters |
+|---|---|
+| Input/output | `--input`, `--assay` (`MAESTER`, `mtscATAC`, `ReDeeM`), `--output_folder`, `--barcode_tag` (`CB`) |
+| Reference | `--reference_genome`, `--NUMTs_regions`, `--string_MT` (`chrM`); MAESTER: `--gtf`, `--tenx_whitelist`, `--build_STAR_index`, `--prebuilt_STAR_index` |
+| Chunking | `--CBs_chunk_size` (3000 barcodes) |
+| mtscATAC/ReDeeM reads | `--atac_min_mapq` (30), `--atac_barcode_rule` (`auto`), `--barcode_space` (`ATAC` or `RNA`), `--multiome_whitelist_rna`, `--multiome_whitelist_atac` |
+| mgatk | `--mgatk_keep_duplicates`, `--mgatk_handle_overlap`, `--mgatk_proper_paired`, `--mgatk_umi_tag`, `--mgatk_base_qual`, `--mgatk_alignment_quality`, `--mgatk_NHmax`, `--mgatk_NMmax` |
+| RedeemV | `--redeem_base_quality` (30), `--redeem_strand_bias_correction` (`storey`), `--redeem_strand_bias_p` (0.01), `--redeem_strand_bias_log2fc` (1) |
 
-Input/Output Options control nf-MiTo pipeline I/O operations:
+## Software
 
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;raw_data_input_type</code></td>
-<td align="left">Input data type [<code>fastq</code>, <code>fastq, MAESTER</code>, <code>mitobam</code>]</td>
-<td align="left"><code>mitobam</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;raw_data_input</code></td>
-<td align="left">Raw data CSV file, preprocessing workflows</td>
-<td align="left"><code>–</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;afm_input</code></td>
-<td align="left">AFM data CSV file, inference workflows</td>
-<td align="left"><code>–</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;coverage_input</code></td>
-<td align="left">Coverage tables CSV file for coverage analysis</td>
-<td align="left"><code>null</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;output_folder</code></td>
-<td align="left">Output directory path</td>
-<td align="left"><code>–</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;path_meta</code></td>
-<td align="left">Cell metadata file path</td>
-<td align="left"><code>null</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;lineage_column</code></td>
-<td align="left">Cell metadata column with lineage annotation</td>
-<td align="left"><code>null</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;path_tuning</code></td>
-<td align="left">Tuning results file from TUNE workflow</td>
-<td align="left"><code>null</code></td>
-<td align="left">Path</td>
-</tr>
-</tbody>
-</table>
+One image per tool, built from [`envs/`](envs) (also the recipes of the conda profile):
 
+| Label | Image | Used for |
+|---|---|---|
+| `maegatk` | `acox1/mito-maegatk:2.0.0` | MAESTER, reference preparation, barcode chunking and Picard filtering |
+| `mgatk` | `acox1/mito-mgatk:2.0.0` | bwa-mem2 alignment, mgatk (v0.9.0) |
+| `redeemv` | `acox1/mito-redeemv:2.0.0` | RedeemV consensus and strand-bias filter |
 
-For the default end-to-end workflow or the PREPROCESS entypoint (i.e., `-entry PREPROCESS`), the <span style="white-space: nowrap;">`--raw_data_input`</span> parameter is required. This parameter points to a CSV file sheet storing IDs and paths
-to raw sequencing data. 3 alternative inputs are supported here: 
-
-1. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `fastq`. The user need to pre-process both MAESTER and TENX sequening data. MAESTER and TENX FASTQs are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following a sample sheet (CSV file):
-
-| sample | fastq_folder | library |
-|-----------|-------------|---------|
-| `sample_name` | `FASTQs folder path` | `MAESTER` |
-| `sample_name` | `FASTQs folder path` | `TENX` |
-
-Each sample is linked to a `fastq_folder` for its `MAESTER` and `TENX` (i.e., GEX) library, respectively. 
-
-2. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `fastq, MAESTER`. The user is only interested into MAESTER data pre-processing (i.e., GEX data has been analyzed independently). MAESTER FASTQs are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following sample sheet (CSV file):
-
-| sample | fastq_folder | cell_barcodes |
-|-----------|-------------|---------|
-| `sample_name` | `MT FASTQs folder path` | `cell_barcodes path` |
-
-Each sample is linked to a `fastq_folder` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests (e.g., qualified cell barcodes from independent GEX data analysis). Only reads associated to these cell barcodes will be filtered during pre-processing of `MAESTER` library.
-
-3. <span style="white-space: nowrap;">`--raw_data_input_type`</span> = `mitobam`. The user already has aligned MAESTER libraries to the genome reference. These aligned reads (i.e., .bam file) are passed (<span style="white-space: nowrap;">`--raw_data_input`</span> parameter) with the following a sample sheet (CSV file):
-
-| sample | bam | cell_barcodes |
-|-----------|-------------|---------|
-| `sample_name` | `MT bam path` | `cell_barcodes path` |
-
-Each sample is linked to a `MT bam file` for its `MAESTER` library, and a `cell_barcodes.txt` file with cell barcodes of interests. The bam file should have `CB` and `UB` tags, specifying for cell barcode and UMI, respectively.
-
-All the other entrypoints (i.e., INFER, TUNE, EXPLORE) do *not* implement raw data pre-processing. Thus, it is assumed that properly formatted AFMs have been generated *before* running these workflows. These AFMs are passed (i.e., <span style="white-space: nowrap;">`--afm_input`</span>) with the following a sample sheet (CSV file):
-
-| job_id | sample | afm |
-|-----------|-------------|---------|
-| `job_id` | `sample_name` | `AFM path` |
-
-The `job_id` here serve as label links a certain sample (`sample_name`) with a specific AFM (`AFM path`, e.g. from different raw data pre-processing workflows).
-
-(Optional) the user can also provide coverage tables for analysis (<span style="white-space: nowrap;">`--coverage_input`</span> parameter, default is `null`). These coverage tables are passed with the following sample sheet (CSV file):
-
-| job_id | sample | coverage |
-|-----------|-------------|---------|
-| `job_id` | `sample_name` | `coverage table path` |
-
-The coverage tables can be used in EXPLORE workflows for advanced visualization and analysis of mitochondrial variant coverage patterns.
-
-The <span style="white-space: nowrap;">`--output_folder`</span> parameter is always required from the user.
-
-(Optional) the user can provide its custom cell metadata (<span style="white-space: nowrap;">`--path_meta`</span> parameter, default is `null`). To be valid, these metadata should be formatted as a CSV file indexed with 10x cell barcodes to which their sample name is appended (`_<sample name>`):
-
-| cell | col1 | col2 | 
-|-----------|-------------|---------|
-| cell1_sampleA | ... | ... | 
-| celln_sampleB | ... | ... | 
-
-<span style="white-space: nowrap;">`--lineage_column`</span> can specify for an orthogonal lineage measurement (i.e., lentiviral barcodes) or inference (e.g. gene-expression derived cell types). If valid, these labels can be used as to compute variant enrichments in these cell groups, or to quantify the relationship with inferred MT-clones. 
-
-### Reference Genome parameters
-
-Reference Genome parameters control nf-MiTo pipeline resources for alignment of sequencing reads. 
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;build_STAR_index</code></td>
-<td align="left">Build STAR index from reference files</td>
-<td align="left"><code>true</code></td>
-<td align="left">Boolean</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;prebuilt_STAR_index</code></td>
-<td align="left">Path to prebuilt STAR index directory</td>
-<td align="left"><code>null</code></td>
-<td align="left">Path</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;reference_genome</code></td>
-<td align="left">Reference genome FASTA file URL or path</td>
-<td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz">GENCODE GRCh38.p13</a></td>
-<td align="left">Path/URL</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;gtf</code></td>
-<td align="left">GTF annotation file URL or path</td>
-<td align="left"><a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz">GENCODE v32 GTF</a></td>
-<td align="left">Path/URL</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;NUMTs_regions</code></td>
-<td align="left">Nuclear mitochondrial DNA regions BED file URL or path</td>
-<td align="left"><a href="https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed">hg38 NUMTs blacklist</a></td>
-<td align="left">Path/URL</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;tenx_whitelist</code></td>
-<td align="left">10x Genomics cell barcode whitelist URL or path</td>
-<td align="left"><a href="https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz">10x v3 whitelist</a></td>
-<td align="left">Path/URL</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;string_MT</code></td>
-<td align="left">Mitochondrial chromosome identifier</td>
-<td align="left"><code>chrM</code></td>
-<td align="left">String</td>
-</tr>
-</tbody>
-</table>
-
-By default, nf-MiTo pulls a reference genome and its annotations from Gencode, and build a STAR index from scratch (i.e., <span style="white-space: nowrap;">`--build_STAR_index`</span> = `true`). In alternative custom genomes and annotations can be passed (i.e., downloadable URLs, <span style="white-space: nowrap;">`--reference_genome`</span> and <span style="white-space: nowrap;">`--gtf`</span> options), or, one can pre-build its own STAR index, and then pass it with the <span style="white-space: nowrap;">`--prebuilt_STAR_index`</span> option (see the [PREPROCESS](docs/PREPROCESS.md) and [create_STAR_index](docs/create_STAR_index.md) tutorials). 
-
-### scLT System parameters
-
-scLT system parameters specify for the scLT system at hand, and (if <span style="white-space: nowrap;">`--scLT_system`</span> = `MAESTER`) the chosen
-pre-processing tool.
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;scLT_system</code></td>
-<td align="left">scLT system [<code>MAESTER</code>, <code>RedeeM</code>, <code>Cas9</code>, <code>scWGS</code>, <code>EPI-clone</code>]</td>
-<td align="left"><code>MAESTER</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;pp_method</code></td>
-<td align="left">Preprocessing method [<code>magatk</code>, <code>mito_preprocessing</code>, <code>cellsnp-lite</code>, <code>samtools</code>, <code>freebayes</code>]</td>
-<td align="left"><code>maegatk</code></td>
-<td align="left">String</td>
-</tr>
-</tbody>
-</table>
-
-If <span style="white-space: nowrap;">`--scLT_system`</span> != `MAESTER`, AFMs needs to be generated with MiTo utilities. See ... vignette.
-
-### Sequencing Data Preprocessing parameters
-
-Sequencing Data Preprocessing parameters control how MT-reads are pre-processed (i.e., main workflow or PREPROCESS entrypoint).
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;CBs_chunk_size</code></td>
-<td align="left">Cell barcodes chunk size</td>
-<td align="left"><code>3000</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_UMI_consensus_mode</code></td>
-<td align="left">UMI-based read grouping strategy</td>
-<td align="left"><code>Identity</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_UMI_consensus_edits</code></td>
-<td align="left">Max UMI edit distance for read grouping</td>
-<td align="left"><code>0</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_min_reads_mito</code></td>
-<td align="left">Min reads for consensus sequence generation</td>
-<td align="left"><code>3</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_base_error_rate_mito</code></td>
-<td align="left">Max fraction of discordant bases in a read group</td>
-<td align="left"><code>0.25</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_base_quality</code></td>
-<td align="left">Min base-calling quality of consensus bases</td>
-<td align="left"><code>30</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;fgbio_min_alignment_quality</code></td>
-<td align="left">Minimum alignment quality of consensus reads</td>
-<td align="left"><code>60</code></td>
-<td align="left">Integer</td>
-</tr>
-</tbody>
-</table>
-
-<span style="white-space: nowrap;">`--CBs_chunk_size`</span> sets the chunk size (i.e., number of cell barcodes) into which the MT-library 
-bam file is splitted for parallel pre-processing. All the other parameters control how single-cell
-MT-libraries are processed (N.B. when <span style="white-space: nowrap;">`--pp_method`</span> is `maegatk` or `mito_preprocessing`, see [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) supplementary information for a detailed breakdown of this parameters and their usage in different pre-processing pipelines). In general, [fgbio](https://fulcrumgenomics.github.io/fgbio/) is used for consensus sequence generation. Resulting consunsus reads are then processed to obtain single-cell allelic tables storing consensus UMI counts for all bases (i.e., basecalls) at each MT-genome position. These basecalls are annotated with different statistics (e.g., average base calling quality and consensus score).  
-
-### Cell Filtering parameters
-
-Cell Filtering parameters parameters specify for cell Quality Control (QC) operations.
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_nUMIs</code></td>
-<td align="left">Minimum UMIs per cell</td>
-<td align="left"><code>500</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_n_genes</code></td>
-<td align="left">Minimum genes per cell</td>
-<td align="left"><code>250</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;max_perc_mt</code></td>
-<td align="left">Maximum mitochondrial read percentage</td>
-<td align="left"><code>0.15</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;n_mads</code></td>
-<td align="left">n MADs</td>
-<td align="left"><code>3</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;mean_cov_all</code></td>
-<td align="left">Minimum mean coverage across all mitochondrial sites</td>
-<td align="left"><code>20</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;median_cov_target</code></td>
-<td align="left">Minimum median coverage of MAESTER target sites</td>
-<td align="left"><code>25</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_perc_covered_sites</code></td>
-<td align="left">Minimum percentage of mitochondrial sites covered</td>
-<td align="left"><code>0.75</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;cell_filter</code></td>
-<td align="left">MT-library filtering strategy [<code>null</code>, <code>filter1</code>, <code>filter2</code>]</td>
-<td align="left"><code>filter2</code></td>
-<td align="left">String</td>
-</tr>
-</tbody>
-</table>
-
-<span style="white-space: nowrap;">`--min_nUMIs`</span>, <span style="white-space: nowrap;">`--min_n_genes`</span>, <span style="white-space: nowrap;">`--max_perc_mt`</span> and <span style="white-space: nowrap;">`--n_mads`</span> are actively used only in the PREPROCESS entrypoint (or main end-to-end workflow), *if* <span style="white-space: nowrap;">`--raw_input_data_type`</span> = `fastq`. These parameters control how cell barcodes are filtered according to standard QC metrics on their GEX library (i.e., n UMIs, genes and % of UMIs mapping to the MT-genome). Considering the number of UMIs and genes, cells are filtered with adaptive thresholds on the upper bound (<span style="white-space: nowrap;">`--n_mads`</span> * MADs, Median Absolute Deviations).
-
-The mitochondrial coverage parameters <span style="white-space: nowrap;">`--mean_cov_all`</span>, <span style="white-space: nowrap;">`--median_cov_target`</span>, and <span style="white-space: nowrap;">`--min_perc_covered_sites`</span> control quality filtering based on mitochondrial library coverage metrics. These parameters set thresholds for mean coverage across all mitochondrial sites, the median coverage of MAESTER target sites, and minimum percentage of covered sites, respectively.
-
-The <span style="white-space: nowrap;">`--cell_filter`</span> parameter is used across all workflows, and specify how cells are filtered according to their MT-library properties (i.e., <span style="white-space: nowrap;">`--scLT_system`</span> in [`MAESTER`, `RedeeM`]). The `filter2` strategy is optimized for MAESTER libraries, while `filter1` can be used for all MT-protocols. 
-
-### Allele Frequency Matrix Preprocessing parameters
-
-Allele Frequency Matrix Preprocessing parameters control how the AFM generated after raw reads pre-processing
-is filtered and how cell genotypes are assigned.
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;filtering</code></td>
-<td align="left">MT-SNVs filtering method [<code>null</code>, <code>MiTo</code>, <code>MQuad</code>]</td>
-<td align="left"><code>MiTo</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;filter_dbs</code></td>
-<td align="left">MT-SNVs database filtering</td>
-<td align="left"><code>true</code></td>
-<td align="left">Boolean</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;spatial_metrics</code></td>
-<td align="left">Spatial metrics calculation</td>
-<td align="left"><code>false</code></td>
-<td align="left">Boolean</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;filter_moran</code></td>
-<td align="left">Spatially segregated MT-SNVs filtering</td>
-<td align="left"><code>true</code></td>
-<td align="left">Boolean</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_cov</code></td>
-<td align="left">Min MT-SNV site coverage</td>
-<td align="left"><code>5</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_var_quality</code></td>
-<td align="left">Min (average) ALT allele base-calling quality</td>
-<td align="left"><code>30</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_frac_negative</code></td>
-<td align="left">Min fraction of negative cells</td>
-<td align="left"><code>0.2</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_n_positive</code></td>
-<td align="left">Min n of positive cells</td>
-<td align="left"><code>5</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;af_confident_detection</code></td>
-<td align="left">AF threshold for "confident" detection</td>
-<td align="left"><code>0.02</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_n_confidently_detected</code></td>
-<td align="left">Min n of confidently detected cells</td>
-<td align="left"><code>2</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_mean_AD_in_positives</code></td>
-<td align="left">Min mean AD in +cells</td>
-<td align="left"><code>1.25</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_mean_DP_in_positives</code></td>
-<td align="left">Min mean DP in +cells</td>
-<td align="left"><code>25</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;t_prob</code></td>
-<td align="left">Probability threshold for MiTo genotyping</td>
-<td align="left"><code>0.7</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_AD</code></td>
-<td align="left">Minimum allelic depth</td>
-<td align="left"><code>2</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_cell_prevalence</code></td>
-<td align="left">Min MT-SNV prevalence for MiTo genotyping</td>
-<td align="left"><code>0.05</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;t_vanilla</code></td>
-<td align="left">AF threshold for vanilla genotyping</td>
-<td align="left"><code>0</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;bin_method</code></td>
-<td align="left">Genotyping method [<code>MiTo</code>, <code>vanilla</code>]</td>
-<td align="left"><code>MiTo</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;min_n_var</code></td>
-<td align="left">Minimum number of variants per cell</td>
-<td align="left"><code>1</code></td>
-<td align="left">Integer</td>
-</tr>
-</tbody>
-</table>
-
-<span style="white-space: nowrap;">`--min_cov`</span>, <span style="white-space: nowrap;">`--min_var_quality`</span>, <span style="white-space: nowrap;">`--min_frac_negative`</span>, <span style="white-space: nowrap;">`--min_n_positive`</span>, <span style="white-space: nowrap;">`--af_confident_detection`</span>, <span style="white-space: nowrap;">`--min_n_confidently_detected`</span>, <span style="white-space: nowrap;">`--min_mean_AD_in_positives`</span>, <span style="white-space: nowrap;">`--min_mean_DP_in_positives`</span> are active if <span style="white-space: nowrap;">`--filtering`</span> = `MiTo`. Otherwise all AFM characters are retained (<span style="white-space: nowrap;">`--filtering`</span> = `null`) or MT-SNVs filtering is performed with the MQuad method (<span style="white-space: nowrap;">`--filtering`</span> = `MQuad`). 
-
-### Phylogeny Reconstruction parameters
-
-Phylogeny Reconstruction parameters control phylogeny reconstruction from filtered character matrices.
-
-<table>
-<thead>
-<tr>
-<th align="left">Parameter</th>
-<th align="left">Description</th>
-<th align="left">Default</th>
-<th align="left">Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;distance_metric</code></td>
-<td align="left">Distance metric [<code>weighted_jaccard</code>, <code>jaccard</code>, <code>correlation</code>, <code>cosine</code>]</td>
-<td align="left"><code>weighted_jaccard</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;tree_algorithm</code></td>
-<td align="left">Algorithm [<code>cassiopeia</code>, <code>iqtree</code>, <code>mpboot</code>]</td>
-<td align="left"><code>cassiopeia</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;cassiopeia_solver</code></td>
-<td align="left">Solver [<code>UPMGA</code>, <code>NJ</code>, <code>spectral</code>, <code>greedy</code>]</td>
-<td align="left"><code>UPMGA</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;n_boot_replicates</code></td>
-<td align="left">Bootstrap replicates</td>
-<td align="left"><code>100</code></td>
-<td align="left">Integer</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;boot_strategy</code></td>
-<td align="left">Bootstrap strategy [<code>feature_resampling</code>, <code>jacknife</code>]</td>
-<td align="left"><code>feature_resampling</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;frac_char_resampling</code></td>
-<td align="left">% resampled characters</td>
-<td align="left"><code>0.8</code></td>
-<td align="left">Float</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;support_method</code></td>
-<td align="left">Support method [<code>tbe</code>, <code>fbp</code>]</td>
-<td align="left"><code>tbe</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;annotate_tree</code></td>
-<td align="left">Tree annotation method</td>
-<td align="left"><code>MiTo</code></td>
-<td align="left">String</td>
-</tr>
-<tr>
-<td align="left" style="white-space: nowrap;"><code>&#8209;&#8209;max_fraction_unassigned</code></td>
-<td align="left">Max fraction of unassigned cells</td>
-<td align="left"><code>0.1</code></td>
-<td align="left">Float</td>
-</tr>
-</tbody>
-</table>
-
-## Configuration
-Any custom configuration can be passed to nf-MiTo with the `-c <user.config>` option. See the [`config/user.config`](config/user.config) file for a minimal example for an HPC environment.
-
-## Examples
-Tutorials for the main entrypoints and use-cases can be found [here](docs). 
-
-## Troubleshooting
-
-1. **Memory Errors**: Increase memory allocation in configuration
-2. **Input Format Errors**: Validate CSV file structure
-
-### Support
-
-- **Issues**: Report bugs via GitHub Issues
-- **Discussions**: Community support via GitHub Discussions
+Build with `docker build --platform linux/x86_64 -f docker/Dockerfile_<tool> -t acox1/mito-<tool>:2.0.0 .` from the repository root. Scripts are in [`bin/`](bin) and are on the `PATH` of every task.
 
 ## Versions
 
-nf-MiTo calls the [MiTo](https://github.com/andrecossa5/MiTo) Python package, from the `acox1/mito` container
-(`config/base.config`, built from `docker/Dockerfile_MiTo`).
+| nf-MiTo | MiTo | Notes |
+|---|---|---|
+| `v1.0.0` | `scmito>=1.0.2,<2` (original API), container `acox1/mito:1.0.2` | Pipeline of the paper (preprocessing, tuning, inference). Analyses in [MiTo_benchmark_repro](https://github.com/andrecossa5/MiTo_benchmark_repro). |
+| `v2.0.0` (release candidate `v2.0.0-rc1`) | `>=2.0.0` | Preprocessing only, three assays; tables are loaded with `mt.io.make_afm`. TUNE, EXPLORE, INFER and BENCH were removed. |
 
-| nf-MiTo | MiTo | Container | Notes |
-|---|---|---|---|
-| `v1.0.0` | `scmito>=1.0.2,<2` (the original MiTo API) | `acox1/mito:1.0.2` | the MiTo version of the paper analyses; downstream analyses in [MiTo_benchmark_repro](https://github.com/andrecossa5/MiTo_benchmark_repro) |
+## Troubleshooting
 
-MiTo 2.x has a new API (`mt.pp.filter_afm`, `mt.tl.annotate_clones`) that this release of nf-MiTo does not use yet:
-use MiTo 1.0.2 with it. A release of nf-MiTo for MiTo 2.x is in preparation.
+1. **Memory errors**: resources are set per process in `config/base.config`; override them in your `-c` config. `BWAMEM2_MT` and `BWAMEM2_INDEX` request 40 GB.
+2. **Samplesheet errors**: the pipeline checks the CSV at launch and names the row and column.
+3. **Barcodes not found**: `cell_barcodes` must match the BAM tag (or the reads, for FASTQ input); use `--barcode_space RNA` for Cell Ranger ARC lists.
 
-Compared with runs on the former `acox1/mito` images (MiTo v0.1.x), the kNN-based metrics of the `INFER`
-workflow (`median_NN_entropy`, `median_NN_purity`) differ, because MiTo now returns the `k` nearest neighbours where
-v0.1.x returned every other cell (see the [MiTo CHANGELOG](https://github.com/andrecossa5/MiTo/blob/master/CHANGELOG.md)).
-The options `--k` and `--gamma` (the removed `MiTo_smooth` genotyping) and the solvers `shared_muts` and `max_cut` are
-no longer available.
+Issues: GitHub Issues.
 
 ## Citation
 
 If you use nf-MiTo in your research, please cite:
 
-
 *MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics. Andrea Cossa, Alberto Dalmasso, Guido Campani, Elisa Bugani, Chiara Caprioli, Noemi Bulla, Andrea Tirelli, Yinxiu Zhan, Pier Giuseppe Pelicci. biorxiv. doi:https://doi.org/10.1101/2025.06.17.660165*
+
+and the tool you used: maegatk/MAESTER (Miller et al., Nat. Biotechnol. 2022), mgatk (Lareau et al., Nat. Biotechnol. 2021), RedeemV/ReDeeM (Weng et al., Nature 2024).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT, see [LICENSE](LICENSE). `bin/mitoConsensus.py` is RedeemV code (chenweng1991/redeemV, commit `5c34940`) and is not covered by this licence.
