@@ -40,7 +40,7 @@ Every assay follows the same two stages, starting from the library holding the M
 1. **Reads → MT BAM** (skipped if you give a BAM): one library-level, coordinate-sorted BAM of chrM reads with the cell barcode in a tag (`--barcode_tag`, default `CB`).
 2. **MT BAM → single-cell tables**: the BAM is split in chunks of cell barcodes (`--CBs_chunk_size`) and filtered with Picard `FilterSamReads`, then processed by the assay's tool (per cell for maegatk and mgatk, per chunk for RedeemV) and collapsed into the tables.
 
-For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked.
+For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked. By default the genome (`--reference_genome`) is downloaded and masked with `--NUMTs_regions`; with `"NUMTs_regions": null` in the params file, `--reference_genome` is taken as an already masked, uncompressed FASTA and used as it is.
 
 nf-MiTo 2.0.0 does not use the MiTo package; there is no MiTo image. See [MiTo: tracing the phenotypic evolution of somatic cell lineages via mitochondrial single-cell multi-omics](https://doi.org/10.1101/2025.06.17.660165) for the method.
 

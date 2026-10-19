@@ -29,10 +29,9 @@ workflow prep_resources {
         } else {
             
             PREP_GTF()
-            PREP_GENOME()
-            BUILD_INDEX(PREP_GENOME.out.genome, PREP_GTF.out.gtf)
+            genome = params.NUMTs_regions ? PREP_GENOME().genome : Channel.value(file(params.reference_genome, checkIfExists: true))
+            BUILD_INDEX(genome, PREP_GTF.out.gtf)
             star_index = BUILD_INDEX.out.star_index
-            genome = PREP_GENOME.out.genome
 
         }
 
@@ -52,11 +51,12 @@ workflow prep_genome {
 
     main:
 
-        PREP_GENOME()
+        // --NUMTs_regions null: --reference_genome is already masked (uncompressed FASTA), used as it is
+        genome = params.NUMTs_regions ? PREP_GENOME().genome : Channel.value(file(params.reference_genome, checkIfExists: true))
 
     emit:
 
-        genome = PREP_GENOME.out.genome
+        genome = genome
     
 }
 
