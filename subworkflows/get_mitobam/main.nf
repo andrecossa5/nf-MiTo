@@ -8,6 +8,8 @@ include { SOLO } from "./modules/Solo.nf"
 include { FILTER_MAESTER_BAM } from "./modules/filter_bam.nf"
 include { MERGE_ATAC_LANES } from "./modules/atac.nf"
 include { ATAC_ADD_BARCODE } from "./modules/atac.nf"
+include { FETCH_MULTIOME_WHITELISTS } from "./modules/atac.nf"
+include { RNA2ATAC_BARCODES } from "./modules/atac.nf"
 include { BWAMEM2_INDEX } from "./modules/atac.nf"
 include { BWAMEM2_MT } from "./modules/atac.nf"
 
@@ -65,13 +67,20 @@ workflow get_atac_bam {
         genome          // NUMT-masked genome (FASTA)
 
     main:
-        // Get MT-reads from 10x scATAC libraries (barcode in R2): bwa-mem2 on the masked genome
+        // Get MT-reads from 10x ATAC libraries (scATAC, or the ATAC side of a Multiome): bwa-mem2 on the masked genome
         MERGE_ATAC_LANES(ch_fastq_dirs)
-        ATAC_ADD_BARCODE(MERGE_ATAC_LANES.out.reads.combine(cell_barcodes, by:0))
+        ch_cells = cell_barcodes
+        if (params.barcode_space == "RNA") {
+            // Cell Ranger ARC cells are RNA-space barcodes; the ATAC reads carry the linked ATAC barcode
+            FETCH_MULTIOME_WHITELISTS()
+            RNA2ATAC_BARCODES(cell_barcodes, FETCH_MULTIOME_WHITELISTS.out.whitelists)
+            ch_cells = RNA2ATAC_BARCODES.out.cell_barcodes
+        }
+        ATAC_ADD_BARCODE(MERGE_ATAC_LANES.out.reads.combine(ch_cells, by:0))
         BWAMEM2_INDEX(genome)
         BWAMEM2_MT(ATAC_ADD_BARCODE.out.reads, BWAMEM2_INDEX.out.index)
 
     emit:
-        mitobam = BWAMEM2_MT.out.bam.combine(cell_barcodes, by:0)
+        mitobam = BWAMEM2_MT.out.bam.combine(cell_barcodes, by:0)   // the cells keep the names listed by the user
 }
 //----------------------------------------------------------------------------//

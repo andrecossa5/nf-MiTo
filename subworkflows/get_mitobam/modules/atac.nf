@@ -49,12 +49,60 @@ process ATAC_ADD_BARCODE {
 
   script:
   """
-  python ${baseDir}/bin/preprocess/atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded
+  python ${baseDir}/bin/preprocess/atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded --rule ${params.atac_barcode_rule}
   """
 
   stub:
   """
   touch barcoded_R1.fastq.gz barcoded_R3.fastq.gz
+  """
+
+}
+
+//
+
+process FETCH_MULTIOME_WHITELISTS {
+
+  label 'mgatk'
+
+  output:
+  tuple path('WhiteList.RNA'), path('WhiteList.ATAC'), emit: whitelists
+
+  script:
+  """
+  wget -q -O WhiteList.RNA ${params.multiome_whitelist_rna}
+  wget -q -O WhiteList.ATAC ${params.multiome_whitelist_atac}
+  """
+
+  stub:
+  """
+  touch WhiteList.RNA WhiteList.ATAC
+  """
+
+}
+
+//
+
+process RNA2ATAC_BARCODES {
+
+  tag "${sample_name}"
+  label 'mgatk'
+
+  input:
+  tuple val(sample_name), path(rna_cells)
+  tuple path(wl_rna), path(wl_atac)
+
+  output:
+  tuple val(sample_name), path("atac_cells.tsv"), emit: cell_barcodes
+
+  script:
+  """
+  python ${baseDir}/bin/preprocess/rna2atac_barcodes.py ${rna_cells} ${wl_rna} ${wl_atac} atac_cells.tsv
+  """
+
+  stub:
+  """
+  touch atac_cells.tsv
   """
 
 }
