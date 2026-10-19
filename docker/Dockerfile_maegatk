@@ -1,0 +1,19 @@
+# maegatk image. Environment: envs/maegatk.yml (build from the repository root).
+FROM debian:bookworm-slim
+LABEL maintainer="andrea.cossa@ieo.it"
+
+RUN apt-get --quiet update --yes \
+    && apt-get --quiet install --yes --no-install-recommends ca-certificates build-essential zlib1g-dev wget git procps \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ARCH=$(uname -m) \
+    && wget -q https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-24.11.3-0-Linux-${ARCH}.sh \
+    && bash Miniforge3-24.11.3-0-Linux-${ARCH}.sh -b -p /mambaforge \
+    && rm Miniforge3-24.11.3-0-Linux-${ARCH}.sh
+ENV PATH="/mambaforge/bin/:$PATH"
+
+COPY envs/maegatk.yml /tmp/env.yml
+RUN conda env update -n base -f /tmp/env.yml && conda clean --all --yes
+
+# Build (mgatk and maegatk need x86_64): docker build --platform linux/x86_64 -f docker/Dockerfile_maegatk -t acox1/mito-maegatk:2.0.0 .
+CMD ["bash"]

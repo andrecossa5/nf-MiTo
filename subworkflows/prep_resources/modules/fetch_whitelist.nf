@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process FETCH_WHITELIST {
 
-  label 'scLT'
+  label 'maegatk'
 
   output:
   path('10x_v3_whitelist.txt'), emit: whitelist

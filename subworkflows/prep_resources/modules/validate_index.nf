@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process VALIDATE_INDEX {
 
-  label 'scLT'
+  label 'maegatk'
 
   output:
   path('STAR_index'), emit: star_index

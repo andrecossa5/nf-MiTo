@@ -1,0 +1,19 @@
+# maegatk image/env (MAESTER) and shared steps: reference prep, barcode chunking, Picard filtering, STARsolo.
+# Versions as in nf-MiTo 1.0.0 (same MAESTER tables).
+name: mito-maegatk
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - numpy=1.22.4
+  - pandas=1.5.3
+  - pysam=0.22.1
+  - samtools=1.20
+  - fgbio=2.1.0
+  - bwa
+  - picard
+  - bedtools
+  - pigz=2.8
+  - star=2.7.9a
+  - wget

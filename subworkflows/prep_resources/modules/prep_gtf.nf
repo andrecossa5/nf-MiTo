@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process PREP_GTF {
 
-  label 'scLT'
+  label 'maegatk'
 
   output:
   path('filtered_genes.gtf'), emit: gtf

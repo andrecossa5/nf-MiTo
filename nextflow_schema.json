@@ -1,523 +1,226 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://github.com/andrecossa5/nf-MiTo/blob/master/nextflow_schema.json",
-    "title": "nf-MiTo pipeline parameters",
-    "description": "Integrated pipeline for MT-SNVs-based single-cell lineage tracing",
-    "type": "object",
-    "definitions": {
-        "input_output_options": {
-            "title": "Input/Output options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["output_folder"],
-            "properties": {
-                "raw_data_input_type": {
-                    "type": "string",
-                    "description": "Type of raw input data",
-                    "default": "mitobam",
-                    "enum": ["fastq", "fastq, MAESTER", "mitobam"],
-                    "help_text": "Specify the format of your input data: raw fastq files, MAESTER fastq files, or pre-aligned mitochondrial BAM files."
-                },
-                "raw_data_input": {
-                    "type": "string",
-                    "description": "Path to CSV file containing raw data input information",
-                    "help_text": "CSV file with sample information. Format depends on raw_data_input_type."
-                },
-                "afm_input": {
-                    "type": "string",
-                    "description": "Path to CSV file containing allelic frequency matrix (AFM) input information",
-                    "help_text": "CSV file containing job_id, sample, and afm path columns for direct AFM analysis."
-                },
-                "coverage_input": {
-                    "type": ["string", "null"],
-                    "description": "Path to CSV file containing coverage tables of the samples",
-                    "default": null,
-                    "help_text": "CSV file containing sample, and coverage path columns. Only for EXPLORE workflow."
-                },
-                "output_folder": {
-                    "type": "string",
-                    "description": "The output directory where the results will be saved",
-                    "help_text": "Absolute path to output directory where all pipeline results will be stored."
-                },
-                "path_meta": {
-                    "type": ["string", "null"],
-                    "description": "Path to metadata file",
-                    "default": null
-                },
-                "path_tuning": {
-                    "type": ["string", "null"],
-                    "description": "Path to tuning results file",
-                    "default": null
-                }
-            }
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/andrecossa5/nf-MiTo/master/nextflow_schema.json",
+  "title": "nf-MiTo pipeline parameters",
+  "description": "Preprocessing of MT-SNVs-based scLT data into the tables read by MiTo",
+  "type": "object",
+  "definitions": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "string",
+          "description": "Samplesheet CSV: sample,fastq_dir,bam,cell_barcodes"
         },
-        "reference_genome_options": {
-            "title": "Reference genome options",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "Reference genome related files and options.",
-            "properties": {
-                "build_STAR_index": {
-                    "type": "boolean",
-                    "description": "Build STAR index from reference files",
-                    "default": true,
-                    "help_text": "If true, builds STAR index from reference genome and GTF. If false, uses prebuilt index."
-                },
-                "prebuilt_STAR_index": {
-                    "type": "string",
-                    "description": "Path to prebuilt STAR index directory",
-                    "default": null,
-                    "help_text": "Directory containing prebuilt STAR index files. Used when build_STAR_index is false."
-                },
-                "reference_genome": {
-                    "type": "string",
-                    "description": "Reference genome FASTA file URL or path",
-                    "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz",
-                    "help_text": "URL or path to reference genome FASTA file for STAR index building."
-                },
-                "gtf": {
-                    "type": "string",
-                    "description": "GTF annotation file URL or path",
-                    "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz",
-                    "help_text": "URL or path to GTF annotation file for STAR index building."
-                },
-                "NUMTs_regions": {
-                    "type": "string",
-                    "description": "Nuclear mitochondrial DNA regions BED file URL or path",
-                    "default": "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed",
-                    "help_text": "BED file containing NUMT regions to mask from reference genome."
-                },
-                "tenx_whitelist": {
-                    "type": "string",
-                    "description": "10x Genomics cell barcode whitelist URL or path",
-                    "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz",
-                    "help_text": "URL or path to 10x Genomics v3 cell barcode whitelist file."
-                },
-                "ref": {
-                    "type": "string",
-                    "description": "Path to reference genome directory",
-                    "help_text": "Directory containing reference genome files (STAR index)"
-                },
-                "string_MT": {
-                    "type": "string",
-                    "description": "Mitochondrial chromosome identifier",
-                    "default": "chrM",
-                    "help_text": "The chromosome name for mitochondrial DNA in your reference genome."
-                },
-                "whitelist": {
-                    "type": "string",
-                    "description": "Path to cell barcode whitelist file",
-                    "help_text": "Text file containing valid 10x cell barcodes, one per line."
-                }
-            }
+        "assay": {
+          "type": "string",
+          "description": "MAESTER | mtscATAC | ReDeeM",
+          "default": "MAESTER"
         },
-        "sclt_system_options": {
-            "title": "scLT system options",
-            "type": "object",
-            "fa_icon": "fas fa-microscope",
-            "description": "Single-cell lineage tracing system specification.",
-            "properties": {
-                "scLT_system": {
-                    "type": "string",
-                    "description": "Single-cell lineage tracing system type",
-                    "default": "MAESTER",
-                    "enum": ["MAESTER", "RedeeM", "Cas9", "scWGS"],
-                    "help_text": "The lineage tracing technology used to generate the data."
-                },
-                "pp_method": {
-                    "type": "string",
-                    "description": "Preprocessing method for variant calling",
-                    "default": "maegatk",
-                    "help_text": "Method used for preprocessing and variant calling."
-                }
-            }
+        "output_folder": {
+          "type": "string",
+          "description": "Output folder"
         },
-        "sequencing_data_preprocessing_options": {
-            "title": "Sequencing data preprocessing options",
-            "type": "object",
-            "fa_icon": "fas fa-cogs",
-            "description": "Options for data preprocessing and quality control.",
-            "properties": {
-                "CBs_chunk_size": {
-                    "type": "integer",
-                    "description": "Cell barcode chunk size for processing",
-                    "default": 3000,
-                    "minimum": 100
-                },
-                "fgbio_UMI_consensus_mode": {
-                    "type": "string",
-                    "description": "fgbio UMI consensus calling strategy",
-                    "default": "Identity"
-                },
-                "fgbio_UMI_consensus_edits": {
-                    "type": "integer",
-                    "description": "Maximum edit distance for UMI consensus",
-                    "default": 0,
-                    "minimum": 0
-                },
-                "fgbio_min_reads_mito": {
-                    "type": "integer",
-                    "description": "Minimum reads required for mitochondrial consensus",
-                    "default": 3,
-                    "minimum": 1
-                },
-                "fgbio_base_error_rate_mito": {
-                    "type": "number",
-                    "description": "Base error rate for mitochondrial consensus calling",
-                    "default": 0.25,
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "fgbio_base_quality": {
-                    "type": "integer",
-                    "description": "Minimum base quality for consensus calling",
-                    "default": 30,
-                    "minimum": 0,
-                    "maximum": 60
-                },
-                "fgbio_min_alignment_quality": {
-                    "type": "integer",
-                    "description": "Minimum alignment quality score",
-                    "default": 60,
-                    "minimum": 0,
-                    "maximum": 60
-                }
-            }
-        },
-        "cell_filtering_options": {
-            "title": "Cell filtering options",
-            "type": "object",
-            "fa_icon": "fas fa-filter",
-            "description": "Parameters for filtering cells based on quality metrics.",
-            "properties": {
-                "min_nUMIs": {
-                    "type": "integer",
-                    "description": "Minimum number of UMIs per cell",
-                    "default": 500,
-                    "minimum": 0
-                },
-                "min_n_genes": {
-                    "type": "integer",
-                    "description": "Minimum number of genes per cell",
-                    "default": 250,
-                    "minimum": 0
-                },
-                "max_perc_mt": {
-                    "type": "number",
-                    "description": "Maximum percentage of mitochondrial reads",
-                    "default": 0.15,
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "n_mads": {
-                    "type": "integer",
-                    "description": "Number of median absolute deviations for outlier detection",
-                    "default": 3,
-                    "minimum": 1
-                },
-                "mean_cov_all": {
-                    "type": "integer",
-                    "description": "Minimum mean coverage across all mitochondrial sites",
-                    "default": 20,
-                    "minimum": 1
-                },
-                "median_cov_target": {
-                    "type": "integer",
-                    "description": "Target median coverage for mitochondrial variants",
-                    "default": 25,
-                    "minimum": 1
-                },
-                "min_perc_covered_sites": {
-                    "type": "number",
-                    "description": "Minimum percentage of mitochondrial sites covered",
-                    "default": 0.75,
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "cell_filter": {
-                    "type": "string",
-                    "description": "Cell filtering strategy",
-                    "default": "filter2"
-                }
-            }
-        },
-        "afm_preprocessing_options": {
-            "title": "Allele Frequency Matrix preprocessing options",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "Parameters for filtering mitochondrial variants.",
-            "properties": {
-                "filter_dbs": {
-                    "type": "boolean",
-                    "description": "Filter doublets/blacklisted variants",
-                    "default": true
-                },
-                "filtering": {
-                    "type": "string",
-                    "description": "Variant filtering method",
-                    "default": "MiTo"
-                },
-                "spatial_metrics": {
-                    "type": "boolean",
-                    "description": "Calculate spatial metrics",
-                    "default": false
-                },
-                "filter_moran": {
-                    "type": "boolean",
-                    "description": "Apply Moran's I filtering",
-                    "default": true
-                },
-                "min_cell_number": {
-                    "type": "integer",
-                    "description": "Minimum number of cells with variant",
-                    "default": 5,
-                    "minimum": 1
-                },
-                "min_cov": {
-                    "type": "integer",
-                    "description": "Minimum coverage",
-                    "default": 5,
-                    "minimum": 1
-                },
-                "min_var_quality": {
-                    "type": "integer",
-                    "description": "Minimum variant quality score",
-                    "default": 30,
-                    "minimum": 0
-                },
-                "min_frac_negative": {
-                    "type": "number",
-                    "description": "Minimum fraction of negative cells",
-                    "default": 0.2,
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "min_n_positive": {
-                    "type": ["integer", "array"],
-                    "description": "Minimum number of positive cells (single value for INFER, array for TUNE)",
-                    "default": 5,
-                    "minimum": 1,
-                    "items": {
-                        "type": "integer",
-                        "minimum": 1
-                    }
-                },
-                "af_confident_detection": {
-                    "type": ["number", "array"],
-                    "description": "Allele frequency threshold for confident detection (single value for INFER, array for TUNE)",
-                    "default": 0.02,
-                    "minimum": 0,
-                    "items": {
-                        "type": "number",
-                        "minimum": 0
-                    }
-                },
-                "min_n_confidently_detected": {
-                    "type": ["integer", "array"],
-                    "description": "Minimum number of confidently detected positive cells (single value for INFER, array for TUNE)",
-                    "default": 2,
-                    "minimum": 1,
-                    "items": {
-                        "type": "integer",
-                        "minimum": 1
-                    }
-                },
-                "min_mean_AD_in_positives": {
-                    "type": ["number", "array"],
-                    "description": "Minimum mean allelic depth in positive cells (single value for INFER, array for TUNE)",
-                    "default": 1.25,
-                    "minimum": 0,
-                    "items": {
-                        "type": "number",
-                        "minimum": 0
-                    }
-                },
-                "min_mean_DP_in_positives": {
-                    "type": "number",
-                    "description": "Minimum mean depth in positive cells",
-                    "default": 25,
-                    "minimum": 0
-                },
-                "t_prob": {
-                    "type": ["number", "array"],
-                    "description": "Probability threshold (single value for INFER, array for TUNE)",
-                    "default": 0.7,
-                    "minimum": 0,
-                    "maximum": 1,
-                    "items": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 1
-                    }
-                },
-                "min_AD": {
-                    "type": ["integer", "array"],
-                    "description": "Minimum allelic depth (single value for INFER, array for TUNE)",
-                    "default": 2,
-                    "minimum": 1,
-                    "items": {
-                        "type": "integer",
-                        "minimum": 1
-                    }
-                },
-                "min_cell_prevalence": {
-                    "type": ["number", "array"],
-                    "description": "Minimum cell prevalence for variant (single value for INFER, array for TUNE)",
-                    "default": 0.05,
-                    "minimum": 0,
-                    "maximum": 1,
-                    "items": {
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 1
-                    }
-                },
-                "t_vanilla": {
-                    "type": "integer",
-                    "description": "Vanilla threshold",
-                    "default": 0,
-                    "minimum": 0
-                },
-                "bin_method": {
-                    "type": ["string", "array"],
-                    "description": "Binarization method (single value for INFER, array for TUNE)",
-                    "default": "MiTo",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "min_n_var": {
-                    "type": "integer",
-                    "description": "Minimum number of variants per cell",
-                    "default": 1,
-                    "minimum": 1
-                }
-            }
-        },
-        "phylogeny_reconstruction_options": {
-            "title": "Phylogeny reconstruction options",
-            "type": "object",
-            "fa_icon": "fas fa-project-diagram",
-            "description": "Parameters for phylogeny reconstruction and annotation.",
-            "properties": {
-                "lineage_column": {
-                    "type": ["string", "null"],
-                    "description": "Column name in cell metadata for lineage annotation",
-                    "default": null
-                },
-                "K": {
-                    "type": "integer",
-                    "description": "Number of clusters",
-                    "default": 5,
-                    "minimum": 2
-                },
-                "distance_metric": {
-                    "type": "string",
-                    "description": "Distance metric for tree reconstruction",
-                    "default": "weighted_jaccard",
-                    "enum": ["weighted_jaccard", "jaccard", "hamming", "cosine"]
-                },
-                "tree_algorithm": {
-                    "type": "string",
-                    "description": "Tree reconstruction algorithm",
-                    "default": "cassiopeia",
-                    "enum": ["cassiopeia", "iqtree", "mpboot"]
-                },
-                "cassiopeia_solver": {
-                    "type": "string",
-                    "description": "Cassiopeia tree solver method",
-                    "default": "UPMGA",
-                    "enum": ["UPMGA", "NJ", "UPGMA"]
-                },
-                "n_boot_replicates": {
-                    "type": "integer",
-                    "description": "Number of bootstrap replicates",
-                    "default": 100,
-                    "minimum": 10
-                },
-                "boot_strategy": {
-                    "type": "string",
-                    "description": "Character bootstrap strategy",
-                    "default": "feature_resampling",
-                    "enum": ["feature_resampling", "cell_resampling"]
-                },
-                "frac_char_resampling": {
-                    "type": "number",
-                    "description": "Fraction of characters to resample",
-                    "default": 0.8,
-                    "minimum": 0.1,
-                    "maximum": 1.0
-                },
-                "support_method": {
-                    "type": "string",
-                    "description": "Bootstrap support calculation method",
-                    "default": "tbe",
-                    "enum": ["tbe", "felsenstein"]
-                },
-                "annotate_tree": {
-                    "type": "string",
-                    "description": "Tree annotation method",
-                    "default": "MiTo"
-                },
-                "max_fraction_unassigned": {
-                    "type": "number",
-                    "description": "Maximum fraction of unassigned cells",
-                    "default": 0.1,
-                    "minimum": 0,
-                    "maximum": 1
-                }
-            }
-        },
-        "benchmarking_options": {
-            "title": "Benchmarking options",
-            "type": "object",
-            "fa_icon": "fas fa-chart-bar",
-            "description": "Parameters for pipeline benchmarking.",
-            "properties": {
-                "maxK": {
-                    "type": "integer",
-                    "description": "Maximum number of vireoSNP clusters",
-                    "default": 15,
-                    "minimum": 2
-                },
-                "help": {
-                    "type": "boolean",
-                    "description": "Show help message and exit",
-                    "default": false
-                },
-                "version": {
-                    "type": "boolean",
-                    "description": "Show version information and exit",
-                    "default": false
-                }
-            }
+        "barcode_tag": {
+          "type": "string",
+          "description": "Cell barcode tag of the MT BAM",
+          "default": "CB"
         }
+      },
+      "required": [
+        "input",
+        "output_folder"
+      ]
     },
-    "allOf": [
-        {
-            "$ref": "#/definitions/input_output_options"
+    "reference_options": {
+      "title": "Reference options",
+      "type": "object",
+      "properties": {
+        "build_STAR_index": {
+          "type": "boolean",
+          "description": "Build the STAR index (MAESTER)",
+          "default": true
         },
-        {
-            "$ref": "#/definitions/reference_genome_options"
+        "prebuilt_STAR_index": {
+          "type": "string",
+          "description": "Path to a prebuilt STAR index"
         },
-        {
-            "$ref": "#/definitions/sclt_system_options"
+        "reference_genome": {
+          "type": "string",
+          "description": "Reference genome FASTA (path or URL)",
+          "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz"
         },
-        {
-            "$ref": "#/definitions/sequencing_data_preprocessing_options"
+        "gtf": {
+          "type": "string",
+          "description": "Annotation GTF (path or URL)",
+          "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz"
         },
-        {
-            "$ref": "#/definitions/cell_filtering_options"
+        "NUMTs_regions": {
+          "type": "string",
+          "description": "NUMT regions to mask (BED, path or URL)",
+          "default": "https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed"
         },
-        {
-            "$ref": "#/definitions/afm_preprocessing_options"
+        "tenx_whitelist": {
+          "type": "string",
+          "description": "10x barcode whitelist (MAESTER)",
+          "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz"
         },
-        {
-            "$ref": "#/definitions/phylogeny_reconstruction_options"
-        },
-        {
-            "$ref": "#/definitions/benchmarking_options"
+        "string_MT": {
+          "type": "string",
+          "description": "MT contig name",
+          "default": "chrM"
         }
-    ]
+      }
+    },
+    "preprocessing_options": {
+      "title": "Preprocessing options",
+      "type": "object",
+      "properties": {
+        "CBs_chunk_size": {
+          "type": "integer",
+          "description": "Cell barcodes per chunk",
+          "default": 3000
+        }
+      }
+    },
+    "mtscatac_options": {
+      "title": "mtscATAC / ReDeeM alignment and mgatk options",
+      "type": "object",
+      "properties": {
+        "atac_min_mapq": {
+          "type": "integer",
+          "description": "MAPQ of the MT reads kept after bwa-mem2",
+          "default": 30
+        },
+        "atac_barcode_rule": {
+          "type": "string",
+          "description": "Barcode window in the barcode read: auto | fwd:<offset> | rc:<offset>",
+          "default": "auto"
+        },
+        "barcode_space": {
+          "type": "string",
+          "description": "Barcodes of cell_barcodes: ATAC | RNA (Cell Ranger ARC)",
+          "default": "ATAC"
+        },
+        "multiome_whitelist_rna": {
+          "type": "string",
+          "description": "10x Multiome RNA whitelist",
+          "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.RNA"
+        },
+        "multiome_whitelist_atac": {
+          "type": "string",
+          "description": "10x Multiome ATAC whitelist",
+          "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.ATAC"
+        },
+        "mgatk_keep_duplicates": {
+          "type": "boolean",
+          "description": "Keep duplicates",
+          "default": false
+        },
+        "mgatk_handle_overlap": {
+          "type": "boolean",
+          "description": "Handle overlapping mates",
+          "default": true
+        },
+        "mgatk_proper_paired": {
+          "type": "boolean",
+          "description": "Proper pairs only",
+          "default": true
+        },
+        "mgatk_umi_tag": {
+          "type": "string",
+          "description": "UMI tag",
+          "default": ""
+        },
+        "mgatk_base_qual": {
+          "type": "integer",
+          "description": "Minimum base quality",
+          "default": 0
+        },
+        "mgatk_alignment_quality": {
+          "type": "integer",
+          "description": "Minimum alignment quality",
+          "default": 30
+        },
+        "mgatk_NHmax": {
+          "type": "integer",
+          "description": "Maximum NH",
+          "default": 1
+        },
+        "mgatk_NMmax": {
+          "type": "integer",
+          "description": "Maximum NM",
+          "default": 4
+        }
+      }
+    },
+    "redeemv_options": {
+      "title": "RedeemV (ReDeeM) options",
+      "type": "object",
+      "properties": {
+        "redeemv_home": {
+          "type": "string",
+          "description": "RedeemV checkout",
+          "default": "/opt/redeemV"
+        },
+        "redeem_base_quality": {
+          "type": "integer",
+          "description": "Minimum base quality",
+          "default": 30
+        },
+        "redeem_strand_bias_correction": {
+          "type": "string",
+          "description": "storey | none",
+          "default": "storey"
+        },
+        "redeem_strand_bias_p": {
+          "type": "number",
+          "description": "Threshold on the p-value (none) or Storey q-value (storey)",
+          "default": 0.01
+        },
+        "redeem_strand_bias_log2fc": {
+          "type": "number",
+          "description": "|log2(plus/minus)| above which a biased variant is removed",
+          "default": 1
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "properties": {
+        "help": {
+          "type": "boolean",
+          "description": "Show help",
+          "default": false
+        },
+        "version": {
+          "type": "boolean",
+          "description": "Show version",
+          "default": false
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/input_output_options"
+    },
+    {
+      "$ref": "#/definitions/reference_options"
+    },
+    {
+      "$ref": "#/definitions/preprocessing_options"
+    },
+    {
+      "$ref": "#/definitions/mtscatac_options"
+    },
+    {
+      "$ref": "#/definitions/redeemv_options"
+    },
+    {
+      "$ref": "#/definitions/generic_options"
+    }
+  ]
 }

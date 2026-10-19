@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process EXTRACT_FASTA {
     
-    label 'scLT'
+    label 'maegatk'
     
     input:
     val(pattern)

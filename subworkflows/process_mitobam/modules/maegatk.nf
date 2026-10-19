@@ -7,7 +7,7 @@ nextflow.enable.dsl = 2
 process MAEGATK {
 
   tag "${sample_name}: ${cell}"
-  label 'scLT'
+  label 'maegatk'
 
   input:
   tuple val(sample_name), val(cell), path(bam)
@@ -47,7 +47,7 @@ process MAEGATK {
 process COLLAPSE_MAEGATK {
 
   tag "${sample_name}"
-  label 'scLT'
+  label 'maegatk'
   publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
 
   input:

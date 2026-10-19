@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process PREP_GENOME {
 
-  label 'scLT'
+  label 'maegatk'
 
   output:
   path('masked_genome.fa'), emit: genome

@@ -6,7 +6,7 @@ nextflow.enable.dsl = 2
 
 process BUILD_INDEX {
 
-  label 'scLT'
+  label 'maegatk'
   publishDir "${params.output_folder}/resources", mode: 'copy'
 
   input:
