@@ -72,7 +72,7 @@ s2,,/data/s2_MT.bam,/data/s2_cells.txt
 ### Run
 
 ```bash
-nextflow run andrecossa5/nf-MiTo -r v2.0.0-rc1 -profile singularity \
+nextflow run andrecossa5/nf-MiTo -r v2.0.0 -profile singularity \
   --assay mtscATAC --input samplesheet.csv --output_folder results \
   --reference_genome <GRCh38.fa(.gz)> --NUMTs_regions <NUMTs.bed>
 ```
@@ -130,7 +130,7 @@ Build with `docker build --platform linux/x86_64 -f docker/Dockerfile_<tool> -t 
 | nf-MiTo | MiTo | Notes |
 |---|---|---|
 | `v1.0.0` | `scmito>=1.0.2,<2` (original API), container `acox1/mito:1.0.2` | Pipeline of the paper (preprocessing, tuning, inference). Analyses in [MiTo_benchmark_repro](https://github.com/andrecossa5/MiTo_benchmark_repro). |
-| `v2.0.0` (release candidate `v2.0.0-rc1`) | `>=2.0.0` | Preprocessing only, three assays; tables are loaded with `mt.io.make_afm`. TUNE, EXPLORE, INFER and BENCH were removed. |
+| `v2.0.0` (in development) | `>=2.0.0` | Preprocessing only, three assays; tables are loaded with `mt.io.make_afm`. TUNE, EXPLORE, INFER and BENCH were removed. |
 
 ## Troubleshooting
 
