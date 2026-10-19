@@ -17,15 +17,13 @@ if (params.help) {
 
     USAGE:
         nextflow run main.nf -profile <docker|singularity|conda> \\
-            --raw_data_input samples.csv --raw_data_input_type <type> \\
-            --output_folder results
+            --input samplesheet.csv --assay MAESTER --output_folder results
 
     OPTIONS:
-        --raw_data_input_type    "fastq, MAESTER" | mitobam   (default: ${params.raw_data_input_type})
-        --raw_data_input         CSV with the samples
+        --input                  Samplesheet CSV: sample,fastq_dir,bam,cell_barcodes
+                                 (exactly one of fastq_dir / bam per row)
+        --assay                  MAESTER | mtscATAC | ReDeeM (default: ${params.assay})
         --output_folder          Output directory (required)
-        --scLT_system            ${params.scLT_system}
-        --pp_method              ${params.pp_method}
         --string_MT              MT contig name (default: ${params.string_MT})
 
     Work in progress: mgatk (mtscATAC) and RedeemV (ReDeeM) are being added.

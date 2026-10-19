@@ -52,19 +52,11 @@ workflow process_mitobam {
         }
         FILTER_BAM_CB(ch_chunks)
 
-        if (params.pp_method == "maegatk") {
-
-            SPLIT_BAM(FILTER_BAM_CB.out.bam)
-            ch_cell_bams = processCellBams(SPLIT_BAM.out.cell_bams)
-            MAEGATK(ch_cell_bams, EXTRACT_FASTA.out.fasta)
-            COLLAPSE_MAEGATK(MAEGATK.out.tables.groupTuple(by:0))
-            ch_output = COLLAPSE_MAEGATK.out.ch_output
-
-        } else {
-
-            error "Unsupported pp_method: ${params.pp_method}. Available here: maegatk."
-
-        }
+        SPLIT_BAM(FILTER_BAM_CB.out.bam)
+        ch_cell_bams = processCellBams(SPLIT_BAM.out.cell_bams)
+        MAEGATK(ch_cell_bams, EXTRACT_FASTA.out.fasta)
+        COLLAPSE_MAEGATK(MAEGATK.out.tables.groupTuple(by:0))
+        ch_output = COLLAPSE_MAEGATK.out.ch_output
 
     emit:
 
