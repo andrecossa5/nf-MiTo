@@ -4,8 +4,6 @@ nextflow.enable.dsl = 2
 // Subworkflows
 include { prep_resources } from "../prep_resources/main" 
 include { prep_genome } from "../prep_resources/main" 
-include { tenx } from "../tenx/main"
-include { get_tenx_maester_bam } from "../get_mitobam/main" 
 include { get_maester_bam } from "../get_mitobam/main" 
 include { process_mitobam } from "../process_mitobam/main" 
 
@@ -20,14 +18,7 @@ def createPreprocessingChannel() {
         error "Error: --raw_data_input is required for preprocessing"
     }
 
-    if (params.raw_data_input_type == "fastq") {
-
-        // From raw reads, unaligned
-        ch = Channel.fromPath(params.raw_data_input)
-            .splitCsv(header: true)
-            .map { row -> [ row.sample, row.fastq_folder, row.library ] }
-        
-    } else if (params.raw_data_input_type == "fastq, MAESTER") {
+    if (params.raw_data_input_type == "fastq, MAESTER") {
 
         // From raw reads, unaligned (MAESTER) and a .txt file of valid 10x barcodes
         ch = Channel.fromPath(params.raw_data_input)
@@ -42,7 +33,7 @@ def createPreprocessingChannel() {
             .map { row -> [ row.sample, row.bam, row.cell_barcodes ] }
     }
     else {
-        error "Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: \"fastq\", \"fastq, MAESTER\", or \"mitobam\"."
+        error "Unsupported raw_data_input_type: ${params.raw_data_input_type}. Available: \"fastq, MAESTER\" or \"mitobam\"."
     }
 
     return ch
@@ -60,24 +51,7 @@ workflow preprocess {
 
     main:
  
-        if (params.raw_data_input_type == "fastq") {
-
-            // All 10x and MAESTER MT reads
-            prep_resources()
-            tenx_fastqs = ch.filter{it->it[2]=='TENX'}.map{it->tuple(it[0],it[1])}
-            maester_fastqs = ch.filter{it->it[2]=='MAESTER'}.map{it->tuple(it[0],it[1])}
-            tenx(tenx_fastqs, prep_resources.out.whitelist, prep_resources.out.star_index)
-            get_tenx_maester_bam(
-                maester_fastqs, 
-                tenx.out.cell_barcodes_QC, 
-                tenx.out.bam, 
-                prep_resources.out.whitelist,
-                prep_resources.out.star_index
-            )
-            ch_mitobam = get_tenx_maester_bam.out.mitobam
-            genome = prep_resources.out.genome
-
-        } else if (params.raw_data_input_type == "fastq, MAESTER") {
+        if (params.raw_data_input_type == "fastq, MAESTER") {
 
             // MAESTER MT reads
             prep_resources()
@@ -103,11 +77,11 @@ workflow preprocess {
      
         // Process mitobam, for a list of target cell barcodes
         process_mitobam(ch_mitobam, genome)
-        afm = process_mitobam.out.afm
+        tables = process_mitobam.out.tables
         
     emit:
 
-        afm = Channel.of('MiTo.tree').combine(afm)
+        tables = tables
 
 }
 
