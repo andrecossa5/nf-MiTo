@@ -65,10 +65,12 @@ workflow process_mitobam {
 
         } else if (params.assay == "mtscATAC") {
 
-            // mgatk: counts per chunk of cell barcodes
+            // mgatk bcall: one BAM per cell, mgatk's per-sample function on each
+            SPLIT_BAM(FILTER_BAM_CB.out.bam)
+            ch_cell_bams = processCellBams(SPLIT_BAM.out.cell_bams)
             ch_ref = EXTRACT_FASTA.out.fasta.map { it -> tuple(it[0], it[5]) }
-            MGATK(FILTER_BAM_CB.out.bam_cbs, ch_ref)
-            COLLAPSE_MGATK(MGATK.out.tables.groupTuple(by:0).map { s, files -> tuple(s, files.flatten()) }, ch_ref)
+            MGATK(ch_cell_bams, ch_ref)
+            COLLAPSE_MGATK(MGATK.out.tables.groupTuple(by:0), ch_ref)
             ch_output = COLLAPSE_MGATK.out.ch_output
 
         } else {

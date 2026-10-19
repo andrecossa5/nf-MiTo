@@ -1,30 +1,34 @@
-// MGATK modules (mgatk tenx counting, run per chunk of cell barcodes)
+// MGATK modules (mgatk bcall: one BAM per cell, counted with mgatk's per-sample function)
 nextflow.enable.dsl = 2
 
 //
 
 process MGATK {
 
-  tag "${sample_name}: ${CBs.simpleName}"
+  tag "${sample_name}: ${cell}"
   label 'mgatk'
 
   input:
-  tuple val(sample_name), path(bam), path(CBs)
+  tuple val(sample_name), val(cell), path(bam)
   tuple path(fasta), path(fai)
 
   output:
-  tuple val(sample_name), path("chunk_*.txt"), emit: tables
+  tuple val(sample_name), val(cell),
+    path("${cell}.A.txt"),
+    path("${cell}.C.txt"),
+    path("${cell}.G.txt"),
+    path("${cell}.T.txt"),
+    path("${cell}.coverage.txt"),
+    path("${cell}.depth.txt"), emit: tables
 
   script:
-  def idx = CBs.simpleName.split('_')[1]
   def flags = [
     params.mgatk_keep_duplicates ? '--keep_duplicates' : '',
     params.mgatk_handle_overlap ? '--handle_overlap' : '',
     params.mgatk_proper_paired ? '--proper_paired' : ''
   ].findAll { it }.join(' ')
   """
-  python ${baseDir}/bin/preprocess/mgatk_chunk.py ${bam} ${CBs} ${fasta} chunk_${idx} \\
-    --barcode_tag ${params.barcode_tag} \\
+  python ${baseDir}/bin/preprocess/mgatk_cell.py ${bam} ${cell} ${fasta} \\
     --umi_tag '${params.mgatk_umi_tag}' \\
     --base_qual ${params.mgatk_base_qual} \\
     --alignment_quality ${params.mgatk_alignment_quality} \\
@@ -34,9 +38,8 @@ process MGATK {
   """
 
   stub:
-  def idx = CBs.simpleName.split('_')[1]
   """
-  for l in A C G T coverage depth; do touch chunk_${idx}.\$l.txt; done
+  for l in A C G T coverage depth; do touch ${cell}.\$l.txt; done
   """
 
 }
@@ -50,7 +53,14 @@ process COLLAPSE_MGATK {
   publishDir "${params.output_folder}/${sample_name}/MT.preprocess.ouput", mode: 'copy'
 
   input:
-  tuple val(sample_name), path(chunk_tables)
+  tuple val(sample_name),
+    val(cells),
+    path(A),
+    path(C),
+    path(G),
+    path(T),
+    path(coverage),
+    path(depth)
   tuple path(fasta), path(fai)
 
   output:
