@@ -1,4 +1,4 @@
-# maegatk image/env (MAESTER) and shared steps: reference prep, barcode chunking, Picard filtering, STARsolo.
+# maegatk image/env (MAESTER) and shared steps: reference prep, BAM splitting, STARsolo.
 # Versions as in nf-MiTo 1.0.0 (same MAESTER tables).
 name: mito-maegatk
 channels:
@@ -12,7 +12,6 @@ dependencies:
   - samtools=1.20
   - fgbio=2.1.0
   - bwa
-  - picard
   - pigz=2.8
   - star=2.7.9a
   - wget

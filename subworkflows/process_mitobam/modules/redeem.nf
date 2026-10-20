@@ -5,29 +5,28 @@ nextflow.enable.dsl = 2
 
 process REDEEM_CONSENSUS {
 
-  tag "${sample_name}: ${CBs.simpleName}"
+  tag "${sample_name}: ${batch_bam.simpleName}"
   label 'redeemv'
 
   input:
-  tuple val(sample_name), path(bam), path(CBs)
+  tuple val(sample_name), path(batch_bam), path(batch_cbs)
   tuple path(fasta), path(fai)
 
   output:
-  tuple val(sample_name), path("chunk_*.txt"), path("chunk_*.QualifiedTotalCts"), emit: tables
+  tuple val(sample_name), path("${batch_bam.simpleName}.RawGenotypes.*.txt"), path("${batch_bam.simpleName}.QualifiedTotalCts"), emit: tables
 
   script:
-  def idx = CBs.simpleName.split('_')[1]
   """
-  redeem_consensus.py ${bam} ${CBs} ${fasta} chunk_${idx} \\
+  redeem_consensus.py ${batch_bam} ${batch_cbs} ${fasta} ${batch_bam.simpleName} \\
     --barcode_tag ${params.barcode_tag} \\
-    --base_quality ${params.redeem_base_quality}
+    --base_quality ${params.redeem_base_quality} \\
+    --threads ${task.cpus}
   """
 
   stub:
-  def idx = CBs.simpleName.split('_')[1]
   """
-  for l in Total VerySensitive Sensitive Specific; do touch chunk_${idx}.RawGenotypes.\$l.txt; done
-  touch chunk_${idx}.QualifiedTotalCts
+  for l in Total VerySensitive Sensitive Specific; do touch ${batch_bam.simpleName}.RawGenotypes.\$l.txt; done
+  touch ${batch_bam.simpleName}.QualifiedTotalCts
   """
 
 }

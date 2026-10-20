@@ -12,7 +12,6 @@ This tutorial provides step-by-step instructions for creating a custom STAR inde
 Before starting, ensure you have the following tools installed:
 
 - **STAR** (≥2.7.0) - RNA-seq aligner
-- **bedtools** (≥2.26.0) - Genome arithmetic tools  
 - **wget** - File download utility
 - **pigz** - Parallel gzip implementation (optional but recommended)
 
@@ -20,7 +19,7 @@ You can install these using mamba:
 
 ```bash
 # Create a new conda environment
-mamba create -n star-index star bedtools wget pigz -c bioconda -c conda-forge
+mamba create -n star-index star wget pigz -c bioconda -c conda-forge
 
 # Activate the environment
 conda activate star-index
@@ -28,56 +27,20 @@ conda activate star-index
 
 ## Overview
 
-The STAR index creation process involves three main steps:
+The STAR index creation process involves three steps:
 
-1. **Prepare the reference genome** - Download and mask NUMT regions
+1. **Reference genome** - the NUMT-masked FASTA you pass to nf-MiTo with `--masked_ref`
 2. **Prepare the GTF annotation** - Download and filter gene annotations
 3. **Build the STAR index** - Generate the searchable genome index
 
-## Step 1: Prepare the Reference Genome
+nf-MiTo does not download or mask genomes. Use the same masked FASTA (uncompressed) for the index and for `--masked_ref`, so that MAESTER reads and the other assays see the same reference.
 
-### 1.1 Set up working directory
+## Step 1: Set up
 
 ```bash
-# Create working directory
-mkdir -p star_index_creation
-cd star_index_creation
-
-# Create subdirectories
+mkdir -p star_index_creation && cd star_index_creation
 mkdir -p downloads processed_files STAR_index
-```
-
-### 1.2 Download the reference genome
-
-```bash
-# Default human reference genome (GRCh38.p13)
-REFERENCE_GENOME="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz"
-
-# Download and decompress the genome
-echo "Downloading reference genome..."
-wget -qO- ${REFERENCE_GENOME} | pigz -dc > downloads/genome.fa
-echo "Genome download completed: $(wc -l < downloads/genome.fa) lines"
-```
-
-### 1.3 Download and apply NUMT masking
-
-Nuclear mitochondrial DNA sequences (NUMTs) can interfere with mitochondrial analysis, so we mask them:
-
-```bash
-# Download NUMT blacklist regions
-NUMTS_REGIONS="https://raw.githubusercontent.com/caleblareau/mitoblacklist/master/combinedBlacklist/hg38.full.blacklist.bed"
-
-echo "Downloading NUMT regions..."
-wget ${NUMTS_REGIONS} -O downloads/hg38.full.blacklist.bed
-
-# Mask NUMT regions in the genome
-echo "Masking NUMT regions..."
-bedtools maskfasta \
-  -fi downloads/genome.fa \
-  -bed downloads/hg38.full.blacklist.bed \
-  -fo processed_files/masked_genome.fa
-
-echo "NUMT masking completed: $(grep -c '^>' processed_files/masked_genome.fa) sequences"
+cp /path/to/masked.fa processed_files/masked_genome.fa
 ```
 
 ## Step 2: Prepare the GTF Annotation
@@ -263,7 +226,7 @@ Or specify via command line:
 nextflow run main.nf \
   --build_STAR_index false \
   --prebuilt_STAR_index /path/to/your/nf-MiTo/resources/STAR_index \
-  --raw_data_input your_samples.csv \
+  --input samplesheet.csv --assay MAESTER --masked_ref /path/to/masked.fa \
   --output_folder results
 ```
 
@@ -278,7 +241,7 @@ To use a different reference genome:
 REFERENCE_GENOME="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/GRCm38.p6.genome.fa.gz"
 GTF_URL="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.annotation.gtf.gz"
 
-# Note: You'll need a mouse-specific NUMT blacklist or skip masking
+# Note: use a mouse genome masked for NUMTs, passed as --masked_ref
 ```
 
 ### Optimizing for Different Systems

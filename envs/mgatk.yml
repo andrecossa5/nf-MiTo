@@ -1,4 +1,4 @@
-# mgatk image/env (mtscATAC): bwa-mem2 alignment, MT BAM extraction, Picard barcode filtering, mgatk counting.
+# mgatk image/env (mtscATAC): bwa-mem2 alignment, MT BAM extraction, mgatk counting.
 # bwa-mem2 is x86_64 only.
 name: mito-mgatk
 channels:
@@ -9,7 +9,6 @@ dependencies:
   - pysam
   - samtools
   - bwa-mem2
-  - picard
   - pigz
   - numpy
   - pandas

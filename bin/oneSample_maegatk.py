@@ -1,47 +1,54 @@
 #!/usr/bin/env python3
 
+"""
+maegatk for one cell (MAESTER): read filtering, fgbio UMI consensus, re-mapping, allele counts.
+Usage: oneSample_maegatk.py <cell.bam> <cell> <mt.fa> [options]
+Writes <cell>.{A,C,G,T,coverage,depth}.txt in the working directory.
+The steps are those of https://github.com/caleblareau/maegatk and the MAESTER paper (Miller et al., 2022).
+"""
+
 import os
-import sys
+import argparse
 import pysam
 
 
 ##
 
 
-# Parse input bam, cell name and reference .fa file
-inputbam = sys.argv[1]
-sample = sys.argv[2]
-fasta_file = sys.argv[3]
+parser = argparse.ArgumentParser(description='maegatk for one cell')
+parser.add_argument('bam')
+parser.add_argument('sample', help='cell name, used as prefix of the outputs')
+parser.add_argument('fasta', help='MT FASTA (a single contig, bwa-indexed)')
+parser.add_argument('--umi_tag', default='UB')
+parser.add_argument('--NHmax', type=int, default=2)
+parser.add_argument('--NMmax', type=int, default=15)
+parser.add_argument('--min_reads', type=int, default=3, help='reads per UMI family for the fgbio consensus')
+parser.add_argument('--base_qual', type=int, default=0)
+parser.add_argument('--alignment_quality', type=int, default=0)
+parser.add_argument('--proper_paired', action='store_true')
+args = parser.parse_args()
 
-# Define default maegatk parameters within the script
-# os.chdir('/Users/IEO5505/Desktop/MI_TO/mito_preprocessing/scratch')
-# script_dir = '/Users/IEO5505/Desktop/MI_TO/mito_preprocessing/bin/benchmark'
-# sample = 'AGGACTTTCAACTCTT'
-# inputbam = 'AGGACTTTCAACTCTT.bam'
-# fasta_file = '/Users/IEO5505/Desktop/MI_TO/MI_TO_analysis_repro/data/MI_TO_bench/index/chrM.fa'
+inputbam = args.bam
+sample = args.sample
+fasta_file = args.fasta
 
-# mito_genome = config["mito_chr"]
-# mito_length = str(config["mito_length"])
-# fasta_file = config["fasta_file"]
+# Contig name and length from the FASTA
+with open(fasta_file) as fh:
+    _lines = [x.strip() for x in fh if x.strip()]
+_names = [x[1:].split()[0] for x in _lines if x.startswith('>')]
+if len(_names) != 1:
+    raise ValueError(f'{fasta_file}: expected a single contig, found {len(_names)}')
+mito_genome = _names[0]
+mito_length = str(sum(len(x) for x in _lines if not x.startswith('>')))
 
-# Get this info from fasta_file
-mito_genome = 'chrM' 
-mito_length = str(16569)
+umi_barcode = args.umi_tag
+base_qual = str(args.base_qual)
+alignment_quality = str(args.alignment_quality)
+NHmax = str(args.NHmax)
+NMmax = str(args.NMmax)
+min_reads = str(args.min_reads)
+proper_paired = str(bool(args.proper_paired))
 
-# Hard-code all the other variables according to https://github.com/caleblareau/maegatk and the MAESTER paper (Miller et el., 2022)
-# umi_barcode = config["umi_barcode"]
-umi_barcode = 'UB'
-# base_qual = str(config["base_qual"])
-base_qual = str(0)
-# alignment_quality = config["alignment_quality"]
-alignment_quality = str(0)
-# NHmax = config["NHmax"]
-NHmax = str(2) 
-# NMmax = config["NMmax"]
-NMmax = str(15)
-# min_reads = str(config["min_reads"])
-min_reads = str(3)
-# max_javamem  = config["max_javamem"]
 
 # Software paths
 python = "python"
@@ -72,7 +79,6 @@ outputdepth = sample + ".depth.txt"
 # From here on, the code is exactly as it is in https://github.com/caleblareau/maegatk
 
 # 1) Filter bam files
-proper_paired = "False"
 pycall = " ".join([python, filtclip_py, inputbam, filtlog, mito_genome, proper_paired, NHmax, NMmax]) + " > " + temp_bam0
 os.system(pycall)
 

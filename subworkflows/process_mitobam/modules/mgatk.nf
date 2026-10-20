@@ -5,21 +5,21 @@ nextflow.enable.dsl = 2
 
 process MGATK {
 
-  tag "${sample_name}: ${cell}"
+  tag "${sample_name}: ${batch_bam.simpleName}"
   label 'mgatk'
 
   input:
-  tuple val(sample_name), val(cell), path(bam)
+  tuple val(sample_name), path(batch_bam), path(batch_cbs)
   tuple path(fasta), path(fai)
 
   output:
-  tuple val(sample_name), val(cell),
-    path("${cell}.A.txt"),
-    path("${cell}.C.txt"),
-    path("${cell}.G.txt"),
-    path("${cell}.T.txt"),
-    path("${cell}.coverage.txt"),
-    path("${cell}.depth.txt"), emit: tables
+  tuple val(sample_name), val(batch_bam.simpleName),
+    path("${batch_bam.simpleName}.A.txt"),
+    path("${batch_bam.simpleName}.C.txt"),
+    path("${batch_bam.simpleName}.G.txt"),
+    path("${batch_bam.simpleName}.T.txt"),
+    path("${batch_bam.simpleName}.coverage.txt"),
+    path("${batch_bam.simpleName}.depth.txt"), emit: tables
 
   script:
   def flags = [
@@ -28,7 +28,8 @@ process MGATK {
     params.mgatk_proper_paired ? '--proper_paired' : ''
   ].findAll { it }.join(' ')
   """
-  mgatk_cell.py ${bam} ${cell} ${fasta} \\
+  mgatk_batch.py ${batch_bam} ${batch_bam.simpleName} ${fasta} \\
+    --barcode_tag ${params.barcode_tag} \\
     --umi_tag '${params.mgatk_umi_tag}' \\
     --base_qual ${params.mgatk_base_qual} \\
     --alignment_quality ${params.mgatk_alignment_quality} \\
@@ -39,7 +40,7 @@ process MGATK {
 
   stub:
   """
-  for l in A C G T coverage depth; do touch ${cell}.\$l.txt; done
+  for l in A C G T coverage depth; do touch ${batch_bam.simpleName}.\$l.txt; done
   """
 
 }
@@ -54,7 +55,7 @@ process COLLAPSE_MGATK {
 
   input:
   tuple val(sample_name),
-    val(cells),
+    val(batches),
     path(A),
     path(C),
     path(G),

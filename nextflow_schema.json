@@ -1,218 +1,280 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://raw.githubusercontent.com/andrecossa5/nf-MiTo/master/nextflow_schema.json",
-  "title": "nf-MiTo pipeline parameters",
-  "description": "Preprocessing of MT-SNVs-based scLT data into the tables read by MiTo",
-  "type": "object",
-  "definitions": {
-    "input_output_options": {
-      "title": "Input/output options",
-      "type": "object",
-      "properties": {
-        "input": {
-          "type": "string",
-          "description": "Samplesheet CSV: sample,fastq_dir,bam,cell_barcodes"
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/andrecossa5/nf-MiTo/master/nextflow_schema.json",
+    "title": "nf-MiTo pipeline parameters",
+    "description": "Preprocessing of MT-SNVs-based scLT data into the tables read by MiTo",
+    "type": "object",
+    "definitions": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "description": "Samplesheet CSV: sample,fastq_dir,bam,cell_barcodes"
+                },
+                "assay": {
+                    "type": "string",
+                    "description": "MAESTER | mtscATAC | ReDeeM",
+                    "default": "MAESTER"
+                },
+                "output_folder": {
+                    "type": "string",
+                    "description": "Output folder"
+                }
+            },
+            "required": [
+                "input",
+                "output_folder"
+            ]
         },
-        "assay": {
-          "type": "string",
-          "description": "MAESTER | mtscATAC | ReDeeM",
-          "default": "MAESTER"
+        "reference_options": {
+            "title": "Reference options",
+            "type": "object",
+            "properties": {
+                "masked_ref": {
+                    "type": "string",
+                    "description": "NUMT-masked genome FASTA (uncompressed), required"
+                },
+                "string_MT": {
+                    "type": "string",
+                    "description": "MT contig name",
+                    "default": "chrM"
+                }
+            },
+            "required": [
+                "masked_ref"
+            ]
         },
-        "output_folder": {
-          "type": "string",
-          "description": "Output folder"
+        "tables_options": {
+            "title": "Single-cell tables options (all assays)",
+            "type": "object",
+            "properties": {
+                "barcode_tag": {
+                    "type": "string",
+                    "description": "Cell barcode tag of the MT BAM",
+                    "default": "CB"
+                },
+                "batch_size": {
+                    "type": "string",
+                    "description": "Cells per task: an integer, or auto (about 75 tasks per library, 100 to 1000 cells each)",
+                    "default": "auto"
+                }
+            }
         },
-        "barcode_tag": {
-          "type": "string",
-          "description": "Cell barcode tag of the MT BAM",
-          "default": "CB"
+        "maester_resources_options": {
+            "title": "MAESTER resources (STARsolo)",
+            "type": "object",
+            "properties": {
+                "build_STAR_index": {
+                    "type": "boolean",
+                    "description": "Build the STAR index (MAESTER)",
+                    "default": true
+                },
+                "prebuilt_STAR_index": {
+                    "type": "string",
+                    "description": "Path to a prebuilt STAR index"
+                },
+                "gtf": {
+                    "type": "string",
+                    "description": "Annotation GTF (path or URL)",
+                    "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz"
+                },
+                "tenx_whitelist": {
+                    "type": "string",
+                    "description": "10x barcode whitelist (MAESTER)",
+                    "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz"
+                }
+            }
+        },
+        "maegatk_options": {
+            "title": "MAESTER options (maegatk)",
+            "type": "object",
+            "properties": {
+                "maegatk_umi_tag": {
+                    "type": "string",
+                    "description": "UMI tag of the MT BAM",
+                    "default": "UB"
+                },
+                "maegatk_NHmax": {
+                    "type": "integer",
+                    "description": "Maximum NH (alignments per read)",
+                    "default": 2
+                },
+                "maegatk_NMmax": {
+                    "type": "integer",
+                    "description": "Maximum NM (edit distance)",
+                    "default": 15
+                },
+                "maegatk_min_reads": {
+                    "type": "integer",
+                    "description": "Reads per UMI family for the fgbio consensus",
+                    "default": 3
+                },
+                "maegatk_base_qual": {
+                    "type": "integer",
+                    "description": "Minimum base quality",
+                    "default": 0
+                },
+                "maegatk_alignment_quality": {
+                    "type": "integer",
+                    "description": "Minimum mapping quality",
+                    "default": 0
+                },
+                "maegatk_proper_paired": {
+                    "type": "boolean",
+                    "description": "Keep only properly paired reads",
+                    "default": false
+                }
+            }
+        },
+        "atac_options": {
+            "title": "ATAC alignment options (mtscATAC, ReDeeM)",
+            "type": "object",
+            "properties": {
+                "atac_min_mapq": {
+                    "type": "integer",
+                    "description": "MAPQ of the MT reads kept after bwa-mem2",
+                    "default": 30
+                },
+                "atac_barcode_rule": {
+                    "type": "string",
+                    "description": "Barcode window in the barcode read: auto | fwd:<offset> | rc:<offset>",
+                    "default": "auto"
+                },
+                "barcode_space": {
+                    "type": "string",
+                    "description": "Barcodes of cell_barcodes: ATAC | RNA (Cell Ranger ARC)",
+                    "default": "ATAC"
+                },
+                "multiome_whitelist_rna": {
+                    "type": "string",
+                    "description": "10x Multiome RNA whitelist",
+                    "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.RNA"
+                },
+                "multiome_whitelist_atac": {
+                    "type": "string",
+                    "description": "10x Multiome ATAC whitelist",
+                    "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.ATAC"
+                }
+            }
+        },
+        "mgatk_options": {
+            "title": "mtscATAC options (mgatk)",
+            "type": "object",
+            "properties": {
+                "mgatk_umi_tag": {
+                    "type": "string",
+                    "description": "UMI tag",
+                    "default": ""
+                },
+                "mgatk_keep_duplicates": {
+                    "type": "boolean",
+                    "description": "Keep duplicates",
+                    "default": false
+                },
+                "mgatk_handle_overlap": {
+                    "type": "boolean",
+                    "description": "Handle overlapping mates",
+                    "default": true
+                },
+                "mgatk_proper_paired": {
+                    "type": "boolean",
+                    "description": "Proper pairs only",
+                    "default": true
+                },
+                "mgatk_base_qual": {
+                    "type": "integer",
+                    "description": "Minimum base quality",
+                    "default": 0
+                },
+                "mgatk_alignment_quality": {
+                    "type": "integer",
+                    "description": "Minimum alignment quality",
+                    "default": 30
+                },
+                "mgatk_NHmax": {
+                    "type": "integer",
+                    "description": "Maximum NH",
+                    "default": 1
+                },
+                "mgatk_NMmax": {
+                    "type": "integer",
+                    "description": "Maximum NM",
+                    "default": 4
+                }
+            }
+        },
+        "redeemv_options": {
+            "title": "ReDeeM options (RedeemV)",
+            "type": "object",
+            "properties": {
+                "redeem_base_quality": {
+                    "type": "integer",
+                    "description": "Minimum base quality",
+                    "default": 30
+                },
+                "redeem_strand_bias_correction": {
+                    "type": "string",
+                    "description": "storey | none",
+                    "default": "storey"
+                },
+                "redeem_strand_bias_p": {
+                    "type": "number",
+                    "description": "Threshold on the p-value (none) or Storey q-value (storey)",
+                    "default": 0.01
+                },
+                "redeem_strand_bias_log2fc": {
+                    "type": "number",
+                    "description": "|log2(plus/minus)| above which a biased variant is removed",
+                    "default": 1
+                }
+            }
+        },
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "properties": {
+                "help": {
+                    "type": "boolean",
+                    "description": "Show help",
+                    "default": false
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Show version",
+                    "default": false
+                }
+            }
         }
-      },
-      "required": [
-        "input",
-        "output_folder"
-      ]
     },
-    "reference_options": {
-      "title": "Reference options",
-      "type": "object",
-      "properties": {
-        "masked_ref": {
-          "type": "string",
-          "description": "NUMT-masked genome FASTA (uncompressed), required"
+    "allOf": [
+        {
+            "$ref": "#/definitions/input_output_options"
         },
-        "build_STAR_index": {
-          "type": "boolean",
-          "description": "Build the STAR index (MAESTER)",
-          "default": true
+        {
+            "$ref": "#/definitions/reference_options"
         },
-        "prebuilt_STAR_index": {
-          "type": "string",
-          "description": "Path to a prebuilt STAR index"
+        {
+            "$ref": "#/definitions/tables_options"
         },
-        "gtf": {
-          "type": "string",
-          "description": "Annotation GTF (path or URL)",
-          "default": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.annotation.gtf.gz"
+        {
+            "$ref": "#/definitions/maester_resources_options"
         },
-        "tenx_whitelist": {
-          "type": "string",
-          "description": "10x barcode whitelist (MAESTER)",
-          "default": "https://teichlab.github.io/scg_lib_structs/data/10X-Genomics/3M-february-2018.txt.gz"
+        {
+            "$ref": "#/definitions/maegatk_options"
         },
-        "string_MT": {
-          "type": "string",
-          "description": "MT contig name",
-          "default": "chrM"
+        {
+            "$ref": "#/definitions/atac_options"
+        },
+        {
+            "$ref": "#/definitions/mgatk_options"
+        },
+        {
+            "$ref": "#/definitions/redeemv_options"
+        },
+        {
+            "$ref": "#/definitions/generic_options"
         }
-      },
-      "required": [
-        "masked_ref"
-      ]
-    },
-    "preprocessing_options": {
-      "title": "Preprocessing options",
-      "type": "object",
-      "properties": {
-        "CBs_chunk_size": {
-          "type": "integer",
-          "description": "Cell barcodes per chunk",
-          "default": 3000
-        }
-      }
-    },
-    "mtscatac_options": {
-      "title": "mtscATAC / ReDeeM alignment and mgatk options",
-      "type": "object",
-      "properties": {
-        "atac_min_mapq": {
-          "type": "integer",
-          "description": "MAPQ of the MT reads kept after bwa-mem2",
-          "default": 30
-        },
-        "atac_barcode_rule": {
-          "type": "string",
-          "description": "Barcode window in the barcode read: auto | fwd:<offset> | rc:<offset>",
-          "default": "auto"
-        },
-        "barcode_space": {
-          "type": "string",
-          "description": "Barcodes of cell_barcodes: ATAC | RNA (Cell Ranger ARC)",
-          "default": "ATAC"
-        },
-        "multiome_whitelist_rna": {
-          "type": "string",
-          "description": "10x Multiome RNA whitelist",
-          "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.RNA"
-        },
-        "multiome_whitelist_atac": {
-          "type": "string",
-          "description": "10x Multiome ATAC whitelist",
-          "default": "https://raw.githubusercontent.com/chenweng1991/redeemV/5c34940/source/WhiteList_10X_Multiome.ATAC"
-        },
-        "mgatk_keep_duplicates": {
-          "type": "boolean",
-          "description": "Keep duplicates",
-          "default": false
-        },
-        "mgatk_handle_overlap": {
-          "type": "boolean",
-          "description": "Handle overlapping mates",
-          "default": true
-        },
-        "mgatk_proper_paired": {
-          "type": "boolean",
-          "description": "Proper pairs only",
-          "default": true
-        },
-        "mgatk_umi_tag": {
-          "type": "string",
-          "description": "UMI tag",
-          "default": ""
-        },
-        "mgatk_base_qual": {
-          "type": "integer",
-          "description": "Minimum base quality",
-          "default": 0
-        },
-        "mgatk_alignment_quality": {
-          "type": "integer",
-          "description": "Minimum alignment quality",
-          "default": 30
-        },
-        "mgatk_NHmax": {
-          "type": "integer",
-          "description": "Maximum NH",
-          "default": 1
-        },
-        "mgatk_NMmax": {
-          "type": "integer",
-          "description": "Maximum NM",
-          "default": 4
-        }
-      }
-    },
-    "redeemv_options": {
-      "title": "RedeemV (ReDeeM) options",
-      "type": "object",
-      "properties": {
-        "redeem_base_quality": {
-          "type": "integer",
-          "description": "Minimum base quality",
-          "default": 30
-        },
-        "redeem_strand_bias_correction": {
-          "type": "string",
-          "description": "storey | none",
-          "default": "storey"
-        },
-        "redeem_strand_bias_p": {
-          "type": "number",
-          "description": "Threshold on the p-value (none) or Storey q-value (storey)",
-          "default": 0.01
-        },
-        "redeem_strand_bias_log2fc": {
-          "type": "number",
-          "description": "|log2(plus/minus)| above which a biased variant is removed",
-          "default": 1
-        }
-      }
-    },
-    "generic_options": {
-      "title": "Generic options",
-      "type": "object",
-      "properties": {
-        "help": {
-          "type": "boolean",
-          "description": "Show help",
-          "default": false
-        },
-        "version": {
-          "type": "boolean",
-          "description": "Show version",
-          "default": false
-        }
-      }
-    }
-  },
-  "allOf": [
-    {
-      "$ref": "#/definitions/input_output_options"
-    },
-    {
-      "$ref": "#/definitions/reference_options"
-    },
-    {
-      "$ref": "#/definitions/preprocessing_options"
-    },
-    {
-      "$ref": "#/definitions/mtscatac_options"
-    },
-    {
-      "$ref": "#/definitions/redeemv_options"
-    },
-    {
-      "$ref": "#/definitions/generic_options"
-    }
-  ]
+    ]
 }

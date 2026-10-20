@@ -38,7 +38,7 @@ It packages three tools, one per assay:
 Every assay follows the same two stages, starting from the library holding the MT reads:
 
 1. **Reads → MT BAM** (skipped if you give a BAM): one library-level, coordinate-sorted BAM of chrM reads with the cell barcode in a tag (`--barcode_tag`, default `CB`).
-2. **MT BAM → single-cell tables**: the BAM is split in chunks of cell barcodes (`--CBs_chunk_size`) and filtered with Picard `FilterSamReads`, then processed by the assay's tool (per cell for maegatk and mgatk, per chunk for RedeemV) and collapsed into the tables.
+2. **MT BAM → single-cell tables**: the BAM is split in one pass into batches of cells (`--batch_size`); each batch is one task, where the assay's tool processes the cells one at a time (memory is that of one cell); batches are then collapsed into the tables.
 
 For `mtscATAC` and `ReDeeM`, reads are aligned with bwa-mem2 to the GRCh38 genome with the nuclear mitochondrial insertions (NUMTs) masked. The masked genome is given with `--masked_ref` (an uncompressed FASTA); nf-MiTo does not download or mask a reference.
 
@@ -99,9 +99,9 @@ afm = mt.io.make_afm(path_to_tables, 'ReDeeM', 'redeem-v')   # or ('MAESTER', 'm
 
 ## Assay notes
 
-- **MAESTER**: STARsolo on the GEX+MAESTER reads (`--tenx_whitelist`, `--gtf`; the STAR index is built once, or passed with `--prebuilt_STAR_index`, see [`docs/create_STAR_index.md`](docs/create_STAR_index.md)), MT reads kept with `--string_MT`, then UMI consensus (fgbio) and maegatk counting per cell.
+- **MAESTER**: STARsolo on the GEX+MAESTER reads (`--tenx_whitelist`, `--gtf`; the STAR index is built once, or passed with `--prebuilt_STAR_index`, see [`docs/create_STAR_index.md`](docs/create_STAR_index.md)), MT reads kept with `--string_MT`, then, per cell, read filtering (`--maegatk_NHmax`, `--maegatk_NMmax`), UMI consensus (fgbio, `--maegatk_min_reads`), re-mapping and maegatk counting (`--maegatk_base_qual`, `--maegatk_alignment_quality`). The STARsolo layout (barcode 1-16, UMI 17-28, `1MM_multi_Nbase_pseudocounts`, `1MM_CR`, `EmptyDrops_CR`) is that of the MAESTER protocol and is fixed.
 - **mtscATAC**: the barcode is read from the 16-nt barcode read (`--atac_barcode_rule auto` detects forward or reverse-complement), reads are aligned with bwa-mem2 and the MT pairs (`--atac_min_mapq`) are kept. mgatk runs in `bcall` mode on one BAM per cell, with the `--mgatk_*` filters.
-- **ReDeeM**: same alignment as mtscATAC. RedeemV's `mitoConsensus.py` (shipped in `bin/`, unmodified, from RedeemV commit `5c34940`) builds molecule consensus genotypes at four stringency levels (`Total`, `VerySensitive`, `Sensitive`, `Specific`). A **strand-bias filter** then runs per variant, pooled over all cells of the library: a two-sided binomial test of the plus/minus molecule counts against 0.5, converted to Storey q-values (`--redeem_strand_bias_correction storey`, as in RedeemV) or used as raw p-values (`none`). A variant is blacklisted if the p/q-value is below `--redeem_strand_bias_p` and the strands differ by more than `--redeem_strand_bias_log2fc`; its rows are removed unless they have duplex support. Every tested variant is listed in `StrandBiasTable.tsv.gz`.
+- **ReDeeM**: same alignment as mtscATAC. `bin/redeem_consensus.py` builds molecule consensus genotypes, with the rules of RedeemV's `mitoConsensus.py` (commit `5c34940`; output checked to be identical) but streaming one cell at a time, at four stringency levels (`Total`, `VerySensitive`, `Sensitive`, `Specific`). A **strand-bias filter** then runs per variant, pooled over all cells of the library: a two-sided binomial test of the plus/minus molecule counts against 0.5, converted to Storey q-values (`--redeem_strand_bias_correction storey`, as in RedeemV) or used as raw p-values (`none`). A variant is blacklisted if the p/q-value is below `--redeem_strand_bias_p` and the strands differ by more than `--redeem_strand_bias_log2fc`; its rows are removed unless they have duplex support. Every tested variant is listed in `StrandBiasTable.tsv.gz`.
 
 ## Parameters
 
@@ -109,12 +109,14 @@ Defaults are in `nextflow.config` and typed in `nextflow_schema.json`.
 
 | Group | Parameters |
 |---|---|
-| Input/output | `--input`, `--assay` (`MAESTER`, `mtscATAC`, `ReDeeM`), `--output_folder`, `--barcode_tag` (`CB`) |
-| Reference | `--masked_ref` (required), `--string_MT` (`chrM`); MAESTER: `--gtf`, `--tenx_whitelist`, `--build_STAR_index`, `--prebuilt_STAR_index` |
-| Chunking | `--CBs_chunk_size` (3000 barcodes) |
-| mtscATAC/ReDeeM reads | `--atac_min_mapq` (30), `--atac_barcode_rule` (`auto`), `--barcode_space` (`ATAC` or `RNA`), `--multiome_whitelist_rna`, `--multiome_whitelist_atac` |
-| mgatk | `--mgatk_keep_duplicates`, `--mgatk_handle_overlap`, `--mgatk_proper_paired`, `--mgatk_umi_tag`, `--mgatk_base_qual`, `--mgatk_alignment_quality`, `--mgatk_NHmax`, `--mgatk_NMmax` |
-| RedeemV | `--redeem_base_quality` (30), `--redeem_strand_bias_correction` (`storey`), `--redeem_strand_bias_p` (0.01), `--redeem_strand_bias_log2fc` (1) |
+| Input/output | `--input`, `--assay` (`MAESTER`, `mtscATAC`, `ReDeeM`), `--output_folder` |
+| Reference | `--masked_ref` (required), `--string_MT` (`chrM`) |
+| Single-cell tables (all assays) | `--barcode_tag` (`CB`), `--batch_size` (`auto`: about 75 tasks per library of 100 to 1000 cells; or an integer) |
+| MAESTER resources | `--gtf`, `--tenx_whitelist`, `--build_STAR_index`, `--prebuilt_STAR_index` |
+| MAESTER (maegatk) | `--maegatk_umi_tag` (`UB`), `--maegatk_NHmax` (2), `--maegatk_NMmax` (15), `--maegatk_min_reads` (3), `--maegatk_base_qual` (0), `--maegatk_alignment_quality` (0), `--maegatk_proper_paired` (false) |
+| mtscATAC/ReDeeM alignment | `--atac_min_mapq` (30), `--atac_barcode_rule` (`auto`), `--barcode_space` (`ATAC` or `RNA`), `--multiome_whitelist_rna`, `--multiome_whitelist_atac` |
+| mtscATAC (mgatk) | `--mgatk_keep_duplicates`, `--mgatk_handle_overlap`, `--mgatk_proper_paired`, `--mgatk_umi_tag`, `--mgatk_base_qual`, `--mgatk_alignment_quality`, `--mgatk_NHmax`, `--mgatk_NMmax` |
+| ReDeeM (RedeemV) | `--redeem_base_quality` (30), `--redeem_strand_bias_correction` (`storey`), `--redeem_strand_bias_p` (0.01), `--redeem_strand_bias_log2fc` (1) |
 
 ## Software
 
@@ -122,7 +124,7 @@ One image per tool, built from [`envs/`](envs) (also the recipes of the conda pr
 
 | Label | Image | Used for |
 |---|---|---|
-| `maegatk` | `acox1/mito-maegatk:2.0.0` | MAESTER, reference preparation, barcode chunking and Picard filtering |
+| `maegatk` | `acox1/mito-maegatk:2.0.0` | MAESTER, reference preparation, BAM splitting into batches, STARsolo |
 | `mgatk` | `acox1/mito-mgatk:2.0.0` | bwa-mem2 alignment, mgatk (v0.9.0) |
 | `redeemv` | `acox1/mito-redeemv:2.0.0` | RedeemV consensus and strand-bias filter |
 
@@ -137,7 +139,7 @@ Build with `docker build --platform linux/x86_64 -f docker/Dockerfile_<tool> -t 
 
 ## Troubleshooting
 
-1. **Memory errors**: resources are set per process in `config/base.config`; override them in your `-c` config. `BWAMEM2_MT` and `BWAMEM2_INDEX` request 40 GB.
+1. **Memory errors**: resources are set per process in `config/base.config`; override them in your `-c` config. `BWAMEM2_INDEX` requests 80 GB (index peak about 70 GB), `BWAMEM2_MT` 40 GB. Per-cell memory is small and independent of `--batch_size`, which only trades the number of tasks (scheduler load) against the work lost when a task is retried.
 2. **Samplesheet errors**: the pipeline checks the CSV at launch and names the row and column.
 3. **Barcodes not found**: `cell_barcodes` must match the BAM tag (or the reads, for FASTQ input); use `--barcode_space RNA` for Cell Ranger ARC lists.
 
@@ -153,4 +155,4 @@ and the tool you used: maegatk/MAESTER (Miller et al., Nat. Biotechnol. 2022), m
 
 ## License
 
-MIT, see [LICENSE](LICENSE). `bin/mitoConsensus.py` is RedeemV code (chenweng1991/redeemV, commit `5c34940`) and is not covered by this licence.
+MIT, see [LICENSE](LICENSE).

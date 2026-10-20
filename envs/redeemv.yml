@@ -1,5 +1,4 @@
-# RedeemV image/env (ReDeeM): mitoConsensus.py and the strand-bias finalization.
-# mitoConsensus.py (RedeemV @ 5c34940) is in bin/.
+# RedeemV image/env (ReDeeM): streaming molecule consensus (bin/redeem_consensus.py) and the strand-bias finalization.
 name: mito-redeemv
 channels:
   - conda-forge
@@ -11,5 +10,3 @@ dependencies:
   - numpy
   - pandas
   - scipy
-  - progress
-  - click

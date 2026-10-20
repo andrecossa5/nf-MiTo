@@ -24,6 +24,8 @@ def checkParams() {
         error "Error: --assay must be one of ${PP_METHODS.keySet().join(', ')}. Provided: ${params.assay}"
     if (!IMPLEMENTED.contains(params.assay))
         error "Error: assay ${params.assay} is not implemented yet (available: ${IMPLEMENTED.join(', ')})"
+    if (params.batch_size.toString() != 'auto' && !(params.batch_size.toString() ==~ /[1-9][0-9]*/))
+        error "Error: --batch_size must be a positive integer or 'auto'. Provided: ${params.batch_size}"
 }
 
 // Read and validate the samplesheet. Columns: sample, fastq_dir, bam, cell_barcodes.

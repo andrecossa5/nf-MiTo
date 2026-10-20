@@ -6,41 +6,42 @@ nextflow.enable.dsl = 2
 
 process MAEGATK {
 
-  tag "${sample_name}: ${cell}"
+  tag "${sample_name}: ${batch_bam.simpleName}"
   label 'maegatk'
 
   input:
-  tuple val(sample_name), val(cell), path(bam)
+  tuple val(sample_name), path(batch_bam), path(batch_cbs)
   path(reference)
 
   output:
-  tuple val(sample_name), 
-    val(cell), 
-    path("${cell}.A.txt"),
-    path("${cell}.C.txt"),  
-    path("${cell}.G.txt"),  
-    path("${cell}.T.txt"),
-    path("${cell}.coverage.txt"),  
-    path("${cell}.depth.txt"), emit: tables
-  
+  tuple val(sample_name),
+    val(batch_bam.simpleName),
+    path("${batch_bam.simpleName}.A.txt"),
+    path("${batch_bam.simpleName}.C.txt"),
+    path("${batch_bam.simpleName}.G.txt"),
+    path("${batch_bam.simpleName}.T.txt"),
+    path("${batch_bam.simpleName}.coverage.txt"),
+    path("${batch_bam.simpleName}.depth.txt"), emit: tables
+
   script:
+  def flags = params.maegatk_proper_paired ? '--proper_paired' : ''
   """
-  oneSample_maegatk.py ${bam} ${cell} chrM.fa 
-  rm *bam *bai *fastq *sam *log
+  maegatk_batch.sh ${batch_bam} ${batch_bam.simpleName} ${reference[0]} ${params.barcode_tag} \\
+    --umi_tag ${params.maegatk_umi_tag} \\
+    --NHmax ${params.maegatk_NHmax} \\
+    --NMmax ${params.maegatk_NMmax} \\
+    --min_reads ${params.maegatk_min_reads} \\
+    --base_qual ${params.maegatk_base_qual} \\
+    --alignment_quality ${params.maegatk_alignment_quality} \\
+    ${flags}
   """
 
   stub:
   """
-  touch ${cell}.A.txt  
-  touch ${cell}.C.txt  
-  touch ${cell}.G.txt  
-  touch ${cell}.T.txt 
-  touch ${cell}.coverage.txt  
-  touch ${cell}.depth.txt
+  for l in A C G T coverage depth; do touch ${batch_bam.simpleName}.\$l.txt; done
   """
 
 }
-
 
 //
 
@@ -52,7 +53,7 @@ process COLLAPSE_MAEGATK {
 
   input:
   tuple val(sample_name), 
-      val(cells), 
+      val(batches), 
       path(A), 
       path(C), 
       path(G), 
