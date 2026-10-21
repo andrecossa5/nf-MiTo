@@ -2,7 +2,7 @@
 
 """
 Attach the cell barcode of a 10x ATAC / Multiome-ATAC library to the genomic reads.
-Usage: atac_add_barcode.py <R1.fastq.gz> <R2_barcode.fastq.gz> <R3.fastq.gz> <cell_barcodes> <out_prefix> [--rule auto]
+Usage: atac_add_barcode.py <R1.fastq.gz> <R2_barcode.fastq.gz> <R3.fastq.gz> <cell_barcodes> <out_prefix> [--rule auto] [--compress_threads 4]
 
 <cell_barcodes>: one barcode per line (with or without a "-1" suffix) or two tab-separated columns,
 "<name>\t<barcode as in the reads>". With two columns, the second is matched to the reads and the first is
@@ -15,12 +15,17 @@ sequencer (16 nt: 10x scATAC; 24 nt: Multiome i5, usually reverse complement of 
 The barcode is matched to the list exactly or with one unambiguous mismatch. Read pairs whose barcode is not
 a listed cell are dropped (not needed downstream, and mapping gets much cheaper). Writes
 <out_prefix>_R1.fastq.gz and <out_prefix>_R3.fastq.gz with "_BC:<name>" appended to the read name.
+
+Speed: reads are handled as bytes, and gzip is done by external pigz processes (gzip if pigz is not installed): the
+three inputs are decompressed and the two outputs compressed (--compress_threads each) in parallel with this process.
 """
 
 import sys
-import gzip
+import shutil
 import argparse
 import itertools
+import subprocess
+import gzip
 
 
 ##
@@ -35,10 +40,13 @@ parser.add_argument('out_prefix')
 parser.add_argument('--rule', default='auto', help='auto | fwd:<offset> | rc:<offset>')
 parser.add_argument('--detect_reads', type=int, default=50000)
 parser.add_argument('--min_match_rate', type=float, default=0.02)
+parser.add_argument('--compress_threads', type=int, default=4, help='pigz threads for each of the two outputs')
 args = parser.parse_args()
 
 BC_LEN = 16
-COMP = str.maketrans('ACGTN', 'TGCAN')
+COMP = bytes.maketrans(b'ACGTN', b'TGCAN')
+BUFSIZE = 1 << 20
+PIGZ = shutil.which('pigz')
 
 
 ##
@@ -51,9 +59,9 @@ def revcomp(s):
 def neighbours(bc):
     """All sequences at Hamming distance 1 (substitutions of A,C,G,T,N)."""
     for i in range(len(bc)):
-        for b in 'ACGTN':
+        for b in b'ACGTN':
             if b != bc[i]:
-                yield bc[:i] + b + bc[i+1:]
+                yield bc[:i] + bytes((b,)) + bc[i+1:]
 
 
 def read_listed(path):
@@ -66,7 +74,7 @@ def read_listed(path):
                 continue
             name = parts[0].strip()
             key = (parts[1].strip() if len(parts) > 1 else name)[:BC_LEN]
-            listed[key] = name
+            listed[key.encode()] = name.encode()
     if not listed:
         raise ValueError(f'No barcodes in {path}')
     return listed
@@ -100,9 +108,9 @@ def records(handle):
 
 
 def clean_name(head):
-    """'@name/1 comment' -> '@name' (the mates of a pair must share the name)."""
+    """b'@name/1 comment' -> b'@name' (the mates of a pair must share the name)."""
     name = head.split()[0]
-    return name[:-2] if len(name) > 3 and name[-2] == '/' and name[-1].isdigit() else name
+    return name[:-2] if len(name) > 3 and name[-2:-1] == b'/' and name[-1:].isdigit() else name
 
 
 def choose_rule(listed):
@@ -112,7 +120,7 @@ def choose_rule(listed):
         return mode, int(offset)
 
     seqs = []
-    with gzip.open(args.r2, 'rt') as fh:
+    with gzip.open(args.r2, 'rb') as fh:
         for rec in itertools.islice(records(fh), args.detect_reads):
             seqs.append(rec[1].strip())
     if not seqs:
@@ -134,6 +142,29 @@ def choose_rule(listed):
     return best
 
 
+def gunzip(path):
+    cmd = [PIGZ, '-dc', path] if PIGZ else ['gzip', '-dc', path]
+    return subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=BUFSIZE)
+
+
+def gzip_to(path):
+    cmd = [PIGZ, '-3', '-p', str(args.compress_threads), '-c'] if PIGZ else ['gzip', '-3', '-c']
+    out = open(path, 'wb')
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=out, bufsize=BUFSIZE), out
+
+
+def finish(proc, what, out=None):
+    """Wait for a gzip process and fail if it did (e.g. truncated input)."""
+    if proc.stdin is not None:
+        proc.stdin.close()
+    if proc.stdout is not None:
+        proc.stdout.close()
+    if proc.wait() != 0:
+        raise RuntimeError(f'gzip failed on {what}')
+    if out is not None:
+        out.close()
+
+
 ##
 
 
@@ -142,25 +173,52 @@ def main():
     listed = read_listed(args.cell_barcodes)
     rule = choose_rule(listed)
     lookup = build_lookup(listed)
+    mode, offset = rule
+    stop = offset + BC_LEN
+    # b'_BC:<name>\n' appended to the read name, per barcode
+    tags = {key: b'_BC:' + name + b'\n' for key, name in lookup.items()}
     n = kept = exact = 0
 
-    with gzip.open(args.r1, 'rt') as f1, gzip.open(args.r2, 'rt') as f2, gzip.open(args.r3, 'rt') as f3, \
-         gzip.open(f'{args.out_prefix}_R1.fastq.gz', 'wt', compresslevel=3) as o1, \
-         gzip.open(f'{args.out_prefix}_R3.fastq.gz', 'wt', compresslevel=3) as o3:
+    p1, p2, p3 = gunzip(args.r1), gunzip(args.r2), gunzip(args.r3)
+    q1, out1 = gzip_to(f'{args.out_prefix}_R1.fastq.gz')
+    q3, out3 = gzip_to(f'{args.out_prefix}_R3.fastq.gz')
+    f1, f2, f3 = p1.stdout, p2.stdout, p3.stdout
+    w1, w3 = q1.stdin, q3.stdin
+    get = tags.get
+    plus = b'+\n'
 
-        for a, b, c in itertools.zip_longest(records(f1), records(f2), records(f3)):
-            if a is None or b is None or c is None:
-                raise ValueError('R1, R2 and R3 have different numbers of reads')
-            n += 1
-            key = window(b[1].strip(), rule)
-            name_bc = lookup.get(key)
-            if name_bc is None:
-                continue
-            kept += 1
-            exact += key in listed
-            name = clean_name(a[0])
-            o1.write(f'{name}_BC:{name_bc}\n{a[1]}+\n{a[3]}')
-            o3.write(f'{name}_BC:{name_bc}\n{c[1]}+\n{c[3]}')
+    for h1 in f1:
+        h2 = f2.readline()
+        h3 = f3.readline()
+        if not h2 or not h3:
+            raise ValueError('R1, R2 and R3 have different numbers of reads')
+        s1 = f1.readline()
+        f1.readline()
+        qual1 = f1.readline()
+        seq2 = f2.readline()
+        f2.readline()
+        f2.readline()
+        s3 = f3.readline()
+        f3.readline()
+        qual3 = f3.readline()
+        n += 1
+        key = seq2[offset:stop] if mode == 'fwd' else seq2[offset:stop][::-1].translate(COMP)
+        tag = get(key)
+        if tag is None:
+            continue
+        kept += 1
+        exact += key in listed
+        name = clean_name(h1) + tag
+        w1.write(name + s1 + plus + qual1)
+        w3.write(name + s3 + plus + qual3)
+
+    if f2.readline() or f3.readline():
+        raise ValueError('R1, R2 and R3 have different numbers of reads')
+
+    for proc, what in [(p1, args.r1), (p2, args.r2), (p3, args.r3)]:
+        finish(proc, what)
+    finish(q1, f'{args.out_prefix}_R1.fastq.gz', out1)
+    finish(q3, f'{args.out_prefix}_R3.fastq.gz', out3)
 
     print(f'{n} read pairs, {kept} with a listed cell barcode ({exact} exact)')
 

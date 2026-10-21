@@ -49,7 +49,7 @@ process ATAC_ADD_BARCODE {
 
   script:
   """
-  atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded --rule ${params.atac_barcode_rule}
+  atac_add_barcode.py ${R1} ${R2} ${R3} ${cell_barcodes} barcoded --rule ${params.atac_barcode_rule} --compress_threads ${Math.max(1, task.cpus - 2)}
   """
 
   stub:
