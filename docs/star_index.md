@@ -1,4 +1,4 @@
-# Creating a STAR Index for nf-MiTo
+# Building a STAR index
 
 This tutorial provides step-by-step instructions for creating a custom STAR index for use with the nf-MiTo pipeline. This is useful when you want to:
 
@@ -281,4 +281,4 @@ You now have a complete STAR index ready for use with nf-MiTo! The key files are
 
 This index can be reused for multiple nf-MiTo runs and shared across projects using the same reference genome.
 
-For more information about nf-MiTo parameters and workflows, see the main [README](../README.md) and [PREPROCESS tutorial](PREPROCESS.md).
+For more information about nf-MiTo parameters and workflows, see the [Quickstart](quickstart.md) and [Full parameters](parameters.md).
