@@ -112,7 +112,6 @@ process RNA2ATAC_BARCODES {
 process BWAMEM2_INDEX {
 
   label 'mgatk'
-  publishDir "${params.output_folder}/resources", mode: 'copy'
 
   input:
   path(genome)

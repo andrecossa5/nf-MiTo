@@ -123,7 +123,7 @@ Per cell, maegatk filters the reads (`--maegatk_NHmax`, `--maegatk_NMmax`), buil
 ├── A.txt.gz  C.txt.gz  G.txt.gz  T.txt.gz  coverage.txt.gz  depth.txt.gz   # MAESTER, mtscATAC
 ├── refAllele.txt                                                           # mtscATAC only
 ├── RawGenotypes.<level>.StrandBalance.gz  QualifiedTotalCts.gz  StrandBias*   # ReDeeM
-└── resources/        # reference index, whitelists: reusable by other runs
+└── resources/        # MAESTER only: the STAR index, reusable by other runs
 ```
 
 ## Load the tables in MiTo

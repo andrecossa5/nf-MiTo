@@ -43,7 +43,7 @@ Then:
 { "masked_ref": "/path/to/reference/masked.fa" }
 ```
 
-The bwa-mem2 index (and, for MAESTER, the STAR index) is built by the pipeline from this FASTA, once, and stored in `<output_folder>/resources` for reuse.
+The bwa-mem2 index is built by the pipeline from this FASTA and is not copied to the output folder: it stays in the Nextflow work directory, so `-resume` reuses it. For MAESTER, the STAR index is built from the same FASTA and published in `<output_folder>/resources`.
 
 ## Other genomes
 
